@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Xcode Plug-in | 徐旭栋</title><link>/tag/xcode-plug-in/</link><atom:link href="/tag/xcode-plug-in/index.xml" rel="self" type="application/rss+xml"/><description>Xcode Plug-in</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Sat, 03 Jan 2015 00:00:01 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>Xcode Plug-in</title><link>/tag/xcode-plug-in/</link></image><item><title>Xcode 插件整理</title><link>/2015/01/03/xcode-%E6%8F%92%E4%BB%B6%E6%95%B4%E7%90%86/</link><pubDate>Sat, 03 Jan 2015 00:00:01 +0000</pubDate><guid>/2015/01/03/xcode-%E6%8F%92%E4%BB%B6%E6%95%B4%E7%90%86/</guid><description>&lt;div class="alert alert-warning">
+&lt;div>
+Xocde Plug-in 在 Xcode 8 之后已被禁用
+&lt;/div>
+&lt;/div>
+&lt;h2 id="xcode-插件备忘清单">Xcode 插件备忘清单&lt;/h2>
+&lt;h3 id="alcatrazhttpsgithubcomalcatrazalcatraz">&lt;a href="https://github.com/alcatraz/Alcatraz" target="_blank" rel="noopener">Alcatraz&lt;/a>&lt;/h3>
+&lt;p>用于搜索、安装、管理 Xcode 插件的插件，持项目模版和 Xcode 字体主题，省去了手动 Clone 再编译的过程。&lt;/p>
+&lt;h3 id="bbudebuggertuckawayhttpsgithubcomneonichubbudebuggertuckaway">&lt;a href="https://github.com/neonichu/BBUDebuggerTuckAway" target="_blank" rel="noopener">BBUDebuggerTuckAway&lt;/a>&lt;/h3>
+&lt;p>当编辑代码的时候，能自动隐藏 &lt;code>Debugger&lt;/code>，尤其适用于边调试边修改的情况。&lt;/p>
+&lt;h3 id="clangformat-xcodehttpsgithubcomtravisjefferyclangformat-xcode">&lt;a href="https://github.com/travisjeffery/ClangFormat-Xcode" target="_blank" rel="noopener">ClangFormat-Xcode&lt;/a>&lt;/h3>
+&lt;p>使用 &lt;code>ClangFormat&lt;/code> 来格式化代码风格，支持 LLVM，Google，Chromium，Mozilla，WebKit，或者自定义设置，代码洁癖必备之一。使用自定义格式时 &lt;code>ClangFormat&lt;/code> 会从当前正在输入的文件的最近一级的父目录依次向上查找，直到找到用于确定代码风格的 &lt;code>.clang-format&lt;/code> 文件，因此通常放在工程文件根目录即可，文件内容使用 YAML 格式，具体风格配置可以参考 &lt;a href="http://clang.llvm.org/docs/ClangFormatStyleOptions.html" target="_blank" rel="noopener">Clang-Format Style Options&lt;/a> ，或者 &lt;a href="http://clangformat.com" target="_blank" rel="noopener">clangformat.com&lt;/a>。&lt;/p>
+&lt;h3 id="cocoapods-xcode-pluginhttpsgithubcomkattralicocoapods-xcode-plugin">&lt;a href="https://github.com/kattrali/cocoapods-xcode-plugin" target="_blank" rel="noopener">cocoapods-xcode-plugin&lt;/a>&lt;/h3>
+&lt;p>CocoaPods 的 Xcode 插件，省去命令行的步骤，直接在 Xcode 中对 CocoaPods 进行管理。&lt;/p>
+&lt;h3 id="colorsense-for-xcodehttpsgithubcomomzcolorsense-for-xcode">&lt;a href="https://github.com/omz/ColorSense-for-Xcode" target="_blank" rel="noopener">ColorSense-for-Xcode&lt;/a>&lt;/h3>
+&lt;p>高效插件，可视化的 &lt;code>UIColor/NSColor&lt;/code>。&lt;/p>
+&lt;h3 id="fuzzyautocompletepluginhttpsgithubcomfuzzyautocompletefuzzyautocompleteplugin">&lt;a href="https://github.com/FuzzyAutocomplete/FuzzyAutocompletePlugin" target="_blank" rel="noopener">FuzzyAutocompletePlugin&lt;/a>&lt;/h3>
+&lt;p>模糊匹配输入，比 Xcode 的前缀匹配要方便许多，主要通过 &lt;code>hook&lt;/code> 了 Xcode 自带的 &lt;code>IDEOpenQuicklyPattern&lt;/code> 实现。&lt;/p>
+&lt;div class="alert alert-note">
+&lt;div>
+Xcode 8 自带了模糊匹配
+&lt;/div>
+&lt;/div>
+&lt;h3 id="hostringsense-for-xcodehttpsgithubcomholtwickhostringsense-for-xcode">&lt;a href="https://github.com/holtwick/HOStringSense-for-Xcode" target="_blank" rel="noopener">HOStringSense-for-Xcode&lt;/a>&lt;/h3>
+&lt;p>在 &lt;code>ColorSense-for-Xcode&lt;/code> 基础上进行的修改，可视化编辑多种文本，正则表达式、多行文本、内联 &lt;code>HTML&lt;/code> 等等。&lt;/p>
+&lt;h3 id="ksimagenamed-xcodehttpsgithubcomksutherksimagenamed-xcode">&lt;a href="https://github.com/ksuther/KSImageNamed-Xcode" target="_blank" rel="noopener">KSImageNamed-Xcode&lt;/a>&lt;/h3>
+&lt;p>使用 &lt;code>[NSImage/UIImage imageNamed:]&lt;/code> 方法时，会给出所有工程文件中可选图片，并提图片预览。&lt;/p>
+&lt;h3 id="scxcodeminimaphttpsgithubcomstefanceriuscxcodeminimap">&lt;a href="https://github.com/stefanceriu/SCXcodeMiniMap" target="_blank" rel="noopener">SCXcodeMiniMap&lt;/a>&lt;/h3>
+&lt;p>为 Xcode 编辑器增加了一个 MiniMap，不过会挡住报错提示以及较长的的代码的末端，同时支持各种语法高亮。&lt;/p>
+&lt;h3 id="scxcodeswitchexpanderhttpsgithubcomstefanceriuscxcodeswitchexpander">&lt;a href="https://github.com/stefanceriu/SCXcodeSwitchExpander" target="_blank" rel="noopener">SCXcodeSwitchExpander&lt;/a>&lt;/h3>
+&lt;p>与 SCXcodeMiniMap 为同一作者，为 swith 语句自动补全所有的 case，只能适用于枚举类型。&lt;/p>
+&lt;h3 id="vvdocumenter-xcodehttpsgithubcomonevcatvvdocumenter-xcode">&lt;a href="https://github.com/onevcat/VVDocumenter-Xcode" target="_blank" rel="noopener">VVDocumenter-Xcode&lt;/a>&lt;/h3>
+&lt;p>输入 &lt;code>///&lt;/code> 即可生成一个简易文档模版。&lt;/p>
+&lt;div class="alert alert-note">
+&lt;div>
+在 Xcode 8 已被苹果集成
+&lt;/div>
+&lt;/div>
+&lt;h3 id="xalignhttpsgithubcomqfishxalign">&lt;a href="https://github.com/qfish/XAlign" target="_blank" rel="noopener">XAlign&lt;/a>&lt;/h3>
+&lt;p>用于对齐代码，可以根据 =、Marco、Property 进行对齐，强迫症和代码洁癖必备&lt;/p>
+&lt;h3 id="xcodecolorshttpsgithubcomrobbiehansonxcodecolors">&lt;a href="https://github.com/robbiehanson/XcodeColors" target="_blank" rel="noopener">XcodeColors&lt;/a>&lt;/h3>
+&lt;p>更改 NSLog 在 console 中输出的颜色，CocoaLumberjack 的依赖项&lt;/p>
+&lt;h3 id="xtodohttpsgithubcomtraworxtodo">&lt;a href="https://github.com/trawor/XToDo" target="_blank" rel="noopener">XToDo&lt;/a>&lt;/h3>
+&lt;p>允许使用 &lt;code>TODO&lt;/code>，&lt;code>FIXME&lt;/code>，&lt;code>???&lt;/code>，&lt;code>!!!&lt;/code> 这些符号来标记需要完成的工作，汇总显示。&lt;/p>
+&lt;h3 id="xvimhttpsgithubcomxvimprojectxvim">&lt;a href="https://github.com/XVimProject/XVim" target="_blank" rel="noopener">XVim&lt;/a>&lt;/h3>
+&lt;p>让熟悉使用 &lt;code>vim&lt;/code> 的开发者在 Xcode 中也能够有完整的 Vim 体验。&lt;/p></description></item></channel></rss>

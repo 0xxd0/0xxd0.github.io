@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NC. Networking and Communication | 徐旭栋</title><link>/category/nc.-networking-and-communication/</link><atom:link href="/category/nc.-networking-and-communication/index.xml" rel="self" type="application/rss+xml"/><description>NC. Networking and Communication</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Sun, 06 May 2018 00:00:00 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>NC. Networking and Communication</title><link>/category/nc.-networking-and-communication/</link></image><item><title>深入了解 Protocol Buffers</title><link>/2018/05/06/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-protocol-buffers/</link><pubDate>Sun, 06 May 2018 00:00:00 +0000</pubDate><guid>/2018/05/06/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-protocol-buffers/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://github.com/protocolbuffers/protobuf" target="_blank" rel="noopener">protocolbuffers/protobuf: Protocol Buffers &lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://developers.google.com/protocol-buffers" target="_blank" rel="noopener">Protocol Buffers | Google Developers&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 QUIC Transport Protocol</title><link>/2017/06/15/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-quic-transport-protocol/</link><pubDate>Thu, 15 Jun 2017 00:00:00 +0000</pubDate><guid>/2017/06/15/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-quic-transport-protocol/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/draft-ietf-quic-transport-34.pdf" target="_blank" rel="noopener">QUIC: A UDP-Based Multiplexed and Secure Transport&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://www.ietf.org/proceedings/98/slides/slides-98-edu-sessf-quic-tutorial-00.pdf" target="_blank" rel="noopener">QUIC Tutorial&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://blog.cloudflare.com/the-road-to-quic/" target="_blank" rel="noopener">The Road to QUIC&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://www.chromium.org/quic" target="_blank" rel="noopener">QUIC, a multiplexed stream transport over UDP&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 HTTPS</title><link>/2017/05/13/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-https/</link><pubDate>Sat, 13 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/13/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-https/</guid><description>&lt;p>Hypertext Transfer Protocol Secure，超文本传输安全协议，又称 HTTP over TLS。是经由 HTTP 进行通信，并利用 SSL/TLS 来加密。HTTPS 主要目的是为了提供对服务器的身份认证，与传输过程中的数据完整性不被篡改，最早由网景（Netscape）在 1994 年提出，应用在网景领航员浏览器中。&lt;/p>
+&lt;p>HTTP 在作数据传输协议使用时，由于是明文传输无任何安全保证，会存在内容被窃听的问题；由于没有身份认证机制，通信过程中会面临中间人攻击，例如数据被篡改、服务器身份伪装等。正因为 HTTP 存在这些风险问题才诞生了 HTTPS。&lt;/p>
+&lt;p>HTTPS 本质上是一个复合协议，由 HTTP、TSL/SSL、TCP 协同工作，因此会涉及到较多领域的内容比如密码学、公钥与私钥、加密与认证、数字证书、数字签名等。&lt;/p>
+&lt;p>此外 HTTPS 可能会与 &lt;a href="https://tools.ietf.org/pdf/rfc2660.pdf" target="_blank" rel="noopener">RFC 2660&lt;/a> 中的安全超文本传输协议 S-HTTP 相混淆。两者都为 HTTP 安全传输的实现，S-HTTP 为应用层协议，主要对传输内容加密；HTTPS 的核心为 SSL/TSL，SSL/TSL 协议位于传输层与应用层之间，确保整个通信过程都是安全的。&lt;/p>
+&lt;h2 id="https-通信流程">HTTPS 通信流程&lt;/h2>
+&lt;p>如上文所述，HTTPS 是对 HTTP 的扩展，由三部分组成，通信流程可以简化为：&lt;/p>
+&lt;ol>
+&lt;li>通信双方通过三次握手建立 TCP 连接&lt;/li>
+&lt;li>通信双方通过四次握手建立 TLS 连接&lt;/li>
+&lt;li>HTTP Client 向 Server 发送请求，Server 响应返回 Response&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-mermaid">sequenceDiagram
+autonumber
+participant Client
+participant Server
+rect rgb(191, 223, 255)
+Client -&amp;gt;&amp;gt; Server: Request https://www.google.com
+note right of Server: Encrypt Algorithm&amp;lt;br/&amp;gt;Hash Algorithm
+end
+rect rgb(200, 150, 255)
+Server-&amp;gt;&amp;gt;Client: Return Certificate
+Client-&amp;gt;&amp;gt;Client: Is Certificate Valid?
+Note over Client, Server: Invalid, show prompt.
+Client-&amp;gt;&amp;gt;Client: Is Valid, Random Magic Number R.
+Client-&amp;gt;&amp;gt;Client: Encrypt R with Public Key In Certificate
+end
+rect rgb(191, 223, 255)
+Client-&amp;gt;&amp;gt;Server: Transfer Encrypted R to Server
+Server-&amp;gt;&amp;gt;Server: Decrypted R with Private Key
+Server-&amp;gt;&amp;gt;Server: Encrypt Content with R
+end
+rect rgb(200, 150, 255)
+Server-&amp;gt;&amp;gt;Client: Return Encrypted Content
+Client-&amp;gt;&amp;gt;Client: Decrypt Content with R
+end
+&lt;/code>&lt;/pre>
+&lt;h3 id="建立-tcp-链接">建立 TCP 链接&lt;/h3>
+&lt;p>更多关于 TCP 的内容从以下这篇文章进一步了解。&lt;/p>
+&lt;div class="card-simple">
+&lt;div class="article-metadata">
+&lt;div>
+&lt;span class="author-highlighted">
+徐旭栋&lt;/span>
+&lt;/div>
+&lt;span class="article-date">
+Wed, May 03, 2017
+&lt;/span>
+&lt;span class="middot-divider">&lt;/span>
+&lt;span class="article-reading-time">
+1 分钟阅读时长
+&lt;/span>
+&lt;br>
+&lt;span class="article-categories">
+&lt;font color="#005cc5">
+&lt;i class="fas fa-feather-alt">&lt;/i>
+&lt;strong class="mr-1">CIP&lt;/strong>
+&lt;/font>&lt;a href="/cip/11.07-computer-science/">11.07) Computer Science&lt;/a>
+,
+&lt;a href="/cip/11.0701-computer-science/">11.0701) Computer Science&lt;/a>&lt;/span>
+&lt;span class="article-categories">
+&lt;font color="#005cc5">
+&lt;i class="fas fa-hashtag mr-1">&lt;/i>
+&lt;/font>
+&lt;a href="/category/nc.-networking-and-communication/">NC. Networking and Communication&lt;/a>&lt;/span>
+&lt;/div>
+&lt;div class="section-subheading article-title mb-1 mt-3">
+&lt;a href="/2017/05/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-tcp/">深入了解 TCP&lt;/a>
+&lt;/div>
+&lt;a href="/2017/05/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-tcp/" class="summary-link">
+&lt;div class="article-style">
+&lt;p>TCP 详解&lt;/p>
+&lt;/div>
+&lt;/a>
+&lt;div class="btn-links">
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="https://tools.ietf.org/pdf/rfc793.pdf" target="_blank" rel="noopener">
+&lt;i class="far fa-file-pdf mr-1">&lt;/i>
+RFC 793
+&lt;/a>
+&lt;/div>
+&lt;/div>
+&lt;h3 id="建立-tls-链接">建立 TLS 链接&lt;/h3>
+&lt;p>建立 TCP 链接后需要进行 TLS 握手，以浏览器和服务器的通信为例，通常 HTTPS 做单向认证，用于鉴别服务端的真伪，简化流程的如下：&lt;/p>
+&lt;ol>
+&lt;li>浏览器向服务器的 TLS 端口（一般为 443）发起请求，此次请求携带了支持的加密算法和哈希算法。&lt;/li>
+&lt;li>服务器收到请求，选择浏览器支持的加密算法和哈希算法。&lt;/li>
+&lt;li>服务器将数字证书返回给浏览器，这里的数字证书可以是向权威机构比如 CA 申请的，也可以是自签名证书。&lt;/li>
+&lt;li>浏览器进入数字证书认证环节，这一部分是浏览器内置的 TLS 模块完成的。
+&lt;ul>
+&lt;li>首先浏览器会从系统内置的证书列表中索引，找到服务器下发证书对应的机构。&lt;/li>
+&lt;li>如果没有找到，此时就会提示用户该证书是不是由权威机构颁发，是不可信任的。&lt;/li>
+&lt;li>如果查到了对应的机构，则取出该机构颁发的公钥。&lt;/li>
+&lt;li>用机构的证书公钥解密得到证书的内容和证书数字签名，内容包括服务器的地址、服务器的公钥、证书的有效期等。&lt;/li>
+&lt;li>浏览器首先验证数字签名的合法性，验证过程类似 Bob 和 Pat 的通信过程。&lt;/li>
+&lt;li>签名通过后，浏览器验证证书记录的网址是否和当前网址是一致的，不一致会提示用户。&lt;/li>
+&lt;li>如果网址一致会检查证书有效期，证书过期了也会提示用户。&lt;/li>
+&lt;li>以上都通过认证时，浏览器就可以安全使用证书中的服务器公钥了。&lt;/li>
+&lt;li>浏览器生成一个随机数 R，并使用服务器的公钥对 R 进行加密。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>浏览器将加密之后的 R 传送给服务器。&lt;/li>
+&lt;li>服务器用自己的私钥解密得到 R。&lt;/li>
+&lt;li>服务器以 R 为密钥使用了对称加密算法加密网页内容并传输给浏览器。&lt;/li>
+&lt;li>浏览器以 R 为密钥使用之前约定好的解密算法获取网页内容。&lt;/li>
+&lt;/ol>
+&lt;p>整个过程主要为了认证服务端证书以及的公钥的合法性，因为非对称加密计算量较大，整个通信过程只会用到一次非对称加密算法，主要是用来保护传输客户端生成的 &lt;code>Premaster Secret&lt;/code> 用于对称加密的随机数私钥。后续内容传输都为对称加密。&lt;/p>
+&lt;p>通常 TLS 会在系统内置的可信证书列表内索引匹配的证书链。这一过程也有例外，例如 macOS 上，Safari、Edge 和 Chrome 建立 TLS 连接时会从系统的 Keychain Access 根证书去索引；而 Firefox 安全度更高，会在浏览器内置的证书中索引，防止在系统被注入证书时 HTTPS 被窃听，常见的抓包软件就是通过把自签名证书注入到系统的证书链中以实现 HTTPS 的拦截。&lt;/p>
+&lt;p>更多关于 SSL/TLS 的详细内容从以下这篇文章进一步了解。&lt;/p>
+&lt;div class="card-simple">
+&lt;div class="article-metadata">
+&lt;div>
+&lt;span class="author-highlighted">
+徐旭栋&lt;/span>
+&lt;/div>
+&lt;span class="article-date">
+Tue, May 09, 2017
+&lt;/span>
+&lt;br>
+&lt;span class="article-categories">
+&lt;font color="#005cc5">
+&lt;i class="fas fa-feather-alt">&lt;/i>
+&lt;strong class="mr-1">CIP&lt;/strong>
+&lt;/font>&lt;a href="/cip/11.07-computer-science/">11.07) Computer Science&lt;/a>
+,
+&lt;a href="/cip/11.0701-computer-science/">11.0701) Computer Science&lt;/a>&lt;/span>
+&lt;span class="article-categories">
+&lt;font color="#005cc5">
+&lt;i class="fas fa-hashtag mr-1">&lt;/i>
+&lt;/font>
+&lt;a href="/category/nc.-networking-and-communication/">NC. Networking and Communication&lt;/a>&lt;/span>
+&lt;/div>
+&lt;div class="section-subheading article-title mb-1 mt-3">
+&lt;a href="/post/tech-for-good/deep-dive-into-ssl-tls/">深入了解 SSL/TLS Protocol&lt;/a>
+&lt;/div>
+&lt;a href="/post/tech-for-good/deep-dive-into-ssl-tls/" class="summary-link">
+&lt;div class="article-style">
+&lt;p>SSL/TLS 协议详解&lt;/p>
+&lt;/div>
+&lt;/a>
+&lt;div class="btn-links">
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="https://toolietf.org/pdf/rfc6101.pdfs." target="_blank" rel="noopener">
+&lt;i class="far fa-file-pdf mr-1">&lt;/i>
+RFC 6101
+&lt;/a>
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="https://tools.ietf.org/pdf/rfc2246.pdf" target="_blank" rel="noopener">
+&lt;i class="far fa-file-pdf mr-1">&lt;/i>
+RFC 2246
+&lt;/a>
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="https://tools.ietf.org/pdf/rfc4346.pdf" target="_blank" rel="noopener">
+&lt;i class="far fa-file-pdf mr-1">&lt;/i>
+RFC 4346
+&lt;/a>
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="https://tools.ietf.org/pdf/rfc5246.pdf" target="_blank" rel="noopener">
+&lt;i class="far fa-file-pdf mr-1">&lt;/i>
+RFC 5246
+&lt;/a>
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="https://tools.ietf.org/pdf/rfc8446.pdf" target="_blank" rel="noopener">
+&lt;i class="far fa-file-pdf mr-1">&lt;/i>
+RFC 8446
+&lt;/a>
+&lt;/div>
+&lt;/div>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/HTTPS" target="_blank" rel="noopener">HTTPS&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc2818.pdf" target="_blank" rel="noopener">HTTP Over TLS&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc2660.pdf" target="_blank" rel="noopener">The Secure HyperText Transfer Protocol&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 HTTP</title><link>/2017/05/11/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-http/</link><pubDate>Thu, 11 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/11/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-http/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc2616.pdf" target="_blank" rel="noopener">Hypertext Transfer Protocol &amp;ndash; HTTP/1.1&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc7231.pdf" target="_blank" rel="noopener">Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview" target="_blank" rel="noopener">An overview of HTTP&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>TLS Handshaking Protocols</title><link>/2017/05/09/tls-handshaking-protocols/</link><pubDate>Tue, 09 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/09/tls-handshaking-protocols/</guid><description>&lt;h2 id="tls-10">TLS 1.0&lt;/h2>
+&lt;h2 id="tls-20">TLS 2.0&lt;/h2>
+&lt;h2 id="tls-30">TLS 3.0&lt;/h2>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc2246.pdf" target="_blank" rel="noopener">The TLS Protocol Version 1.0&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc8446.pdf" target="_blank" rel="noopener">The Transport Layer Security (TLS) Protocol Version 1.3&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://datatracker.ietf.org/doc/rfc8446/" target="_blank" rel="noopener">Datatracker The Transport Layer Security (TLS) Protocol Version 1.3&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" target="_blank" rel="noopener">Transport Layer Security - Wikipedia&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>TLS Record Protocol</title><link>/2017/05/09/tls-record-protocol/</link><pubDate>Tue, 09 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/09/tls-record-protocol/</guid><description>&lt;h2 id="tls-10">TLS 1.0&lt;/h2>
+&lt;h2 id="tls-20">TLS 2.0&lt;/h2>
+&lt;h2 id="tls-30">TLS 3.0&lt;/h2>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc2246.pdf" target="_blank" rel="noopener">The TLS Protocol Version 1.0&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc8446.pdf" target="_blank" rel="noopener">The Transport Layer Security (TLS) Protocol Version 1.3&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://datatracker.ietf.org/doc/rfc8446/" target="_blank" rel="noopener">Datatracker The Transport Layer Security (TLS) Protocol Version 1.3&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" target="_blank" rel="noopener">Transport Layer Security - Wikipedia&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 WebSocket Protocol</title><link>/2017/05/06/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-websocket-protocol/</link><pubDate>Sat, 06 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/06/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-websocket-protocol/</guid><description>&lt;h2 id="websocket-握手">WebSocket 握手&lt;/h2>
+&lt;p>WebSocket 为第 7 层应用层协议，建立连接的握手流程依赖于 4 层 TCP，由于 WebSocket 通过利用 HTTP 发起握手，所以这里的握手更类似于一次对 HTTP 协议切换的请求。&lt;/p>
+&lt;h3 id="client-请求">Client 请求&lt;/h3>
+&lt;p>WebSocket 的请求和 HTTP 的格式是一致的, 每行会以 &lt;code>\r\n&lt;/code> 字符结尾，请求头的结束处也需要另起一行空白行：&lt;/p>
+&lt;pre>&lt;code class="language-http">GET /chat HTTP/1.1
+Host: server.example.com
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==
+Sec-WebSocket-Protocol: chat, superchat
+Sec-WebSocket-Version: 13
+Origin: http://example.com
+&lt;/code>&lt;/pre>
+&lt;p>最大的区别在于 WebSoeckt 的请求头会在 HTTP 的基础上带上 WS 协议切换标志位，告诉服务端将 HTTP 升级为 WebSocket。&lt;/p>
+&lt;pre>&lt;code class="language-http">Upgrade: websocket
+Connection: Upgrade
+&lt;/code>&lt;/pre>
+&lt;h3 id="server-响应">Server 响应&lt;/h3>
+&lt;pre>&lt;code class="language-http">HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk=
+Sec-WebSocket-Protocol: chat
+&lt;/code>&lt;/pre>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc6455.pdf" target="_blank" rel="noopener">The WebSocket Protocol&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API" target="_blank" rel="noopener">The WebSocket API (WebSockets)&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/WebSocket" target="_blank" rel="noopener">WebSocket&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 TCP</title><link>/2017/05/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-tcp/</link><pubDate>Wed, 03 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-tcp/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc793.pdf" target="_blank" rel="noopener">TRANSMISSION CONTROL PROTOCOL): Semantics and Content&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol" target="_blank" rel="noopener">Transmission Control Protocol - Wikipedia&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 UDP</title><link>/2017/05/01/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-udp/</link><pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/01/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-udp/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc768.pdf" target="_blank" rel="noopener">User Datagram Protocol&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc8085.pdf" target="_blank" rel="noopener">UDP Usage Guidelines&lt;/a>.&lt;/li>
+&lt;/ol></description></item></channel></rss>

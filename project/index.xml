@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Projects | 徐旭栋</title><link>/project/</link><atom:link href="/project/index.xml" rel="self" type="application/rss+xml"/><description>Projects</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Sat, 25 Jun 2016 10:31:29 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>Projects</title><link>/project/</link></image><item><title>Objective-C Evolution</title><link>/project/project-objc-evolution/</link><pubDate>Sat, 25 Jun 2016 10:31:29 +0000</pubDate><guid>/project/project-objc-evolution/</guid><description>&lt;h2 id="关于">关于&lt;/h2>
+&lt;blockquote>
+&lt;p>That day, if swift had never been released&amp;hellip;, would Objective-C be different?&lt;/p>
+&lt;/blockquote>
+&lt;p>The &lt;code>objc-evolutions&lt;/code> project maintains the personal major proposals for changes and enhancements to the The Objective-C Programming Language.&lt;/p>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;p>
+&lt;div class="pub-list-item" style="margin-bottom: 1rem">
+&lt;i class="far fa-file-alt pub-icon" aria-hidden="true">&lt;/i>
+&lt;span class="article-metadata li-cite-author">
+&lt;span class="author-highlighted">
+徐旭栋&lt;/span>
+&lt;/span>
+(2016).
+&lt;a href="/2016/06/25/introduce-objective-c-evolution/">Introduce Objective-C Evolution&lt;/a>.
+&lt;p>
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="/project/project-objc-evolution/">
+项目
+&lt;/a>
+&lt;/p>
+&lt;/div>
+&lt;div class="pub-list-item" style="margin-bottom: 1rem">
+&lt;i class="far fa-file-alt pub-icon" aria-hidden="true">&lt;/i>
+&lt;span class="article-metadata li-cite-author">
+&lt;span class="author-highlighted">
+徐旭栋&lt;/span>
+&lt;/span>
+(2016).
+&lt;a href="/post/tech-for-good/objc-evolution-proposals/">The Objective-C Programming Language Evolution&lt;/a>.
+&lt;p>
+&lt;/p>
+&lt;/div>
+&lt;/p></description></item><item><title>objc4 runtime</title><link>/project/project-objc4/</link><pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate><guid>/project/project-objc4/</guid><description>&lt;p>A latest buildable and debuggable Objective-C runtime project.&lt;/p></description></item><item><title>swift-cartool</title><link>/project/project-cartool/</link><pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate><guid>/project/project-cartool/</guid><description>&lt;p>&lt;img src="https://raw.githubusercontent.com/0xxd0/cartools/master/static/media/AppIcon.png" alt="AppIcon">&lt;/p>
+&lt;p>ToolKit for Compiled Asset Catalogs (.car file) written in Swift.&lt;/p></description></item></channel></rss>

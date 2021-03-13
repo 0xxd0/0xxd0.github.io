@@ -1,0 +1,2468 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>11.07) Computer Science | 徐旭栋</title><link>/cip/11.07-computer-science/</link><atom:link href="/cip/11.07-computer-science/index.xml" rel="self" type="application/rss+xml"/><description>11.07) Computer Science</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Mon, 22 Feb 2021 10:31:29 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>11.07) Computer Science</title><link>/cip/11.07-computer-science/</link></image><item><title>OE-0001 Introduce Swift var, let keyword</title><link>/2016/06/26/oe-0001-introduce-swift-var-let-keyword/</link><pubDate>Sun, 26 Jun 2016 10:31:29 +0000</pubDate><guid>/2016/06/26/oe-0001-introduce-swift-var-let-keyword/</guid><description>&lt;!-- # 引入 defer 关键字 -->
+&lt;ul>
+&lt;li>Proposal: &lt;a href="https://github.com/0xxd0/objc-evolution/blob/master/proposal/0001-swift-var-and-let.md" target="_blank" rel="noopener">OE-0001&lt;/a>&lt;/li>
+&lt;li>Authors: &lt;a href="https://github.com/0xxd0" target="_blank" rel="noopener">Xudong Xu&lt;/a>&lt;/li>
+&lt;li>Status: &lt;strong>Implemented&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>&lt;code>var&lt;/code> 和 &lt;code>let&lt;/code> 是 Swift 定义变量的重要关键字，描述了变量是否可以被修改，将这些关键字引入 Objective-C，以更好地表达变量的可变性。&lt;/p>
+&lt;h2 id="motivation">Motivation&lt;/h2>
+&lt;p>在 Objective-C 中变量声明的 Type Inference 一直没有很好的解决方案，下方的显示类型声明代码是我们经常需要面对的：&lt;/p>
+&lt;pre>&lt;code class="language-objc">NSMutableArray&amp;lt;NSString *&amp;gt;* array = [[NSMutableArray&amp;lt;NSString *&amp;gt; array];
+&lt;/code>&lt;/pre>
+&lt;p>在 Swift 中会由类型推导自动完成：&lt;/p>
+&lt;pre>&lt;code class="language-swift">var elements = [String]();
+&lt;/code>&lt;/pre>
+&lt;h2 id="proposed-solution">Proposed solution&lt;/h2>
+&lt;p>在 ObjC 中引入 &lt;code>let&lt;/code> 和 &lt;code>var&lt;/code> 关键字：&lt;/p>
+&lt;pre>&lt;code class="language-objc">let elements = [NSMutableArray&amp;lt;NSString *&amp;gt; array];
+&lt;/code>&lt;/pre>
+&lt;p>影响范围为所有变量声明，并且同时兼容 C/C++。&lt;/p>
+&lt;h2 id="detailed-design">Detailed design&lt;/h2>
+&lt;p>得益于 Clang 将类型推导特性带入了 pure C，使得我们能在 C 代码中使用 &lt;code>__auto_type&lt;/code> 来做类型推导：&lt;/p>
+&lt;pre>&lt;code class="language-c">// File.c
+__auto_type str = &amp;quot;string&amp;quot;;
+&lt;/code>&lt;/pre>
+&lt;p>以 &lt;code>const&lt;/code> 修饰达到 &lt;code>let&lt;/code> 的效果，通过宏实现定义关键字：&lt;/p>
+&lt;pre>&lt;code class="language-c">#ifdef __cplusplus
+#define var auto
+#define let const auto
+#else
+#define var __auto_type
+#define let const __auto_type
+#endif
+&lt;/code>&lt;/pre>
+&lt;p>使 C/ObjC 能像 Swift 一样使用 &lt;code>var&lt;/code> 和 &lt;code>let&lt;/code>。&lt;/p>
+&lt;pre>&lt;code class="language-objc">var vector = std::vector&amp;lt;NSInteger&amp;gt;{1, 2, 3};
+let array = NSArray.alloc.init;
+let block = ^void (id self, SEL _cmd) {
+return;
+};
+&lt;/code>&lt;/pre>
+&lt;h2 id="source-compatibility">Source compatibility&lt;/h2>
+&lt;p>此特性是附加特性，并且不会破坏任何现有代码，只会精简先前繁琐的语法，不会有任何更改格式正确的代码的行为。&lt;/p>
+&lt;h2 id="alternatives-considered">Alternatives considered&lt;/h2>
+&lt;p>在 C++ 的环境下，可以通过 &lt;code>auto&lt;/code> 完成类型推导：&lt;/p>
+&lt;pre>&lt;code class="language-objc">auto array = [[NSMutableArray&amp;lt;NSString *&amp;gt; array];
+&lt;/code>&lt;/pre>
+&lt;p>但是这样会引入 C++，对于很多场景下这是没必要的。&lt;/p></description></item><item><title>HT0002 如何在 macOS 上显示隐藏文件和文件夹</title><link>/2017/11/26/ht0002-%E5%A6%82%E4%BD%95%E5%9C%A8-macos-%E4%B8%8A%E6%98%BE%E7%A4%BA%E9%9A%90%E8%97%8F%E6%96%87%E4%BB%B6%E5%92%8C%E6%96%87%E4%BB%B6%E5%A4%B9/</link><pubDate>Sun, 26 Nov 2017 10:31:29 +0000</pubDate><guid>/2017/11/26/ht0002-%E5%A6%82%E4%BD%95%E5%9C%A8-macos-%E4%B8%8A%E6%98%BE%E7%A4%BA%E9%9A%90%E8%97%8F%E6%96%87%E4%BB%B6%E5%92%8C%E6%96%87%E4%BB%B6%E5%A4%B9/</guid><description>&lt;p>您可以通过命令行来显示被 Mac 操作系统隐藏的文件和文件夹。&lt;/p>
+&lt;p>以下高级步骤主要适用于系统管理员以及熟悉命令行的其他人员。&lt;/p>
+&lt;h2 id="os-x-mavericks-及之后的-mac-操作系统">OS X Mavericks 及之后的 Mac 操作系统&lt;/h2>
+&lt;ol>
+&lt;li>打开“应用程序”文件夹内“实用工具”文件夹中的“终端”，在“终端”中键入或粘贴以下命令。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">defaults write com.apple.finder AppleShowAllFiles -boolean true ; killall Finder
+&lt;/code>&lt;/pre>
+&lt;ol start="2">
+&lt;li>完成之后，你将会在 Finder 中看到被隐藏的文件和文件夹。&lt;/li>
+&lt;li>如果希望再次一次这些被隐藏的文件和文件夹时，在“终端”中键入或粘贴以下命令。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">defaults write com.apple.finder AppleShowAllFiles -boolean false ; killall Finder
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>【提示】&lt;/strong> 该命令适用于 OS X Mavericks 和 OS X Yosemite 系统。对于还在使用 OS X Mountain Lion 或是更早版本的系统的 Mac 用户来说，请使用如下的命令。&lt;/p>
+&lt;h2 id="os-x-mountain-lion-及之前的-mac-操作系统">OS X Mountain Lion 及之前的 Mac 操作系统&lt;/h2>
+&lt;ol>
+&lt;li>打开“应用程序”文件夹内“实用工具”文件夹中的“终端”，在“终端”中键入或粘贴以下命令。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">defaults write com.apple.finder AppleShowAllFiles TRUE ; killall Finder
+&lt;/code>&lt;/pre>
+&lt;ol start="2">
+&lt;li>完成之后，你将会在 Finder 中看到被隐藏的文件和文件夹。&lt;/li>
+&lt;li>如果希望再次一次这些被隐藏的文件和文件夹时，在“终端”中键入或粘贴以下命令。&lt;/li>
+&lt;/ol>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://support.apple.com/zh-cn/guide/mac-help/mchlp2304/mac" target="_blank" rel="noopener">在 Mac 上显示或隐藏文件扩展名 - Apple 支持&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>OE-0002 Introduce Swift defer keyword</title><link>/2016/06/26/oe-0002-introduce-swift-defer-keyword/</link><pubDate>Sun, 26 Jun 2016 10:31:29 +0000</pubDate><guid>/2016/06/26/oe-0002-introduce-swift-defer-keyword/</guid><description>&lt;ul>
+&lt;li>Proposal: &lt;a href="https://github.com/0xxd0/objc-evolution/blob/master/proposal/0002-introduce-swift-defer.md" target="_blank" rel="noopener">OE-0002&lt;/a>&lt;/li>
+&lt;li>Authors: &lt;a href="https://github.com/0xxd0" target="_blank" rel="noopener">Xudong Xu&lt;/a>&lt;/li>
+&lt;li>Status: &lt;strong>Implemented&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>&lt;code>defer&lt;/code> 是 Swift 定义变量的重要关键字，用于 Control Flow 在当前作用域退出之后的收尾操作，将 &lt;code>defer&lt;/code> 关键字引入 Objective-C，使 Control Flow 更优雅。&lt;/p>
+&lt;h2 id="motivation">Motivation&lt;/h2>
+&lt;p>&lt;code>defer&lt;/code> 极大的改变了资源的获取与释放的代码编写流程，没有 &lt;code>defer&lt;/code> 的情况下，我们需要在所有的退出语句都加上收尾处理。&lt;/p>
+&lt;pre>&lt;code class="language-swift">func foo() {
+guard let list = class_copyMethodList(value, &amp;amp;outCount) else {
+return
+}
+if (condition) {
+// ...
+free(list)
+return
+}
+// ...
+free(list)
+}
+&lt;/code>&lt;/pre>
+&lt;p>用了 &lt;code>defer&lt;/code> 之后可以把精力放在 Control Flow 上，而不是在何处处理收尾，Swift 是一门提倡尽早 &lt;code>return&lt;/code> 的语言：&lt;/p>
+&lt;pre>&lt;code class="language-swift">// with defer
+func foo() {
+guard let list = class_copyMethodList(value, &amp;amp;outCount) else {
+return
+}
+defer {
+free(list)
+}
+if (condition) {
+// ...
+return
+}
+// ...
+return
+}
+&lt;/code>&lt;/pre>
+&lt;h2 id="proposed-solution">Proposed solution&lt;/h2>
+&lt;p>得益于 Clang 的 &lt;code>__attribute((cleanup()))&lt;/code> 特性，将 C Block 标记为一个从当前作用域退出之后执行的收尾用匿名函数。&lt;/p>
+&lt;h2 id="detailed-design">Detailed design&lt;/h2>
+&lt;p>实现参考&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/0xxd0/objc-evolution/blob/75e73c073dab38d3f464b4bc12dc317b4a247ff1/runtime/swift.h#L29" target="_blank" rel="noopener">runtime/swift.h#L29&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>通过宏定义的 defer，可以做到如下的 Control Flow：&lt;/p>
+&lt;pre>&lt;code class="language-c">static pthread_mutex_t lock_key;
+void foo() {
+pthread_mutex_lock(&amp;amp;lock_key);
+defer {
+pthread_mutex_unlock(&amp;amp;lock_key);
+};
+var cls_count = (unsigned)0;
+let cls_list = objc_copyClassList(&amp;amp;cls_count);
+defer {
+free(cls_list);
+};
+// do sth
+}
+&lt;/code>&lt;/pre>
+&lt;h2 id="source-compatibility">Source compatibility&lt;/h2>
+&lt;p>此特性是附加特性，并且不会破坏任何现有代码，只会精简先前繁琐的 Control Flow，不会有任何更改格式正确的代码的行为。&lt;/p>
+&lt;h2 id="alternatives-considered">Alternatives considered&lt;/h2>
+&lt;p>无&lt;/p></description></item><item><title>HT0003 如何在 VMware Fusion 上进行端口映射</title><link>/2018/11/21/ht0003-%E5%A6%82%E4%BD%95%E5%9C%A8-vmware-fusion-%E4%B8%8A%E8%BF%9B%E8%A1%8C%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/</link><pubDate>Wed, 21 Nov 2018 10:31:29 +0000</pubDate><guid>/2018/11/21/ht0003-%E5%A6%82%E4%BD%95%E5%9C%A8-vmware-fusion-%E4%B8%8A%E8%BF%9B%E8%A1%8C%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/</guid><description>&lt;p>您可以通过编辑 VMware Fusion 的 NAT 配置文件来对端口进行映射。&lt;/p>
+&lt;p>以下高级步骤主要适用于系统管理员以及熟悉命令行的其他人员。&lt;/p>
+&lt;h2 id="修改配置文件">修改配置文件&lt;/h2>
+&lt;ol>
+&lt;li>打开“应用程序”文件夹内“实用工具”文件夹中的“终端”。&lt;/li>
+&lt;li>在获取管理员权限之后，通过 vim 或者手动编辑位于 /Library/Preferences/VMware Fusion.app/vmnet8/nat.conf 的 NAT 配置文件，在“终端”中键入或粘贴以下命令。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">sudo vim /Library/Preferences/VMware\ Fusion.app/vmnet8/nat.conf
+&lt;/code>&lt;/pre>
+&lt;ol start="3">
+&lt;li>自定义 incomingtcp 下的端口号（左侧）与虚拟机的端口号（右侧）进行流量转发。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">[incomingtcp]
+# Use these with care - anyone can enter into your VM through these...
+# The format and example are as follows:
+# &amp;lt;external port number&amp;gt; = &amp;lt;VM's IP address&amp;gt;:&amp;lt;VM's port number&amp;gt;
+# 8080 = 172.16.3.128:80
+&lt;/code>&lt;/pre>
+&lt;h2 id="重启-vmware-network">重启 VMware Network&lt;/h2>
+&lt;ol>
+&lt;li>打开“应用程序”文件夹内“实用工具”文件夹中的“终端”。&lt;/li>
+&lt;li>在获取管理员权限之后，在“终端”中键入或粘贴以下命令。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --stop
+sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start
+&lt;/code>&lt;/pre>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>如果需要进一步了解 Fusion 的 NAT 配置，您可以参考 &lt;a href="https://www.vmware.com/support/ws3/doc/ws32_network21.html" target="_blank" rel="noopener">Advanced NAT Configuration&lt;/a>。&lt;/li>
+&lt;/ol></description></item><item><title>OE-0003 Protocol Default Implementation</title><link>/2016/06/26/oe-0003-protocol-default-implementation/</link><pubDate>Sun, 26 Jun 2016 10:31:29 +0000</pubDate><guid>/2016/06/26/oe-0003-protocol-default-implementation/</guid><description>&lt;!-- # 引入 var, let 关键字 -->
+&lt;ul>
+&lt;li>Proposal: &lt;a href="https://github.com/0xxd0/objc-evolution/blob/master/proposal/0003-protocol-default-implementation.md" target="_blank" rel="noopener">OE-0003&lt;/a>&lt;/li>
+&lt;li>Authors: &lt;a href="https://github.com/0xxd0" target="_blank" rel="noopener">Xudong Xu&lt;/a>&lt;/li>
+&lt;li>Status: &lt;strong>Implemented&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>Swift 中，定义 Protocol 时，可以使用 extension 给某些方法提供默认实现，希望把此特性引入 Objective-C&lt;/p>
+&lt;h2 id="motivation">Motivation&lt;/h2>
+&lt;p>在 Swift 中 Protocol 的默认实现一般为如下形式：&lt;/p>
+&lt;pre>&lt;code class="language-swift">protocol Foo {
+associatedtype Element
+func method(_ arg: Element)
+}
+extension Foo where Element: Equatable {
+func method(_ arg: Element) {
+}
+static func isEqual(_ lhs: Element, _ rhs: Element) -&amp;gt; Bool {
+return lhs == rhs
+}
+}
+&lt;/code>&lt;/pre>
+&lt;p>对 Objective-C 来说还做不到这么强的泛型约束，但是希望能够做到基本的 Protocol 默认实现，比如给 UICollectionViewDelegate 加上不能选择的默认实现：&lt;/p>
+&lt;pre>&lt;code class="language-objc">@extension(UICollectionViewDelegate)
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+return false
+}
+@end
+&lt;/code>&lt;/pre>
+&lt;h2 id="proposed-solution">Proposed solution&lt;/h2>
+&lt;p>通过 ObjC runtime 配合 C Marco，在 &lt;code>dyld load&lt;/code> 之后 &lt;code>Clang Module Init&lt;/code> 之前向 Dummy Class 注入 Protocol 的默认实现。在 &lt;code>Class +load&lt;/code> 时候把默认实现的 &lt;code>Method&lt;/code> 添加到具体的 &lt;code>Class&lt;/code> 里。&lt;/p>
+&lt;h2 id="detailed-design">Detailed design&lt;/h2>
+&lt;p>实现参考&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/0xxd0/objc-evolution/blob/75e73c073dab38d3f464b4bc12dc317b4a247ff1/runtime/Extension.h#L20" target="_blank" rel="noopener">runtime/Extension.h#L20&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/0xxd0/objc-evolution/blob/75e73c073dab38d3f464b4bc12dc317b4a247ff1/runtime/Extension.cpp#L17" target="_blank" rel="noopener">runtime/Extension.cpp#L17&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="source-compatibility">Source compatibility&lt;/h2>
+&lt;p>此特性是附加特性，并且不会破坏任何现有代码，只会精简先前繁琐的语法，不会有任何更改格式正确的代码的行为。&lt;/p>
+&lt;h2 id="alternatives-considered">Alternatives considered&lt;/h2>
+&lt;p>在 C++ 的环境下，可以通过 &lt;code>auto&lt;/code> 完成类型推导：&lt;/p>
+&lt;pre>&lt;code class="language-objc">auto array = [[NSMutableArray&amp;lt;NSString *&amp;gt; array];
+&lt;/code>&lt;/pre>
+&lt;p>但是这样会引入 C++，对于很多场景下这是没必要的。&lt;/p></description></item><item><title>HT0007 如何使用 SSL 证书签名 iOS .mobileconfig 文件</title><link>/2018/12/09/ht0007-%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-ssl-%E8%AF%81%E4%B9%A6%E7%AD%BE%E5%90%8D-ios-.mobileconfig-%E6%96%87%E4%BB%B6/</link><pubDate>Sun, 09 Dec 2018 10:31:29 +0000</pubDate><guid>/2018/12/09/ht0007-%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-ssl-%E8%AF%81%E4%B9%A6%E7%AD%BE%E5%90%8D-ios-.mobileconfig-%E6%96%87%E4%BB%B6/</guid><description>&lt;p>您可以使用证书与 OpenSSL 签名 iOS 平台 .mobileconfig 文件。&lt;/p>
+&lt;p>以下高级步骤主要适用于系统管理员以及熟悉命令行的其他人员。iPhoneOS / iPadOS 设备上的配置描述文件（.mobileconfig）是以 .plist 为载体，包含了设备安全策略、VPN 配置信息、Wi-Fi 设置、APN 设置、Exchange 帐户设置、Google 帐户设置、邮件设置以及允许 iPhone, iPod touch, iPad 与企业系统配合使用的证书。本文描述了开发者如何使用 SSL Certification 对 . mobileconfig 文件进行签名，以确保 iPhoneOS / iPadOS 系统上的安全性。&lt;/p>
+&lt;h2 id="准备工作">准备工作&lt;/h2>
+&lt;h3 id="理解证书的状态">理解证书的状态&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>状态&lt;/th>
+&lt;th>说明&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Unsigned&lt;/td>
+&lt;td>The mobileconfig is not signed by anyone. Therefore the source is unknown.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Unverified&lt;/td>
+&lt;td>The mobileconfig is signed, but the source is not recognized as trusted.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Verified&lt;/td>
+&lt;td>The mobileconfig is signed and is recognized as a trusted source.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>当使用 Apple Configurator 2 为 iPhoneOS / iPadOS 添加 Profile 文件时，未签名的 .mobileconfig 文件会被标记为 &amp;ldquo;Unsigned&amp;rdquo; 状态，修复此问题我们需要对 Profile 进行签名。&lt;/p>
+&lt;h3 id="准备所需要的文件">准备所需要的文件&lt;/h3>
+&lt;ol>
+&lt;li>未签名的 .mobileconfig 文件，&lt;strong>UnsignedProfile.mobileconfig&lt;/strong>&lt;/li>
+&lt;li>证书对应 Private Key，&lt;strong>PrivateKey.pem&lt;/strong>&lt;/li>
+&lt;li>与 SSL 证书对应的证书链（中级证书），&lt;strong>CertChain.pem&lt;/strong>&lt;/li>
+&lt;li>受信任的 SSL 证书，自签名证书、TrustAsia, Let’s Encrypt 等签发的免费 SSL 证书，商业 SSL 证书，&lt;strong>Certificate.pem&lt;/strong>&lt;/li>
+&lt;/ol>
+&lt;h3 id="签名方式">签名方式&lt;/h3>
+&lt;pre>&lt;code class="language-bash">openssl smime
+-sign \
+-in UnsignedProfile.mobileconfig \
+-out SignedProfile.mobileconfig \
+-signer Certificate.pem \
+-inkey PrivateKey.pem \
+-certfile CertChain.pem \
+-outform der -nodetach
+&lt;/code>&lt;/pre>
+&lt;h2 id="使用自签名证书签名">使用自签名证书签名&lt;/h2>
+&lt;p>创建可引导安装器后，请按照以下步骤进行使用：&lt;/p>
+&lt;h3 id="从-keychain-access-导出自签名证书">从 Keychain Access 导出自签名证书&lt;/h3>
+&lt;p>Keychain Access -&amp;gt; Certificate Assistance -&amp;gt; Create a Certificate，根据提示创建证书，创建完成之后对证书私钥进行导出，右键证书点击 Export 导出 Certificate.per，右键私钥点击 Export 导出 PrivateKey.p12，通过命令行将 .p12 转换为 .pem，将 Certificate.per 转换为 Certificate.pem。&lt;/p>
+&lt;pre>&lt;code class="language-bash">openssl pkcs12 -in PrivateKey.p12 -out PrivateKey.pem -nodes
+openssl x509 -trustout -inform DER -outform PEM -in Certificate.cer -out Certificate.pem
+&lt;/code>&lt;/pre>
+&lt;h3 id="下载根证书和中间证书">下载根证书和中间证书&lt;/h3>
+&lt;p>本文使用 AppleIncRootCertificate.cer 根证书和 AppleApplicationIntegrationCA5G1.cer 中间证书，更多证书可以访问 Apple PKI。下载完成后通过命令行从 Root Certificate 和 Intermediate Certificate 提取 Certificates 和 Keys，参考 &lt;a href="info.ssl.com/article.aspx?id=12149">INFO.SSL&lt;/a>。&lt;/p>
+&lt;pre>&lt;code class="language-bash">openssl x509 -trustout -inform DER -outform PEM -in AppleIncRootCertificate.cer -out Root.pem
+openssl x509 -trustout -inform DER -outform PEM -in AppleApplicationIntegrationCA5G1.cer -out Intermediate.pem
+&lt;/code>&lt;/pre>
+&lt;p>将 Intermediate.pem 和 Root.pem 中的文本内容合并为一份文件 AppleIncCertificateChain.pem，此时 AppleIncCertificateChain.pem 将会包含两份证书。&lt;/p>
+&lt;h3 id="签名">签名&lt;/h3>
+&lt;ol>
+&lt;li>打开“应用程序”文件夹内“实用工具”文件夹中的“终端”。&lt;/li>
+&lt;li>在获取管理员权限之后，在“终端”中键入或粘贴以下命令。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">openssl smime \
+-sign \
+-in UnsignedProfile.mobileconfig \
+-out SignedProfile.mobileconfig \
+-signer Certificate.pem \
+-inkey PrivateKey.pem \
+-certfile AppleIncCertificateChain.pem \
+-outform der -nodetach
+&lt;/code>&lt;/pre>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://letsencrypt.org/" target="_blank" rel="noopener">Free SSL/TLS Certificates&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://discussions.apple.com/thread/2363234" target="_blank" rel="noopener">possible status of a mobileconfig? - Apple Community&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.apple.com/certificateauthority/" target="_blank" rel="noopener">Apple PKI&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://support.apple.com/zh-cn/guide/server/apd2474fbab/mac" target="_blank" rel="noopener">在 macOS 服务器中创建自签名证书 - Apple 支持&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>HT0013 如何向 iOS 系统中添加自定义字体</title><link>/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/</link><pubDate>Mon, 10 Dec 2018 10:31:29 +0000</pubDate><guid>/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/</guid><description>&lt;p>为 iPhoneOS / iPadOS 设备添加自定义字体。&lt;/p>
+&lt;p>以下高级步骤主要适用于系统管理员以及熟悉命令行的其他人员。&lt;/p>
+&lt;h2 id="概览">概览&lt;/h2>
+&lt;p>iOS 并不限制第三方添加字体到系统之中，当你有自定义字体想在你的 app 或者其他系统内建应用（e.g. Notes.app, Pages.app）中使用时，通过 iOS 提供的多种方法你可以实现不同的结果。&lt;/p>
+&lt;h2 id="为应用添加自定义字体">为应用添加自定义字体&lt;/h2>
+&lt;p>为一个 app 添加字体，字体的使用范围限制于当前 app 之中，如图所示，将字体拖入至工程，并勾选对应的 Target Membership。&lt;/p>
+&lt;figure id="figure-adding-a-custom-font-to-your-app">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://docs-assets.developer.apple.com/published/35bc80c902/d373ed5c-a36b-46fe-9bd8-bf49700072be.png" alt="Adding a Custom Font to Your App" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Adding a Custom Font to Your App
+&lt;/figcaption>&lt;/figure>
+&lt;p>通过 Info.plist &lt;strong>UIAppFonts&lt;/strong> (Fonts provided by application) 字段向 Xcode 工程注册字体，完成之后就可以像其他 iOS 内建字体一样使用你的自定义字体。&lt;/p>
+&lt;p>更多请参考 Apple 文档 &lt;a href="https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app" target="_blank" rel="noopener">Adding a Custom Font to Your App | Apple Developer Documentation&lt;/a>。&lt;/p>
+&lt;h2 id="向-ios-系统注册自定义字体">向 iOS 系统注册自定义字体&lt;/h2>
+&lt;p>为系统内建的应用提供自定字体需要用到 iOS 13 新提供的 CoreText 的 API，同时需要在 App.entitlements 中添加 Fonts Capability 并勾选 Install Fonts，使用字体时需要勾选 Use Installed Fonts。&lt;/p>
+&lt;figure id="figure-wwdc19-session-227">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="WWDC19 Session 227" srcset="
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_9ca56f76f669a9bb2328814904fa0a72.png 400w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_9247fa423d8040f4d4794ff63936225f.png 760w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_9ca56f76f669a9bb2328814904fa0a72.png"
+width="760"
+height="265"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+WWDC19 Session 227
+&lt;/figcaption>&lt;/figure>
+&lt;figure id="figure-adding-a-custom-font-to-your-app">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://docs-assets.developer.apple.com/published/1b7e45d9c2/f9329213-4abb-413e-a339-4b91ee4bf554.png" alt="Adding a Custom Font to Your App" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Adding a Custom Font to Your App
+&lt;/figcaption>&lt;/figure>
+&lt;p>如果其他 app 需要使用通过 CTFontManagerRegisterFontURLS 进行注册的字体，需要通过 CTFontManagerRequestFonts 进行 request 才能获得字体。&lt;/p>
+&lt;figure id="figure-wwdc19-session-227">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="WWDC19 Session 227" srcset="
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_d835121eea6317e508f6ec0613a1a020.png 400w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_3f5f43825a98d8037f1011dc43c66f45.png 760w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_d835121eea6317e508f6ec0613a1a020.png"
+width="760"
+height="308"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+WWDC19 Session 227
+&lt;/figcaption>&lt;/figure>
+&lt;p>更多请参考 &lt;a href="https://developer.apple.com/videos/play/wwdc2019/227/" target="_blank" rel="noopener">Font Management and Text Scaling - WWDC 2019 - Videos - Apple Developer&lt;/a>。&lt;/p>
+&lt;h2 id="通过-mobileconfig-向-ios-系统添加自定义字体">通过 .mobileconfig 向 iOS 系统添加自定义字体&lt;/h2>
+&lt;p>通过 CoreText 提供的 API 有需要使用 CTFontManagerRequestFonts 的限制，所以无法适用于部分没有使用此 API 的 app (e.g. Notes.app)，因此可以通过 Apple Configurator 2 生成字体 Profile 来配置字体，打开 Apple Configurator 2 并切换到 Fonts 页面，点击右侧的 Configure，就会弹出对话框要求选择字体。
+单个描述文件的容量上限约为 20 megabytes，所以对于较小西文字体文件，可以将整个 Font Family 配置到同一个描述文件中，对于较大的非西文字体，则应该逐个单独添加。&lt;/p>
+&lt;figure >
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="" srcset="
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_0f4b7d4bad2f0c26aeda9a2d176e8267.png 400w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_83820084f4395201ee05488b62318eb0.png 760w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_0f4b7d4bad2f0c26aeda9a2d176e8267.png"
+width="760"
+height="659"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;/figure>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app" target="_blank" rel="noopener">Adding a Custom Font to Your App | Apple Developer Documentation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://developer.apple.com/videos/play/wwdc2019/227/" target="_blank" rel="noopener">Font Management and Text Scaling - WWDC 2019 - Videos - Apple Developer&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://stackoverflow.com/questions/57653398/ios-13-custom-fonts-download-and-installation" target="_blank" rel="noopener">iOS 13 Custom Fonts download and installation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://fonts.google.com" target="_blank" rel="noopener">Browse Fonts - Google Fonts&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.google.cn/get/noto/" target="_blank" rel="noopener">Google Noto Fonts&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>HT0022 如何创建可引导的 macOS 安装镜像</title><link>/2018/11/09/ht0022-%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%AF%E5%BC%95%E5%AF%BC%E7%9A%84-macos-%E5%AE%89%E8%A3%85%E9%95%9C%E5%83%8F/</link><pubDate>Fri, 09 Nov 2018 10:31:29 +0000</pubDate><guid>/2018/11/09/ht0022-%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%AF%E5%BC%95%E5%AF%BC%E7%9A%84-macos-%E5%AE%89%E8%A3%85%E9%95%9C%E5%83%8F/</guid><description>&lt;p>您可以将磁盘镜像用作安装 Mac 操作系统的启动磁盘。&lt;/p>
+&lt;p>以下高级步骤主要适用于系统管理员以及熟悉命令行的其他人员。&lt;a href="https://support.apple.com/zh-cn/HT201475" target="_blank" rel="noopener">升级 macOS&lt;/a> 或&lt;a href="https://support.apple.com/zh-cn/HT204904" target="_blank" rel="noopener">重新安装 macOS&lt;/a> 不需要安装器，但如果您在多台电脑上安装 macOS 时，可引导安装器就会很有用。&lt;/p>
+&lt;h2 id="创建可引导安装器需要满足的条件">创建可引导安装器需要满足的条件&lt;/h2>
+&lt;ul>
+&lt;li>备用宗卷（格式化为 Mac OS 扩展格式），至少有 13 GB 可用储存空间&lt;/li>
+&lt;li>已下载 macOS Big Sur、Catalina、Mojave、High Sierra 或 El Capitan 的安装器&lt;/li>
+&lt;/ul>
+&lt;h2 id="下载-macos">下载 macOS&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>下载：&lt;a href="https://itunes.apple.com/cn/app/macos-big-sur/id1526878132?ls=1&amp;amp;mt=12" target="_blank" rel="noopener">macOS Big Sur&lt;/a>、&lt;a href="https://itunes.apple.com/cn/app/macos-catalina/id1466841314?ls=1&amp;amp;mt=12" target="_blank" rel="noopener">macOS Catalina&lt;/a>、&lt;a href="https://itunes.apple.com/cn/app/macos-mojave/id1398502828?ls=1&amp;amp;mt=12" target="_blank" rel="noopener">macOS Mojave&lt;/a> 或 &lt;a href="https://itunes.apple.com/cn/app/macos-high-sierra/id1246284741?ls=1&amp;amp;mt=12" target="_blank" rel="noopener">macOS High Sierra&lt;/a>
+这些内容将作为名为“安装 macOS [版本名称]”的 App 下载到您的“应用程序”文件夹。如果安装器在下载后打开，请退出而不要继续安装。要获取正确的安装器，请从运行 &lt;a href="https://support.apple.com/zh-cn/HT201260" target="_blank" rel="noopener">macOS Sierra 10.12.5 或更高版本&lt;/a>或者 El Capitan 10.11.6 的 Mac 中进行下载。如果您是企业管理员，请通过 Apple 下载，而不要通过本地托管的软件更新服务器进行下载。 &lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>下载：&lt;a href="updates-http.cdn-apple.com/2019/cert/061-41424-20191024-218af9ec-cf50-4516-9011-228c78eda3d2/InstallMacOSX.dmg">OS X El Capitan&lt;/a>
+这个内容将作为名为“InstallMacOSX.dmg”的磁盘映像下载。在与 El Capitan 兼容的 Mac 上，打开下载的磁盘映像，并运行其中名为 InstallMacOSX.pkg 的安装器。它会在您的“应用程序”文件夹中安装一个名为“安装 OS X El Capitan”的 App。您将通过这个 App（而不是磁盘映像或 .pkg 安装器）创建可引导安装器。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="在终端中使用-hdiutil-命令">在“终端”中使用 “hdiutil” 命令&lt;/h2>
+&lt;ol>
+&lt;li>打开“应用程序”文件夹内“实用工具”文件夹中的“终端”。&lt;/li>
+&lt;li>在“终端”中键入或粘贴以下命令，按下 Return 键以输入命令，创建安装镜像。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">hdiutil create -o ~/Desktop/MyVolume -size 8g -layout SPUD -fs HFS+J &amp;amp;&amp;amp; \
+hdiutil attach ~/Desktop/MyVolume.dmg -noverify -mountpoint /Volumes/Install\ macOS\ Beta
+&lt;/code>&lt;/pre>
+&lt;h2 id="在终端中使用-createinstallmedia-命令">在“终端”中使用 “createinstallmedia” 命令&lt;/h2>
+&lt;ol>
+&lt;li>打开“应用程序”文件夹内“实用工具”文件夹中的“终端”。&lt;/li>
+&lt;li>在“终端”中键入或粘贴以下命令。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">sudo /Applications/Install\ macOS\ Beta.app/Contents/Resources/createinstallmedia —volume /Volumes/MyVolume.dmg --nointeraction
+&lt;/code>&lt;/pre>
+&lt;p>键入命令后：&lt;/p>
+&lt;ol>
+&lt;li>按下 Return 键以输入这个命令。&lt;/li>
+&lt;li>出现提示时，请键入您的管理员密码，然后再次按下 Return 键。在您键入密码时，“终端”不会显示任何字符。&lt;/li>
+&lt;li>出现提示时，请键入 Y 以确认您要抹掉宗卷，然后按下 Return 键。创建可引导安装器过程中，“终端”将显示进度。 &lt;/li>
+&lt;li>当“终端”提示操作已完成时，宗卷的名称将与您下载的安装器名称相同，例如“Install macOS Catalina”。您现在可以退出“终端”并弹出宗卷。&lt;/li>
+&lt;/ol>
+&lt;figure >
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://support.apple.com/library/content/dam/edam/applecare/images/en_US/macos/Big-Sur/macos-big-sur-terminal-create-bootable-installer.jpg" alt="" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;/figure>
+&lt;h2 id="创建-iso-镜像文件">创建 .iso 镜像文件&lt;/h2>
+&lt;ol>
+&lt;li>打开“应用程序”文件夹内“实用工具”文件夹中的“终端”。&lt;/li>
+&lt;li>在“终端”中键入或粘贴以下命令。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">hdiutil convert ~/Desktop/MyVolume.dmg -format UDTO -o ~/Desktop/MyVolume.cdr
+mv ~/Desktop/MyVolume.cdr ~/Desktop/MyVolume.iso
+&lt;/code>&lt;/pre>
+&lt;h2 id="使用可引导安装镜像">使用可引导安装镜像&lt;/h2>
+&lt;p>创建可引导安装镜像后，在支持从磁盘镜像启动的操作系统上，请按照以下步骤进行使用：&lt;/p>
+&lt;ol>
+&lt;li>将可引导安装器作为硬件系统的虚拟磁盘。&lt;/li>
+&lt;li>将系统开机或重新启动后，进入磁盘引导。&lt;/li>
+&lt;li>根据提示选取您的语言。&lt;/li>
+&lt;li>从“实用工具”窗口中选择“安装 macOS”（或“安装 OS X”），然后点按“继续”，并按照屏幕上的说明进行操作。&lt;/li>
+&lt;/ol>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ul>
+&lt;li>参考 &lt;a href="https://support.apple.com/zh-cn/HT201372" target="_blank" rel="noopener">如何创建可引导的 macOS 安装器 - Apple 支持&lt;/a> 制作 USB 启动安装器&lt;/li>
+&lt;li>参考 &lt;a href="https://support.apple.com/zh-cn/HT201475" target="_blank" rel="noopener">如何升级至 macOS Big Sur - Apple 支持&lt;/a> 获取 Big Sur 安装镜像。&lt;/li>
+&lt;/ul></description></item><item><title>HT0025 如何在 macOS 上检视 PCI 设备</title><link>/2018/12/27/ht0025-%E5%A6%82%E4%BD%95%E5%9C%A8-macos-%E4%B8%8A%E6%A3%80%E8%A7%86-pci-%E8%AE%BE%E5%A4%87/</link><pubDate>Thu, 27 Dec 2018 10:31:29 +0000</pubDate><guid>/2018/12/27/ht0025-%E5%A6%82%E4%BD%95%E5%9C%A8-macos-%E4%B8%8A%E6%A3%80%E8%A7%86-pci-%E8%AE%BE%E5%A4%87/</guid><description>&lt;p>通过 &lt;a href="mj.ucw.cz/sw/pciutils/">PCI Utilities&lt;/a> 可以获取到 Mac 操作系统下所有 &lt;a href="https://en.wikipedia.org/wiki/Conventional_PCI" target="_blank" rel="noopener">PCI&lt;/a> 设备信息。&lt;/p>
+&lt;p>以下高级步骤主要适用于系统管理员以及熟悉命令行的其他人员。&lt;/p>
+&lt;h2 id="在终端中使用-lspci-命令">在“终端中”使用 &lt;code>lspci&lt;/code> 命令&lt;/h2>
+&lt;p>&lt;code>lspci&lt;/code> 需要用到 &lt;code>AppleACPIPlatformExpert&lt;/code>，需要在内核调试模式下才可运行&lt;/p>
+&lt;ol>
+&lt;li>安装 &lt;a href="https://github.com/pciutils/pciutils" target="_blank" rel="noopener">PCI Utilities&lt;/a>。&lt;/li>
+&lt;li>进入 macOS 恢复模式，进入“实用工具”菜单中的“终端”。如果当前 macOS 开启了 &lt;a href="https://en.wikipedia.org/wiki/System_Integrity_Protection" target="_blank" rel="noopener">SIP&lt;/a> (e.g. El Capitan, Sierra)，请在终端中键入或粘贴以下命令以关闭 SIP。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">csrutil disable
+&lt;/code>&lt;/pre>
+&lt;ol start="3">
+&lt;li>在“终端“键入或粘贴以下命令。通过 nvram 命令以 Verbose Mode 启动操作系统，同时打开内核调试特性。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">nvram boot-args=&amp;quot;-v debug=0x144”
+&lt;/code>&lt;/pre>
+&lt;ol start="4">
+&lt;li>完成后，请退出“终端”，并重启系统。&lt;/li>
+&lt;li>重启完进入系统后，此时 &lt;code>lspci&lt;/code> 即可使用。&lt;/li>
+&lt;/ol>
+&lt;h2 id="使用-lspci-获取-pci-设备信息">使用 &lt;code>lspci&lt;/code> 获取 PCI 设备信息&lt;/h2>
+&lt;ol>
+&lt;li>在“终端”键入或粘贴以下命令。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">sudo /usr/local/sbin/lspci -tv
+&lt;/code>&lt;/pre>
+&lt;ol start="2">
+&lt;li>根据提示键入您的管理员密码，然后再次按下 Return 键。在您键入密码时，“终端”不显示任何字符。&lt;/li>
+&lt;li>以 &lt;a href="https://support.apple.com/en-us/HT201300" target="_blank" rel="noopener">MacBookPro12,1&lt;/a> 为例，可以看到所有 PCI 设备列表。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">-[0000:00]-+-00.0 Intel Corporation Broadwell-U Host Bridge -OPI
++-02.0 Intel Corporation Iris Graphics 6100
++-03.0 Intel Corporation Broadwell-U Audio Controller
++-14.0 Intel Corporation Wildcat Point-LP USB xHCI Controller
++-15.0 Intel Corporation Wildcat Point-LP Serial IO DMA Controller
++-15.4 Intel Corporation Wildcat Point-LP Serial IO GSPI Controller #1
++-16.0 Intel Corporation Wildcat Point-LP MEI Controller #1
++-1b.0 Intel Corporation Wildcat Point-LP High Definition Audio Controller
++-1c.0-[01]--
++-1c.1-[02]--
++-1c.2-[03]----00.0 Broadcom Limited BCM43602 802.11ac Wireless LAN SoC
++-1c.4-[05-ff]--
++-1c.5-[04]----00.0 Samsung Electronics Co Ltd Device a801
++-1f.0 Intel Corporation Wildcat Point-LP LPC Controller
++-1f.3 Intel Corporation Wildcat Point-LP SMBus Controller
+\-1f.6 Intel Corporation Wildcat Point-LP Thermal Management Controller
+&lt;/code>&lt;/pre>
+&lt;ol start="4">
+&lt;li>在“终端”键入或粘贴以下命令，可以获取到网卡信息。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">sudo /usr/local/sbin/lspci | grep Network
+03:00.0 Network controller: Broadcom Limited BCM43602 802.11ac Wireless LAN SoC (rev 01)
+&lt;/code>&lt;/pre>
+&lt;ol start="5">
+&lt;li>对于关闭了 SIP 的情况下，出于安全考虑，有必要在完成以上必要步骤后再次开启 SIP，进入恢复模式，在“终端”键入以下命令。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">csrutil enable
+&lt;/code>&lt;/pre>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;p>要进一步了解 &lt;code>lspci&lt;/code> 命令，在终端中输入 &lt;code>sudo /usr/local/sbin/lspci -h&lt;/code> 或者查阅 PCI Utilities &lt;a href="mj.ucw.cz/sw/pciutils/">项目主页&lt;/a>。&lt;/p></description></item><item><title>HT0026 未越狱如何降级 iOS 应用版本</title><link>/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/</link><pubDate>Thu, 14 Jun 2018 15:44:16 +0000</pubDate><guid>/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/</guid><description>&lt;h2 id="如何获取-ipa">如何获取 ipa&lt;/h2>
+&lt;p>要获取应用下载链接，在未越狱的情况下，由于每一个 &lt;code>ipa&lt;/code> 都和 Apple ID 绑定，并且有 Apple 的签名，所以必须要通过官方途径配合 Apple 账号下载。在 Windows 上可以直接通过 iTunes 方式获取 &lt;code>ipa&lt;/code>，而在 macOS 上目前有两种获取 &lt;code>ipa&lt;/code> 方式：&lt;/p>
+&lt;ol>
+&lt;li>iTunes&lt;/li>
+&lt;li>Apple Configurator&lt;/li>
+&lt;/ol>
+&lt;h3 id="ipa-的下载流程">ipa 的下载流程&lt;/h3>
+&lt;h4 id="itunes-的-ipa-下载流程">iTunes 的 ipa 下载流程&lt;/h4>
+&lt;p>在 iTunes 下，一次购买下载 &lt;code>ipa&lt;/code> 的流程由一个发往服务器为 &lt;code>buy.itunes.apple.com&lt;/code>、Path 为 &lt;code>WebObjects/MZBuy.woa/wa/buyProduct&lt;/code> 的请求作为开始。构造请求时会向 &lt;code>appExtVrsId&lt;/code> 字段注入 Build 号，来指定获取具体某个版本的 &lt;code>ipa&lt;/code>（默认为最新上架的一个 Build Number），再利用 &lt;code>GUID&lt;/code> 和 &lt;code>DSID&lt;/code> 生成 &lt;code>kbsync&lt;/code> 请求鉴权信息，完成 Request 构造。收到 Response 之后，分析 Response Body 中的 &lt;code>XML&lt;/code> 文件，可以找到包含签名后的下载链接，iTunes 利用这个链接完成 &lt;code>ipa&lt;/code> 的下载，链接的形式如下所示。&lt;/p>
+&lt;pre>&lt;code class="language-shell">https://iosapps.itunes.apple.com/itunes-assets/Purple114/v4/bf/36/04/bf360426-5231-2db4-ff0b-430c788ec5c6/pre-thinned13659119744838198600.lc.7948000812590706.EOTME2CVXCUZU.signed.dpkg.ipa?accessKey=${accessKey}
+&lt;/code>&lt;/pre>
+&lt;p>可以看到请求的 &lt;code>ipa&lt;/code> 为 &lt;code>pre-thinned13......ipa&lt;/code>；Path 为 &lt;code>itunes-assets/Purple114/v4/bf/36/04/bf360426-5231-2db4-ff0b-430c788ec5c6&lt;/code>，由于同一个应用，不同设备的 &lt;code>ipa&lt;/code> 包都是不同的，所以文件服务器上必然有大量包含了 &lt;code>pre-thinned&lt;/code> 的 ipa，所以 &lt;code>hash&lt;/code> 过的 Path 可用于文件索引加速，但会使得反向推算特定版本特定设备的 &lt;code>ipa&lt;/code> 变得几乎不可能；&lt;code>accessKey&lt;/code> 为 public key 且具有时效性，用于文件访问鉴权。&lt;/p>
+&lt;p>综上可以得知 &lt;code>ipa&lt;/code> 文件路径难以推测，并且请求具有实效性，因此在 Response 处没有太多的可挖掘的点。而将 &lt;code>appExtVrsId&lt;/code> 这个字段作为切入点是比较合理的。&lt;/p>
+&lt;h4 id="apple-configurator-的-ipa-下载流程">Apple Configurator 的 ipa 下载流程&lt;/h4>
+&lt;p>在 Apple Configurator 2 中，苹果针对请求做了修改 Path 变为 &lt;code>WebObjects/MZFinance.woa/wa/volumeStoreDownloadProduct&lt;/code>，请求的 Plist 如下所示。&lt;/p>
+&lt;pre>&lt;code>&amp;lt;key&amp;gt;guid&amp;lt;/key&amp;gt;
+&amp;lt;string&amp;gt;${guid}&amp;lt;/string&amp;gt;
+&amp;lt;key&amp;gt;kbsync&amp;lt;/key&amp;gt;
+&amp;lt;string&amp;gt;${kbsync}&amp;lt;/string&amp;gt;
+&amp;lt;key&amp;gt;salableAdamId&amp;lt;/key&amp;gt;
+&amp;lt;string&amp;gt;414478124&amp;lt;/string&amp;gt;
+&amp;lt;key&amp;gt;serialNumber&amp;lt;/key&amp;gt;
+&amp;lt;string&amp;gt;${serialNumber}&amp;lt;/string&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>可以发现并没有字段可以来指定版本信息，一筹莫展。&lt;/p>
+&lt;h3 id="通过-itunes-获取-ipa">通过 iTunes 获取 ipa&lt;/h3>
+&lt;div class="alert alert-note">
+&lt;div>
+2020 年 03 月 18 日 后，从 iTunes 12.6.5 的 App Store 下载应用会直接 SSL 握手失败，iTunes 的方式失效。
+&lt;/div>
+&lt;/div>
+&lt;p>自 macOS Mojave 之后，iTunes 的 App Store 的功能就逐渐淡出舞台了，&lt;a href="https://secure-appldnld.apple.com/itunes12/091-87821-20180912-69177170-B085-11E8-B6AB-C1D03409AD2A/iTunes12.6.5.dmg" target="_blank" rel="noopener">iTunes 12.6.5.3&lt;/a> 是最后一个可以浏览 App Store 的 iTunes 版本。&lt;/p>
+&lt;h4 id="安装-itunes-12653">安装 iTunes 12.6.5.3&lt;/h4>
+&lt;p>在 Mojave 之后安装 iTunes 会受到限制，需要绕过校验系统版本的 iTunes Installer，直接提取安装包内部的 iTunes.app 移至 /Applications 使用。在 macOS Mojave 10.14.4 之后，苹果直接对 iTunes 版本做了限制，打开 iTunes 会提示你当前系统不支持 12.6.5，这时候需要提高 info.plist 里的版本号绕过 macOS 的校验，可以使用 Apple Script 来完成上述步骤。&lt;/p>
+&lt;script type="application/javascript" src="https://gist.github.com/0xxd0/c5e410690e501de1786e72499b03eff4.js">&lt;/script>
+&lt;p>针对历史版本的 iTunes，以及其残留物无法删除干净的情况下，可以使用如下 &lt;code>shell&lt;/code> 脚本。&lt;/p>
+&lt;script type="application/javascript" src="https://gist.github.com/0xxd0/f4ad266c6df5b9b62433f86a0881b9b6.js">&lt;/script>
+&lt;p>完成安装后，如果启动 iTunes 时提示 &amp;ldquo;iTunes Library.itl&amp;rdquo; 错误，则需要移除 Music 目录下 iTunes 文件夹内 iTunes Library.itl 文件。此外也可以通过 &lt;a href="https://github.com/cormiertyshawn895/Retroactive" target="_blank" rel="noopener">Retroactive&lt;/a> 安装 iTunes，同样也包括其他被苹果删除的内建应用。&lt;/p>
+&lt;h4 id="从-itunes-抓取下载数据">从 iTunes 抓取下载数据&lt;/h4>
+&lt;p>以 Charles 为例，按照以下步骤进行下载地址抓取&lt;/p>
+&lt;ol>
+&lt;li>打开 Charles，配置证书打开，SSL Proxying 加入 &lt;code>*.apple.com&lt;/code>。&lt;/li>
+&lt;li>开 iTunes，选择一个应用下载，以 WeChat 为例。&lt;/li>
+&lt;li>在 Charles 中过滤 path 为 &lt;code>WebObjects/MZBuy.woa/wa/buyProduct&lt;/code> 的请求，添加 &lt;code>breakpoints&lt;/code>。&lt;/li>
+&lt;li>查看 Response Body 中 &lt;code>XML&lt;/code> 字段 &lt;code>softwareVersionExternalIdentifiers&lt;/code>，该数组包含了所有可下载的 Build 号。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-xml">&amp;lt;key&amp;gt;softwareVersionExternalIdentifiers&amp;lt;/key&amp;gt;
+&amp;lt;array&amp;gt;
+...
+&amp;lt;integer&amp;gt;717062721&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;719842773&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;726302660&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;746082682&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;811222902&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;811530944&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;811669817&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;811953630&amp;lt;/integer&amp;gt;
+...
+&amp;lt;/array&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;ol start="5">
+&lt;li>根据 &lt;a href="https://mixrank.com/appstore/apps/414478124/versions" target="_blank" rel="noopener">MIXRANK&lt;/a> 查询版本对应的 Build 号。&lt;/li>
+&lt;/ol>
+&lt;figure id="figure-build-number">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Build Number" srcset="
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/build-version-map_hu7721f23abd3aabca125ada159a160f16_195919_a68d9f8a3109a2303308b3144f941c93.png 400w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/build-version-map_hu7721f23abd3aabca125ada159a160f16_195919_d486c938359d9c29c4f1a7acb62a54a8.png 760w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/build-version-map_hu7721f23abd3aabca125ada159a160f16_195919_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/build-version-map_hu7721f23abd3aabca125ada159a160f16_195919_a68d9f8a3109a2303308b3144f941c93.png"
+width="760"
+height="557"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Build Number
+&lt;/figcaption>&lt;/figure>
+&lt;ol start="6">
+&lt;li>取消之前的下载，并再次下载触发断点，编辑 Request，将请求的 &lt;code>appExtVrsId&lt;/code> 字段的值替换成对应的版本号，并 Excute。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-xml">&amp;lt;key&amp;gt;appExtVrsId&amp;lt;/key&amp;gt;
+&amp;lt;string&amp;gt;830005675&amp;lt;/string&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;ol start="7">
+&lt;li>完成下载之后可得到指定版本的 ipa。&lt;/li>
+&lt;/ol>
+&lt;h3 id="使用-apple-configurator">使用 Apple Configurator&lt;/h3>
+&lt;div class="alert alert-warning">
+&lt;div>
+暂时还未找到通过 Apple Configurator 2 降级的方法
+&lt;/div>
+&lt;/div>
+&lt;h4 id="安装-apple-configurator-2">安装 Apple Configurator 2&lt;/h4>
+&lt;p>&lt;a href="https://apps.apple.com/cn/app/apple-configurator-2/id1037126344" target="_blank" rel="noopener">点击链接&lt;/a> 从 Mac App Store 直接安装 Apple Configurator 2&lt;/p>
+&lt;h4 id="如何从-apple-configurator-2-抓取下载数据">如何从 Apple Configurator 2 抓取下载数据&lt;/h4>
+&lt;p>首先从 Apple Configurator 2 发起下载请求，以 WeChat 为例，选择 WeChat 点击 Add。&lt;/p>
+&lt;figure id="figure-wechat">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="WeChat" srcset="
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-wechat_hu409c0142164a426ac1eab9af4e5507e1_490825_8ae8f77353d25851add9e69a7ab97c46.png 400w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-wechat_hu409c0142164a426ac1eab9af4e5507e1_490825_f526c1bf2d21b88dde2c195036a5cdec.png 760w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-wechat_hu409c0142164a426ac1eab9af4e5507e1_490825_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-wechat_hu409c0142164a426ac1eab9af4e5507e1_490825_8ae8f77353d25851add9e69a7ab97c46.png"
+width="760"
+height="507"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+WeChat
+&lt;/figcaption>&lt;/figure>
+&lt;p>从 Apple Configurator 2 抓取下载数和 iTunes 的唯一区别点在于断点的位置，如下图所示。&lt;/p>
+&lt;figure id="figure-break-point">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Break Point" srcset="
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/buyitunes-breakpoint_huf641f3175853c64aed3b6229b150b204_94151_c5821320c8699a94522f86b62f74760c.png 400w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/buyitunes-breakpoint_huf641f3175853c64aed3b6229b150b204_94151_574de24b7c3e5c75268b0f0fe62a3be4.png 760w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/buyitunes-breakpoint_huf641f3175853c64aed3b6229b150b204_94151_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/buyitunes-breakpoint_huf641f3175853c64aed3b6229b150b204_94151_c5821320c8699a94522f86b62f74760c.png"
+width="760"
+height="153"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Break Point
+&lt;/figcaption>&lt;/figure>
+&lt;p>其余流程在理论上没有任何区别，但如&lt;a href="#Apple-Configurator-%e7%9a%84-ipa-%e4%b8%8b%e8%bd%bd%e6%b5%81%e7%a8%8b">“Apple Configurator 的 ipa 下载流程”&lt;/a>中所述，核心在于如何修改版本，暂时还没找到方法，目前苹果应该是把 Build Number 查询与修改这一步放到了服务端。&lt;/p>
+&lt;h2 id="安装-ipa">安装 ipa&lt;/h2>
+&lt;p>使用 Apple Configurator 2，添加一个 App，点击 Choose from my Mac 选择上一步骤中抓取到的 ipa。&lt;/p>
+&lt;figure id="figure-install-ipa">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Install IPA" srcset="
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-install-ipa_hu98537246a3a2a82ed81ec0a73f2cf4e6_751964_94209d88307529f92adea8d6df8b9fb6.png 400w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-install-ipa_hu98537246a3a2a82ed81ec0a73f2cf4e6_751964_afee8a21139800545e80ebdbe4e0c28a.png 760w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-install-ipa_hu98537246a3a2a82ed81ec0a73f2cf4e6_751964_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-install-ipa_hu98537246a3a2a82ed81ec0a73f2cf4e6_751964_94209d88307529f92adea8d6df8b9fb6.png"
+width="760"
+height="469"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Install IPA
+&lt;/figcaption>&lt;/figure>
+&lt;p>按步骤安装完成 ipa 的部署即可。&lt;/p>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://forums.macrumors.com/threads/itunes-12-6-5-3-on-macos-catalina-10-15.2184518/" target="_blank" rel="noopener">iTunes 12.6.5.3 on MacOS Catalina 10.15&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.theiphonewiki.com/wiki/DSID" target="_blank" rel="noopener">DSID&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://support.apple.com/zh-cn/HT208079" target="_blank" rel="noopener">使用 iTunes 在业务环境中部署应用&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://discussions.apple.com/thread/251200031?page=2" target="_blank" rel="noopener">Updating apps using iTunes 12.6.5.3&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://discussions.apple.com/thread/251211447" target="_blank" rel="noopener">iTunes 12.6.5 Apps don’t download since 18/03/2020&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/Public-key_cryptography" target="_blank" rel="noopener">Public-key cryptography&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>HT0030 如何在 iCloud 中屏蔽不需要同步的文件</title><link>/2017/01/11/ht0030-%E5%A6%82%E4%BD%95%E5%9C%A8-icloud-%E4%B8%AD%E5%B1%8F%E8%94%BD%E4%B8%8D%E9%9C%80%E8%A6%81%E5%90%8C%E6%AD%A5%E7%9A%84%E6%96%87%E4%BB%B6/</link><pubDate>Wed, 11 Jan 2017 00:00:00 +0000</pubDate><guid>/2017/01/11/ht0030-%E5%A6%82%E4%BD%95%E5%9C%A8-icloud-%E4%B8%AD%E5%B1%8F%E8%94%BD%E4%B8%8D%E9%9C%80%E8%A6%81%E5%90%8C%E6%AD%A5%E7%9A%84%E6%96%87%E4%BB%B6/</guid><description>&lt;h5 id="文件名">文件名&lt;/h5>
+&lt;ul>
+&lt;li>是 .DS_Store&lt;/li>
+&lt;li>以 (A Document Being Saved 开头&lt;/li>
+&lt;li>包含 .nosync（大小写不敏感）&lt;/li>
+&lt;li>是 .ubd&lt;/li>
+&lt;li>包含 .weakpkg&lt;/li>
+&lt;li>是 tmp（大小写不敏感）&lt;/li>
+&lt;li>是 .tmp（大小写不敏感）&lt;/li>
+&lt;li>是 desktop.ini（大小写不敏感）&lt;/li>
+&lt;li>以 ~$ 开头&lt;/li>
+&lt;li>是 Microsoft User Data（大小写不敏感）&lt;/li>
+&lt;li>是 $RECYCLE.BIN（大小写不敏感）&lt;/li>
+&lt;li>是 iPhoto Library（大小写不敏感）&lt;/li>
+&lt;li>是 Dropbox（大小写不敏感）&lt;/li>
+&lt;li>是 OneDrive（大小写不敏感）&lt;/li>
+&lt;li>是 IDrive-Sync（大小写不敏感）&lt;/li>
+&lt;li>是 .dropbox（大小写不敏感）&lt;/li>
+&lt;li>是 .dropbox.attr（大小写不敏感）&lt;/li>
+&lt;/ul>
+&lt;h5 id="文件的扩展名">文件的扩展名&lt;/h5>
+&lt;ul>
+&lt;li>是 .tmp&lt;/li>
+&lt;li>是 .photoslibrary&lt;/li>
+&lt;li>是 .photolibrary&lt;/li>
+&lt;li>是 .aplibrary&lt;/li>
+&lt;li>是 .migratedaplibrary&lt;/li>
+&lt;li>是 .migratedphotolibrary&lt;/li>
+&lt;/ul>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://apple.stackexchange.com/questions/254313/how-to-exclude-a-sub-folder-from-icloud-drive-in-macos-sierra" target="_blank" rel="noopener">How to exclude a sub folder from iCloud drive in macOS Sierra?&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>操作系统 2021 春</title><link>/2021/02/22/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-2021-%E6%98%A5/</link><pubDate>Mon, 22 Feb 2021 10:31:29 +0000</pubDate><guid>/2021/02/22/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-2021-%E6%98%A5/</guid><description>&lt;h2 id="关于">关于&lt;/h2></description></item><item><title>深入了解 Protocol Buffers</title><link>/2018/05/06/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-protocol-buffers/</link><pubDate>Sun, 06 May 2018 00:00:00 +0000</pubDate><guid>/2018/05/06/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-protocol-buffers/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://github.com/protocolbuffers/protobuf" target="_blank" rel="noopener">protocolbuffers/protobuf: Protocol Buffers &lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://developers.google.com/protocol-buffers" target="_blank" rel="noopener">Protocol Buffers | Google Developers&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 QUIC Transport Protocol</title><link>/2017/06/15/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-quic-transport-protocol/</link><pubDate>Thu, 15 Jun 2017 00:00:00 +0000</pubDate><guid>/2017/06/15/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-quic-transport-protocol/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/draft-ietf-quic-transport-34.pdf" target="_blank" rel="noopener">QUIC: A UDP-Based Multiplexed and Secure Transport&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://www.ietf.org/proceedings/98/slides/slides-98-edu-sessf-quic-tutorial-00.pdf" target="_blank" rel="noopener">QUIC Tutorial&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://blog.cloudflare.com/the-road-to-quic/" target="_blank" rel="noopener">The Road to QUIC&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://www.chromium.org/quic" target="_blank" rel="noopener">QUIC, a multiplexed stream transport over UDP&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 HTTPS</title><link>/2017/05/13/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-https/</link><pubDate>Sat, 13 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/13/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-https/</guid><description>&lt;p>Hypertext Transfer Protocol Secure，超文本传输安全协议，又称 HTTP over TLS。是经由 HTTP 进行通信，并利用 SSL/TLS 来加密。HTTPS 主要目的是为了提供对服务器的身份认证，与传输过程中的数据完整性不被篡改，最早由网景（Netscape）在 1994 年提出，应用在网景领航员浏览器中。&lt;/p>
+&lt;p>HTTP 在作数据传输协议使用时，由于是明文传输无任何安全保证，会存在内容被窃听的问题；由于没有身份认证机制，通信过程中会面临中间人攻击，例如数据被篡改、服务器身份伪装等。正因为 HTTP 存在这些风险问题才诞生了 HTTPS。&lt;/p>
+&lt;p>HTTPS 本质上是一个复合协议，由 HTTP、TSL/SSL、TCP 协同工作，因此会涉及到较多领域的内容比如密码学、公钥与私钥、加密与认证、数字证书、数字签名等。&lt;/p>
+&lt;p>此外 HTTPS 可能会与 &lt;a href="https://tools.ietf.org/pdf/rfc2660.pdf" target="_blank" rel="noopener">RFC 2660&lt;/a> 中的安全超文本传输协议 S-HTTP 相混淆。两者都为 HTTP 安全传输的实现，S-HTTP 为应用层协议，主要对传输内容加密；HTTPS 的核心为 SSL/TSL，SSL/TSL 协议位于传输层与应用层之间，确保整个通信过程都是安全的。&lt;/p>
+&lt;h2 id="https-通信流程">HTTPS 通信流程&lt;/h2>
+&lt;p>如上文所述，HTTPS 是对 HTTP 的扩展，由三部分组成，通信流程可以简化为：&lt;/p>
+&lt;ol>
+&lt;li>通信双方通过三次握手建立 TCP 连接&lt;/li>
+&lt;li>通信双方通过四次握手建立 TLS 连接&lt;/li>
+&lt;li>HTTP Client 向 Server 发送请求，Server 响应返回 Response&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-mermaid">sequenceDiagram
+autonumber
+participant Client
+participant Server
+rect rgb(191, 223, 255)
+Client -&amp;gt;&amp;gt; Server: Request https://www.google.com
+note right of Server: Encrypt Algorithm&amp;lt;br/&amp;gt;Hash Algorithm
+end
+rect rgb(200, 150, 255)
+Server-&amp;gt;&amp;gt;Client: Return Certificate
+Client-&amp;gt;&amp;gt;Client: Is Certificate Valid?
+Note over Client, Server: Invalid, show prompt.
+Client-&amp;gt;&amp;gt;Client: Is Valid, Random Magic Number R.
+Client-&amp;gt;&amp;gt;Client: Encrypt R with Public Key In Certificate
+end
+rect rgb(191, 223, 255)
+Client-&amp;gt;&amp;gt;Server: Transfer Encrypted R to Server
+Server-&amp;gt;&amp;gt;Server: Decrypted R with Private Key
+Server-&amp;gt;&amp;gt;Server: Encrypt Content with R
+end
+rect rgb(200, 150, 255)
+Server-&amp;gt;&amp;gt;Client: Return Encrypted Content
+Client-&amp;gt;&amp;gt;Client: Decrypt Content with R
+end
+&lt;/code>&lt;/pre>
+&lt;h3 id="建立-tcp-链接">建立 TCP 链接&lt;/h3>
+&lt;p>更多关于 TCP 的内容从以下这篇文章进一步了解。&lt;/p>
+&lt;div class="card-simple">
+&lt;div class="article-metadata">
+&lt;div>
+&lt;span class="author-highlighted">
+徐旭栋&lt;/span>
+&lt;/div>
+&lt;span class="article-date">
+Wed, May 03, 2017
+&lt;/span>
+&lt;span class="middot-divider">&lt;/span>
+&lt;span class="article-reading-time">
+1 分钟阅读时长
+&lt;/span>
+&lt;br>
+&lt;span class="article-categories">
+&lt;font color="#005cc5">
+&lt;i class="fas fa-feather-alt">&lt;/i>
+&lt;strong class="mr-1">CIP&lt;/strong>
+&lt;/font>&lt;a href="/cip/11.07-computer-science/">11.07) Computer Science&lt;/a>
+,
+&lt;a href="/cip/11.0701-computer-science/">11.0701) Computer Science&lt;/a>&lt;/span>
+&lt;span class="article-categories">
+&lt;font color="#005cc5">
+&lt;i class="fas fa-hashtag mr-1">&lt;/i>
+&lt;/font>
+&lt;a href="/category/nc.-networking-and-communication/">NC. Networking and Communication&lt;/a>&lt;/span>
+&lt;/div>
+&lt;div class="section-subheading article-title mb-1 mt-3">
+&lt;a href="/2017/05/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-tcp/">深入了解 TCP&lt;/a>
+&lt;/div>
+&lt;a href="/2017/05/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-tcp/" class="summary-link">
+&lt;div class="article-style">
+&lt;p>TCP 详解&lt;/p>
+&lt;/div>
+&lt;/a>
+&lt;div class="btn-links">
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="https://tools.ietf.org/pdf/rfc793.pdf" target="_blank" rel="noopener">
+&lt;i class="far fa-file-pdf mr-1">&lt;/i>
+RFC 793
+&lt;/a>
+&lt;/div>
+&lt;/div>
+&lt;h3 id="建立-tls-链接">建立 TLS 链接&lt;/h3>
+&lt;p>建立 TCP 链接后需要进行 TLS 握手，以浏览器和服务器的通信为例，通常 HTTPS 做单向认证，用于鉴别服务端的真伪，简化流程的如下：&lt;/p>
+&lt;ol>
+&lt;li>浏览器向服务器的 TLS 端口（一般为 443）发起请求，此次请求携带了支持的加密算法和哈希算法。&lt;/li>
+&lt;li>服务器收到请求，选择浏览器支持的加密算法和哈希算法。&lt;/li>
+&lt;li>服务器将数字证书返回给浏览器，这里的数字证书可以是向权威机构比如 CA 申请的，也可以是自签名证书。&lt;/li>
+&lt;li>浏览器进入数字证书认证环节，这一部分是浏览器内置的 TLS 模块完成的。
+&lt;ul>
+&lt;li>首先浏览器会从系统内置的证书列表中索引，找到服务器下发证书对应的机构。&lt;/li>
+&lt;li>如果没有找到，此时就会提示用户该证书是不是由权威机构颁发，是不可信任的。&lt;/li>
+&lt;li>如果查到了对应的机构，则取出该机构颁发的公钥。&lt;/li>
+&lt;li>用机构的证书公钥解密得到证书的内容和证书数字签名，内容包括服务器的地址、服务器的公钥、证书的有效期等。&lt;/li>
+&lt;li>浏览器首先验证数字签名的合法性，验证过程类似 Bob 和 Pat 的通信过程。&lt;/li>
+&lt;li>签名通过后，浏览器验证证书记录的网址是否和当前网址是一致的，不一致会提示用户。&lt;/li>
+&lt;li>如果网址一致会检查证书有效期，证书过期了也会提示用户。&lt;/li>
+&lt;li>以上都通过认证时，浏览器就可以安全使用证书中的服务器公钥了。&lt;/li>
+&lt;li>浏览器生成一个随机数 R，并使用服务器的公钥对 R 进行加密。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>浏览器将加密之后的 R 传送给服务器。&lt;/li>
+&lt;li>服务器用自己的私钥解密得到 R。&lt;/li>
+&lt;li>服务器以 R 为密钥使用了对称加密算法加密网页内容并传输给浏览器。&lt;/li>
+&lt;li>浏览器以 R 为密钥使用之前约定好的解密算法获取网页内容。&lt;/li>
+&lt;/ol>
+&lt;p>整个过程主要为了认证服务端证书以及的公钥的合法性，因为非对称加密计算量较大，整个通信过程只会用到一次非对称加密算法，主要是用来保护传输客户端生成的 &lt;code>Premaster Secret&lt;/code> 用于对称加密的随机数私钥。后续内容传输都为对称加密。&lt;/p>
+&lt;p>通常 TLS 会在系统内置的可信证书列表内索引匹配的证书链。这一过程也有例外，例如 macOS 上，Safari、Edge 和 Chrome 建立 TLS 连接时会从系统的 Keychain Access 根证书去索引；而 Firefox 安全度更高，会在浏览器内置的证书中索引，防止在系统被注入证书时 HTTPS 被窃听，常见的抓包软件就是通过把自签名证书注入到系统的证书链中以实现 HTTPS 的拦截。&lt;/p>
+&lt;p>更多关于 SSL/TLS 的详细内容从以下这篇文章进一步了解。&lt;/p>
+&lt;div class="card-simple">
+&lt;div class="article-metadata">
+&lt;div>
+&lt;span class="author-highlighted">
+徐旭栋&lt;/span>
+&lt;/div>
+&lt;span class="article-date">
+Tue, May 09, 2017
+&lt;/span>
+&lt;br>
+&lt;span class="article-categories">
+&lt;font color="#005cc5">
+&lt;i class="fas fa-feather-alt">&lt;/i>
+&lt;strong class="mr-1">CIP&lt;/strong>
+&lt;/font>&lt;a href="/cip/11.07-computer-science/">11.07) Computer Science&lt;/a>
+,
+&lt;a href="/cip/11.0701-computer-science/">11.0701) Computer Science&lt;/a>&lt;/span>
+&lt;span class="article-categories">
+&lt;font color="#005cc5">
+&lt;i class="fas fa-hashtag mr-1">&lt;/i>
+&lt;/font>
+&lt;a href="/category/nc.-networking-and-communication/">NC. Networking and Communication&lt;/a>&lt;/span>
+&lt;/div>
+&lt;div class="section-subheading article-title mb-1 mt-3">
+&lt;a href="/post/tech-for-good/deep-dive-into-ssl-tls/">深入了解 SSL/TLS Protocol&lt;/a>
+&lt;/div>
+&lt;a href="/post/tech-for-good/deep-dive-into-ssl-tls/" class="summary-link">
+&lt;div class="article-style">
+&lt;p>SSL/TLS 协议详解&lt;/p>
+&lt;/div>
+&lt;/a>
+&lt;div class="btn-links">
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="https://toolietf.org/pdf/rfc6101.pdfs." target="_blank" rel="noopener">
+&lt;i class="far fa-file-pdf mr-1">&lt;/i>
+RFC 6101
+&lt;/a>
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="https://tools.ietf.org/pdf/rfc2246.pdf" target="_blank" rel="noopener">
+&lt;i class="far fa-file-pdf mr-1">&lt;/i>
+RFC 2246
+&lt;/a>
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="https://tools.ietf.org/pdf/rfc4346.pdf" target="_blank" rel="noopener">
+&lt;i class="far fa-file-pdf mr-1">&lt;/i>
+RFC 4346
+&lt;/a>
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="https://tools.ietf.org/pdf/rfc5246.pdf" target="_blank" rel="noopener">
+&lt;i class="far fa-file-pdf mr-1">&lt;/i>
+RFC 5246
+&lt;/a>
+&lt;a class="btn btn-outline-primary btn-page-header btn-sm" href="https://tools.ietf.org/pdf/rfc8446.pdf" target="_blank" rel="noopener">
+&lt;i class="far fa-file-pdf mr-1">&lt;/i>
+RFC 8446
+&lt;/a>
+&lt;/div>
+&lt;/div>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/HTTPS" target="_blank" rel="noopener">HTTPS&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc2818.pdf" target="_blank" rel="noopener">HTTP Over TLS&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc2660.pdf" target="_blank" rel="noopener">The Secure HyperText Transfer Protocol&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 HTTP</title><link>/2017/05/11/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-http/</link><pubDate>Thu, 11 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/11/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-http/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc2616.pdf" target="_blank" rel="noopener">Hypertext Transfer Protocol &amp;ndash; HTTP/1.1&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc7231.pdf" target="_blank" rel="noopener">Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview" target="_blank" rel="noopener">An overview of HTTP&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>TLS Handshaking Protocols</title><link>/2017/05/09/tls-handshaking-protocols/</link><pubDate>Tue, 09 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/09/tls-handshaking-protocols/</guid><description>&lt;h2 id="tls-10">TLS 1.0&lt;/h2>
+&lt;h2 id="tls-20">TLS 2.0&lt;/h2>
+&lt;h2 id="tls-30">TLS 3.0&lt;/h2>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc2246.pdf" target="_blank" rel="noopener">The TLS Protocol Version 1.0&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc8446.pdf" target="_blank" rel="noopener">The Transport Layer Security (TLS) Protocol Version 1.3&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://datatracker.ietf.org/doc/rfc8446/" target="_blank" rel="noopener">Datatracker The Transport Layer Security (TLS) Protocol Version 1.3&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" target="_blank" rel="noopener">Transport Layer Security - Wikipedia&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>TLS Record Protocol</title><link>/2017/05/09/tls-record-protocol/</link><pubDate>Tue, 09 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/09/tls-record-protocol/</guid><description>&lt;h2 id="tls-10">TLS 1.0&lt;/h2>
+&lt;h2 id="tls-20">TLS 2.0&lt;/h2>
+&lt;h2 id="tls-30">TLS 3.0&lt;/h2>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc2246.pdf" target="_blank" rel="noopener">The TLS Protocol Version 1.0&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc8446.pdf" target="_blank" rel="noopener">The Transport Layer Security (TLS) Protocol Version 1.3&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://datatracker.ietf.org/doc/rfc8446/" target="_blank" rel="noopener">Datatracker The Transport Layer Security (TLS) Protocol Version 1.3&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" target="_blank" rel="noopener">Transport Layer Security - Wikipedia&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 WebSocket Protocol</title><link>/2017/05/06/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-websocket-protocol/</link><pubDate>Sat, 06 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/06/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-websocket-protocol/</guid><description>&lt;h2 id="websocket-握手">WebSocket 握手&lt;/h2>
+&lt;p>WebSocket 为第 7 层应用层协议，建立连接的握手流程依赖于 4 层 TCP，由于 WebSocket 通过利用 HTTP 发起握手，所以这里的握手更类似于一次对 HTTP 协议切换的请求。&lt;/p>
+&lt;h3 id="client-请求">Client 请求&lt;/h3>
+&lt;p>WebSocket 的请求和 HTTP 的格式是一致的, 每行会以 &lt;code>\r\n&lt;/code> 字符结尾，请求头的结束处也需要另起一行空白行：&lt;/p>
+&lt;pre>&lt;code class="language-http">GET /chat HTTP/1.1
+Host: server.example.com
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==
+Sec-WebSocket-Protocol: chat, superchat
+Sec-WebSocket-Version: 13
+Origin: http://example.com
+&lt;/code>&lt;/pre>
+&lt;p>最大的区别在于 WebSoeckt 的请求头会在 HTTP 的基础上带上 WS 协议切换标志位，告诉服务端将 HTTP 升级为 WebSocket。&lt;/p>
+&lt;pre>&lt;code class="language-http">Upgrade: websocket
+Connection: Upgrade
+&lt;/code>&lt;/pre>
+&lt;h3 id="server-响应">Server 响应&lt;/h3>
+&lt;pre>&lt;code class="language-http">HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk=
+Sec-WebSocket-Protocol: chat
+&lt;/code>&lt;/pre>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc6455.pdf" target="_blank" rel="noopener">The WebSocket Protocol&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API" target="_blank" rel="noopener">The WebSocket API (WebSockets)&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/WebSocket" target="_blank" rel="noopener">WebSocket&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 TCP</title><link>/2017/05/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-tcp/</link><pubDate>Wed, 03 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-tcp/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc793.pdf" target="_blank" rel="noopener">TRANSMISSION CONTROL PROTOCOL): Semantics and Content&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol" target="_blank" rel="noopener">Transmission Control Protocol - Wikipedia&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 UDP</title><link>/2017/05/01/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-udp/</link><pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/01/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-udp/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc768.pdf" target="_blank" rel="noopener">User Datagram Protocol&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc8085.pdf" target="_blank" rel="noopener">UDP Usage Guidelines&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>再谈 Swift Performance</title><link>/2016/11/26/%E5%86%8D%E8%B0%88-swift-performance/</link><pubDate>Sat, 26 Nov 2016 18:00:05 +0000</pubDate><guid>/2016/11/26/%E5%86%8D%E8%B0%88-swift-performance/</guid><description>&lt;p>随着 WWDC 2016 的离去，WWDC 2017 也已悄然竟接近，明年苹果将重回加州圣何塞 &lt;code>McEnery&lt;/code> 举办开发者大会，这个时候那些该展望的、还没展望的，也基本被讨论的差不多了，虽然在这个时间点来讨论 Swift Performance 虽然有些老生常谈，但也不失为一个好的话题。&lt;/p>
+&lt;h2 id="class-与-struct-的取舍">&lt;code>class&lt;/code> 与 &lt;code>struct&lt;/code> 的取舍&lt;/h2>
+&lt;p>什么情况下该用哪种 &lt;code>first class type&lt;/code> 来建立我们的 &lt;code>Model&lt;/code>，虽然各路英才心里自有图谱，但还是很有必要拉出来讨论一下。到底是用 &lt;code>class&lt;/code> 还是 &lt;code>struct&lt;/code>、用 &lt;code>value&lt;/code> 还是 &lt;code>reference&lt;/code> ，关键的约束点在于性能开销与多态的实现方式。&lt;/p>
+&lt;h3 id="内存分配">内存分配&lt;/h3>
+&lt;p>人尽皆知 &lt;code>heap&lt;/code> 比 &lt;code>stack&lt;/code> 更昂贵，&lt;code>heap&lt;/code> 牺牲了性能以换取比 &lt;code>stack&lt;/code> 更自由的内存管理，&lt;code>stack&lt;/code> 牺牲了复杂的数据结构来获取和 &lt;code>Int&lt;/code> 赋值一样快的 allocation。&lt;/p>
+&lt;p>&lt;code>heap&lt;/code> 之所以昂贵、性能开销大，是因为开辟内存时需要考虑到多线程申请同一块内存 &lt;code>block&lt;/code> 而产生的竞争问题，因此首先需要加锁来达到 Thread Safety，然后，需要去找到未被使用使用的内存并申请初始化，用完了之后还得还回去将其 deallocate，而我们能得到的好处则是更加动态的内存生命周期。并且不像 C++，Swift 只能在堆上初始化 &lt;code>class&lt;/code>，对于 &lt;code>class&lt;/code> 选型的取舍显得尤其重要。&lt;/p>
+&lt;p>反观 &lt;code>stack&lt;/code>，之所以其性能好是因为其开辟内存仅仅依赖于 &lt;code>ESP&lt;/code> 的上下移动，以典型自底向上的栈结构为例，一次函数调用所需要的 stack allocate 仅仅需要上移 &lt;code>ESP&lt;/code>，而当函数体结束时再把 &lt;code>ESP&lt;/code> 指回入栈之前的位置，上段内存自然就 deallocate 了。每个线程有自己的 &lt;code>stack&lt;/code>，不要考虑多线程加锁，也不需要考虑下一块内存是否可用。但限制在于，当执行一次完整的 &lt;code>call stack&lt;/code>，&lt;code>EBP&lt;/code> 的位置是固定的，意味着可以使用内存就这点，所以在栈上能做的事就被大大的限制，否则就等着 Overflow。&lt;/p>
+&lt;pre>&lt;code class="language-swift">struct Car {
+var serial: Int
+}
+let car = Car(serial: 123456)
+// Fake car, have a fake serial, which is equal to car.serial
+let fakeCar = aCar
+// do sth with car, fakeCar
+&lt;/code>&lt;/pre>
+&lt;p>这样一段代码在 &lt;code>stack&lt;/code> 上仅仅用了 2 个字的大小，用于存储两个 &lt;code>car&lt;/code> 的 &lt;code>serial&lt;/code>。就轻量级，开销低这些特点来说，在工程中用 &lt;code>struct&lt;/code> 来建模看上去是挺美滋滋的，但抛开多态单就性能来说，是否意味着 &lt;code>struct&lt;/code> 总是能成为 &lt;code>Modeling&lt;/code> 的首选？答案是否定的，当 &lt;code>struct&lt;/code> 遇见 &lt;code>ARC&lt;/code> 时，她就变得并不那么轻量级了。&lt;/p>
+&lt;h3 id="arc">&lt;code>ARC&lt;/code>&lt;/h3>
+&lt;p>Swift 对于 &lt;code>heap&lt;/code> 上实例的内存管理，采用的机制依旧是 &lt;code>ARC&lt;/code>。&lt;/p>
+&lt;p>ARC 的在性能上的开销主要是在 &lt;code>swift_retain&lt;/code> &amp;amp; &lt;code>swift_release&lt;/code> 所产生的多次 &lt;code>indirection&lt;/code> 以及多线程的加锁保护。对于 &lt;code>trivial&lt;/code> 的 &lt;code>struct&lt;/code> 来说因为不涉及 &lt;code>ARC&lt;/code>，因此没有影响。但当 &lt;code>struct&lt;/code> 本身如果包含了需要 &lt;code>ARC&lt;/code> 的实例时，他就变得不那么高效了。&lt;/p>
+&lt;pre>&lt;code class="language-swift">struct Car {
+var name: String
+var model: String
+}
+let newCar = Car(name: &amp;quot;Tesla&amp;quot;, model: &amp;quot;Model S&amp;quot;)
+let myCar = newCar
+print(myCar.name)
+&lt;/code>&lt;/pre>
+&lt;p>就 &lt;code>Car&lt;/code> 来说，&lt;code>name&lt;/code> 和 &lt;code>model&lt;/code> 虽然是 &lt;code>String&lt;/code>， 是一个 &lt;code>struct&lt;/code>，但是 &lt;code>String&lt;/code> 的 &lt;code>underlying buffer storage&lt;/code> 是开辟在堆上的，需要和 &lt;code>Class&lt;/code> 一样的作 &lt;code>retain count&lt;/code>，所以会产生如下所示代码。&lt;/p>
+&lt;pre>&lt;code class="language-swift">struct Car {
+var name: String
+var model: String
+}
+let newCar = Car(name: &amp;quot;Tesla&amp;quot;, model: &amp;quot;Model S&amp;quot;)
+let myCar = newCar
+print(myCar.name)
+swift_retain(myCar.name._storage)
+swift_retain(myCar.model._storage)
+swift_release(myCar.name._storage)
+swift_release(myCar.model._storage)
+swift_release(newCar.name._storage)
+swift_release(newCar.model._storage)
+&lt;/code>&lt;/pre>
+&lt;p>过多的 &lt;code>retain&lt;/code> &amp;amp; &lt;code>release&lt;/code> 带来性能开销是我们不想看到的，而如果我们采用 &lt;code>class&lt;/code> 来实现则展开成如下形式。&lt;/p>
+&lt;pre>&lt;code class="language-swift">class Car {
+var name: String
+var model: String
+init(name: String, model: String) {
+self.name = name
+self.model = model
+}
+}
+let newCar = Car(name: &amp;quot;Tesla&amp;quot;, model: &amp;quot;Model S&amp;quot;)
+let myCar = newCar
+swift_retain(myCar)
+print(myCar.name)
+swift_retain(myCar)
+// ... do sth
+swift_release(myCar)
+swift_release(newCar)
+&lt;/code>&lt;/pre>
+&lt;p>在实际的过程中，&lt;code>Model&lt;/code> 显然不会这么简单，一个对象上有 10 几 20 个需要的 &lt;code>ARC&lt;/code> 的 &lt;code>property&lt;/code> 也不是不可能的，这时候谨慎使用 &lt;code>struct&lt;/code> 是我们需要注意的雷区。&lt;/p>
+&lt;p>一个好的实践是多用 &lt;code>built-in&lt;/code> 的 &lt;code>type&lt;/code> 和结构来构建模型，比如 &lt;code>Car.model&lt;/code>，作为一个 &lt;code>String&lt;/code>，它其实没有很好的约束 &lt;code>Car.model&lt;/code> 所想表达的内容，它可以是任何字符串例如 &lt;code>Car.model = &amp;quot;foo&amp;quot;&lt;/code>，这是一个非常差的设计。因此如下所示，在这里我们可以采用 &lt;code>enum&lt;/code> 来对 &lt;code>model&lt;/code> 做约束。&lt;/p>
+&lt;pre>&lt;code class="language-swift">extension Car {
+enum Model {
+case s
+case x
+}
+}
+struct Car {
+var name: String
+var model: Car.Model
+}
+&lt;/code>&lt;/pre>
+&lt;p>虽然是一个很小的优化点，但结果即提高了语义的清晰度，又减少了不必要的开销，可谓一石双鸟。&lt;/p>
+&lt;h2 id="多态">多态&lt;/h2>
+&lt;p>&lt;code>Dyanmic Dispatch&lt;/code> 作为类多态实现的基础之一，也是讨论了比较多的话题，对于 &lt;code>class&lt;/code> 来说，编译器会给其添加额外的 &lt;code>field&lt;/code> 来储存 &lt;code>Type&lt;/code> 的信息，&lt;code>runtime&lt;/code> 通过 &lt;code>Type&lt;/code> 的 &lt;code>v-table&lt;/code> 来找到对应的方法，具体关于 &lt;code>Dynamic Dispatch&lt;/code> 的讨论可见之前的 &lt;a href="../whole-module-optimizations/">Whole Module Optimization 分析&lt;/a>，这里就不再赘述。&lt;/p>
+&lt;p>回到 &lt;code>struct&lt;/code>，如果我们需要在 &lt;code>struct&lt;/code> 上实现多态，那就得依靠 &lt;code>protocol&lt;/code> 来实现。&lt;/p>
+&lt;pre>&lt;code class="language-swift">protocol Turboable {
+func turbo()
+}
+func turbo(_ stuffs: [Turboable]) {
+stuffs.forEach {
+$0.turbo()
+}
+}
+struct Car {
+var name: String
+}
+extension Car: Turboable {
+func turbo() {
+print(&amp;quot;turbo Car&amp;quot;)
+}
+}
+struct Jet {
+var name: String
+}
+extension Jet: Turboable {
+func turbo() {
+print(&amp;quot;turbo Jet&amp;quot;)
+}
+}
+struct Tractor {
+var name: String
+var serail: Int
+}
+extension Tractor: Turboable {
+func turbo() {
+print(&amp;quot;turbo Tractor&amp;quot;)
+}
+}
+let myStuffs: [Turboable] = [
+Jet(name: &amp;quot;MiG-25&amp;quot;),
+Car(name: &amp;quot;Chevrolet&amp;quot;),
+Tractor(name: &amp;quot;Mercedes-Benz&amp;quot;,serial: 1)
+]
+turbo(myStuffs)
+&lt;/code>&lt;/pre>
+&lt;p>这是一段很常见的 &lt;code>Protocol Oriented Programming&lt;/code>，实际上这并不是没有额外性能开销的。和 &lt;code>Class&lt;/code> 不一样，通过 &lt;code>protocol&lt;/code> 实现的多态是通过 &lt;code>Protocol Witness Table&lt;/code> 来做 &lt;code>Dispatch&lt;/code>，每一个实现了 &lt;code>Turboable&lt;/code> 的类型，编译器都会生成一份 &lt;code>PWT&lt;/code>。&lt;/p>
+&lt;pre>&lt;code class="language-swift">struct JetPWT {
+func turbo(_ jet: Jet) {
+jet.turbo()
+}
+}
+struct CarPWT {
+func turbo(_ car: Car) {
+car.turbo()
+}
+}
+struct TractorPWT {
+func turbo(_ tractor: Tractor) {
+tractor.turbo()
+}
+}
+&lt;/code>&lt;/pre>
+&lt;p>同时对于 &lt;code>Array&lt;/code>，底层的 &lt;code>buffer&lt;/code> 显然更喜欢以固定的大小去连续的存储元素，而不同的 &lt;code>type&lt;/code> 却有着不同的内存布局，因此 Swift 使用了 &lt;code>Existential Containner&lt;/code> 去存储元素，这样一个容器提供了个三个字大小的 &lt;code>value Buffer&lt;/code> 用于存储元素。&lt;/p>
+&lt;p>但如果元素的内存布局过大导致 &lt;code>value Buffer&lt;/code> 放不下，例如三个字对于 &lt;code>struct Jet&lt;/code> 足够大，但对于 &lt;code>struct Tractor&lt;/code>，因为 &lt;code>String&lt;/code>.&lt;code>size&lt;/code> + &lt;code>Int&lt;/code>.&lt;code>size&lt;/code> &amp;gt; 3 使得它无法存放在只有三个字大小的 &lt;code>buffer&lt;/code> 中。&lt;/p>
+&lt;pre>&lt;code class="language-swift">// 24 bytes, 3 word
+let jetSize = MemoryLayout&amp;lt;Jet&amp;gt;.size
+// 32 bytes, 4 words
+let tractorSize = MemoryLayout&amp;lt;Tractor&amp;gt;.size
+&lt;/code>&lt;/pre>
+&lt;p>因此 &lt;code>Existential Containner&lt;/code> 会在堆上开辟空间用来拷贝存储一份 &lt;code>Tractor&lt;/code>，同时将指针存放在 &lt;code>value Buffer&lt;/code> 中。&lt;/p>
+&lt;p>所以调用 &lt;code>func turbo(_ stuffs: [Turboable])&lt;/code> 实际上绝大部分的性能开销都花费在对结构体进行内存分配上。&lt;/p>
+&lt;p>同时，谈及了内存操作，不同的 &lt;code>type&lt;/code> 对应的内存布局是不同的，&lt;code>Existential Containner&lt;/code> 需要额外信息才能为这些 &lt;code>type&lt;/code> 做堆内存初始化、拷贝、释放，因此 Swift 引入了 &lt;code>Value Witness Table&lt;/code> 来管理 &lt;code>value type&lt;/code> 在堆上的生命周期。&lt;/p>
+&lt;pre>&lt;code class="language-swift">struct JetVWT {
+// 在堆上初始化一块用于存放 Jet 的内存，并把地址赋给 Existential Containner
+func allocate()
+// 把 stack Jet 的内存 copy 到 heap 上
+func copy()
+// 用于 class type 引用计数递减
+func destruct()
+// 释放堆内存
+func deallocate()
+}
+struct CarVWT {
+...
+}
+struct TractorVWT {
+...
+}
+&lt;/code>&lt;/pre>
+&lt;p>因此 &lt;code>Existential Containner&lt;/code> 还需要额外的两个字的空间用来存放 &lt;code>PWT&lt;/code> 和 &lt;code>VWT&lt;/code> 的地址。&lt;/p>
+&lt;pre>&lt;code class="language-swift">struct ExistContTurboable {
+var valueBuffer: (Int, Int, Int)
+var vwt: ValueWitnessTable
+var pwt: TurboableProtocolWitnessTable
+}
+&lt;/code>&lt;/pre>
+&lt;p>通常来说 &lt;code>Existential Containner&lt;/code> 的大小是 5 个字。&lt;/p>
+&lt;pre>&lt;code>// 40 bytes, 5 words
+let turboableSize = MemoryLayout&amp;lt;Turboable&amp;gt;.size
+&lt;/code>&lt;/pre>
+&lt;p>虽然官方没声明，但是多个 &lt;code>protocol&lt;/code> 的情况下一份 &lt;code>pwt&lt;/code> 应该是不够的。&lt;/p>
+&lt;pre>&lt;code class="language-swift">// 48 bytes, 6 words
+let turboableSize = MemoryLayout&amp;lt;Turboable &amp;amp; CustomReflectable&amp;gt;.size
+&lt;/code>&lt;/pre>
+&lt;p>所以多个 &lt;code>protocol&lt;/code> 的结构会是如下所示的布局。&lt;/p>
+&lt;pre>&lt;code class="language-swift">struct ExistContTurboableCustomReflectable {
+var valueBuffer: (Int, Int, Int)
+var vwt: ValueWitnessTable
+var pwt: (TurboableProtocolWitnessTable, CustomReflectableWitnessTable)
+}
+&lt;/code>&lt;/pre>
+&lt;p>以上整个流程实现了 &lt;code>protocol&lt;/code> 的 &lt;code>Dynamic Dispatch&lt;/code>，那么最终 &lt;code>func turbo(_ stuffs: [Turboable])&lt;/code> 会生成下文所示的伪代码。&lt;/p>
+&lt;pre>&lt;code class="language-swift">
+func turbo(val: [ExistContTurboable]) {
+val.forEach { element in
+// on the heap
+var local = ExistContTurboable()
+let vwt = element.vwt
+let pwt = element.pwt
+local.vwt = vwt
+local.pwt = pwt
+// 拷贝 local var 至 valueBuffer 或者堆上的内存
+vwt.allocateBufferAndCopyValue(&amp;amp;local, element)
+// 获取到 valueBuffer 或者堆上的实例
+pwt.turbo(vwt.projectBuffer(&amp;amp;local))
+// 清理现场
+vwt.destructAndDeallocateBuffer()
+}
+}
+&lt;/code>&lt;/pre>
+&lt;p>相比于 &lt;code>class&lt;/code>，通过 &lt;code>protocol&lt;/code> 实现的 &lt;code>Dynamic Dispatch&lt;/code> 所带来的性能下降根据数据大小的不同可能高达数倍，并且不仅仅是 &lt;code>protocol type&lt;/code>，也包括了 &lt;code>stdlib&lt;/code> 中的一些函数。&lt;/p>
+&lt;pre>&lt;code class="language-swift">public func max&amp;lt;T&amp;gt;(_ x: T, _ y: T) -&amp;gt; T where T : Comparable
+&lt;/code>&lt;/pre>
+&lt;p>这是一个很典型的范型函数，编译器在优化 Scope 被限制的条件下，会保守的生成符合所有 case 的函数。&lt;/p>
+&lt;pre>&lt;code class="language-swift">public func max&amp;lt;T&amp;gt;(_ x: T, _ y: T, _ pwt: TypePWT, _ vwt: TypeVWT) -&amp;gt; T where T : Comparable
+&lt;/code>&lt;/pre>
+&lt;p>同样用到了 &lt;code>PWT&lt;/code> 和 &lt;code>VWT&lt;/code>，函数体的内部也同样用 &lt;code>valueBuffer&lt;/code> 来存储数据，一样是 3 个字的大小（苹果估计和 G 胖有仇），唯一的区别是没用 &lt;code>Existential Container&lt;/code> 到，因为这个对于每次调用只有一种 &lt;code>type&lt;/code> 的参数是没有必要的。&lt;/p>
+&lt;p>当然这种通过范型实现的 &lt;code>Static Polymorphism&lt;/code> 仍然是 &lt;code>Dynamic Dispathc&lt;/code> 虽然对性能开销有影响，但是通过 &lt;code>Generic Specialization&lt;/code> 可以使其达到 &lt;code>Static Dispathc&lt;/code>，同样之前的 &lt;a href="../whole-module-optimizations/">Whole Module Optimization 分析&lt;/a> 有提及，所以不再赘述。&lt;/p>
+&lt;div class="alert alert-note">
+&lt;div>
+2017-07-14 Updated
+&lt;/div>
+&lt;/div>
+&lt;p>在 WWDC 2017 上，苹果终于出手这个解决 &lt;code>valueBuffer&lt;/code> 的性能问题了，&lt;code>Unpredictable Performance Cliff&lt;/code>。苹果的方案是采用 &lt;code>COW Existential Buffers&lt;/code>，简单来说就是太大没法放进 &lt;code>valueBuffer&lt;/code> 的 value，苹果对其采用和类一样的 &lt;code>reference counting&lt;/code>，多个 &lt;code>Existential Container&lt;/code> 可以共享相同的 &lt;code>buffer&lt;/code> 直到这个 value 需要被修改才会被重新分配内存，以减少 &lt;code>heap allocation&lt;/code> 的次数，典型的 COW 机制。&lt;/p>
+&lt;p>同样对于范型的 &lt;code>valueBuffer&lt;/code>，原来的 &lt;code>heap allocation&lt;/code> 被替换为 &lt;code>stack allocation&lt;/code>，规避了堆内存管理，这下可以更加肆无忌惮的使用范型和 &lt;code>protocol&lt;/code> 了。&lt;/p>
+&lt;h2 id="结语">结语&lt;/h2>
+&lt;p>我们数据建模的方式小改动会对性能造成巨大的影响，所以在我们设计每一个代码环节时，我们都有这样思维，这段代码发生了什么、会产生怎么样的性能开销、内存是如何分配的。&lt;/p>
+&lt;p>在工程中都应该根据实际场景仔细斟酌采取哪种机制来获取优雅的实现，并在此基础上对性能做优化，是需要 &lt;code>class&lt;/code> 的 OOP 特性，还是 &lt;code>struct&lt;/code> 的 value 特性，是需要 &lt;code>protocol&lt;/code> 的更加灵活的 &lt;code>Dynamic Polymorphism&lt;/code>，还是由范型带来的更加 &lt;code>static&lt;/code> 的 &lt;code>Static Polymorphism&lt;/code>。&lt;/p>
+&lt;p>总之还是那句话，工欲善其事，必先利其器，了解你的编译器，这样才能让编译器更好的理解你。&lt;/p>
+&lt;h2 id="参考文献">参考文献&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://developer.apple.com/videos/play/wwdc2016/416/" target="_blank" rel="noopener">Understanding Swift Performance&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://developer.apple.com/videos/play/wwdc2017/402/" target="_blank" rel="noopener">What&amp;rsquo;s New in Swift 4&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://academy.realm.io/posts/goto-mike-ash-exploring-swift-memory-layout/" target="_blank" rel="noopener">Exploring Swift Memory Layout&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://academy.realm.io/posts/real-world-swift-performance/" target="_blank" rel="noopener">Real World Swift Performance&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>Whole-Module Optimization 分析</title><link>/2016/07/14/whole-module-optimization-%E5%88%86%E6%9E%90/</link><pubDate>Thu, 14 Jul 2016 18:00:05 +0000</pubDate><guid>/2016/07/14/whole-module-optimization-%E5%88%86%E6%9E%90/</guid><description>&lt;p>Swift 自诞生以来，就标榜了 &lt;strong>Performance&lt;/strong>。WWDC 2015 上苹果为 Swift 2 引入的 Swift Compiler 特性 &lt;code>Whole-Module Optimization&lt;/code> 将其再一次拉上了 &lt;strong>Performance&lt;/strong> 的舞台，那么 &lt;code>WMO&lt;/code> 到底做了些什么？&lt;/p>
+&lt;p>通常来说，Swift 文件是单独编译的，这样的编译模式不但可以充分发挥多核心的优势做到并行编译而且还能做到单文件维度的增量编译。&lt;/p>
+&lt;pre>&lt;code class="language-mermaid">stateDiagram-v2
+File1.swift --&amp;gt; Compiler
+Compiler --&amp;gt; File1.o
+File2.swift --&amp;gt; Compiler
+Compiler --&amp;gt; File2.o
+File3.swift --&amp;gt; Compiler
+Compiler --&amp;gt; File3.o
+&lt;/code>&lt;/pre>
+&lt;p>这很合情也和很合理，用 Apple 的话来说就是&lt;/p>
+&lt;blockquote>
+&lt;p>That&amp;rsquo;s &lt;strong>good&lt;/strong> 😀&lt;/p>
+&lt;/blockquote>
+&lt;p>然而这样会把 Optimizer 能获取到的上下文局限在单个文件内，那么显而易见的问题是，整个模块内的死函数、&lt;code>Dynamic Dispatch&lt;/code> 的 &lt;code>V-Table&lt;/code> 查询、泛型特例化等等都无法被很好的优化，所以精益求精的 Apple 认为，这还是不够 &lt;strong>good&lt;/strong>，因此引入了 &lt;code>Whole-Moudle Optimization&lt;/code>。&lt;/p>
+&lt;pre>&lt;code class="language-mermaid">stateDiagram-v2
+File1.swift --&amp;gt; Compiler
+File2.swift --&amp;gt; Compiler
+File3.swift --&amp;gt; Compiler
+Compiler --&amp;gt; File.o
+&lt;/code>&lt;/pre>
+&lt;p>&lt;code>WMO&lt;/code> 将整个模块的内的 Swift 文件合并成一个，把颗粒度提升到整个模块，这样可以做到在 Build Source 阶段，Optimizer 只进行一次模块级别的优化，用 Apple 的话来说就是：&lt;/p>
+&lt;blockquote>
+&lt;p>Analyze everything at once, aggressive optimization, very &lt;strong>good&lt;/strong> 😀&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>WMO&lt;/code> 对于 Swift 所能带来的提升官方称有 2x ~ 5x，如此 &lt;strong>good&lt;/strong> 的性能提升使得从 Xcode 8 开始 WMO 就成为了默认标配，所以 &lt;code>WMO&lt;/code> 快在哪？&lt;/p>
+&lt;h3 id="泛型特例化">泛型特例化&lt;/h3>
+&lt;p>以 &lt;a href="https://github.com/apple/swift/blob/master/stdlib/public/core/Algorithm.swift" target="_blank" rel="noopener">stdlib&lt;/a> 中的函数为例。&lt;/p>
+&lt;pre>&lt;code>// File1.swift
+@_inlineable
+public func max&amp;lt;T : Comparable&amp;gt;(_ x: T, _ y: T) -&amp;gt; T {
+// In case `x == y`, we pick `y`. See min(_:_:).
+return y &amp;gt;= x ? y : x
+}
+&lt;/code>&lt;/pre>
+&lt;p>由于是泛型，编译器无从知道 &lt;code>type T&lt;/code> 具体类型是 &lt;code>Int&lt;/code>、&lt;code>Double&lt;/code> 还是其它任何 &lt;code>Comparable&lt;/code> 的类型，所以编译器会去函数表里找类型匹配函数， 同时编译器也无从知道 &lt;code>type T&lt;/code> 是否需要为其 &lt;code>reference counting&lt;/code>(e.g &lt;code>class Foo: Comparable&lt;/code>)，所以为了应付所有可能的 &lt;code>type T&lt;/code> 情况下，编译器会保守的生成如下伪代码。&lt;/p>
+&lt;pre>&lt;code>// File1.swift
+@_inlineable
+func max&amp;lt;T : Comparable&amp;gt;(x: T, y: T, FTable: FunctionTable) -&amp;gt; T {
+let xCopy = FTable.copy(x)
+let yCopy = FTable.copy(y)
+let ret = !FTable.lessThan(yCopy, xCopy) ? y : x
+FTable.release(x)
+FTable.release(y)
+return ret
+}
+&lt;/code>&lt;/pre>
+&lt;p>然而在 &lt;code>runtime&lt;/code> 时期，对于诸如 Int 这类的基本类型来说，编译器插入的 &lt;code>copy()&lt;/code>、&lt;code>release()&lt;/code> 是毫无意义却又是确实存在的，所以和 &lt;code>Template Specialization&lt;/code> 类似，Swift Compiler 引入了 &lt;code>Generic Specialization&lt;/code>。&lt;/p>
+&lt;pre>&lt;code>// File1.swift
+func foo() {
+let x: Int = ...
+let y: Int = ...
+let ret = max(x, y)
+...
+}
+&lt;/code>&lt;/pre>
+&lt;p>在这样一个上下文内，&lt;code>Compiler&lt;/code> 能清楚的得知 &lt;code>type T = Int&lt;/code>，因此 &lt;code>max&amp;lt;T&amp;gt;&lt;/code> 会被拷贝并被特例化成 &lt;code>max&amp;lt;Int&amp;gt;&lt;/code>。&lt;/p>
+&lt;pre>&lt;code>func max&amp;lt;Int&amp;gt;(x: Int, y: Int) -&amp;gt; Int {
+return y &amp;lt; x ? x : y
+}
+&lt;/code>&lt;/pre>
+&lt;p>然而问题是在如下的情况也是大部分工程中最常见的情况下，对于 File1.swift 来说 File2.Swift 在编译期是不可见的，&lt;code>Generic Specialization&lt;/code> 也因此失去了作用。&lt;/p>
+&lt;pre>&lt;code>// Module Foo
+// File1.swift
+@_inlineable
+public func max&amp;lt;T : Comparable&amp;gt;(_ x: T, _ y: T) -&amp;gt; T {
+// In case `x == y`, we pick `y`. See min(_:_:).
+return y &amp;gt;= x ? y : x
+}
+// File2.swift
+func bar() {
+let x: Int = ...
+let y: Int = ...
+let ret = max(x, y)
+...
+}
+&lt;/code>&lt;/pre>
+&lt;blockquote>
+&lt;p>It&amp;rsquo;s not &lt;strong>good&lt;/strong> 🙁.&lt;/p>
+&lt;/blockquote>
+&lt;p>就时候就能体现出 &lt;code>WMO&lt;/code> 的优势，颗粒度上升至模块之后，File1，File2 会被合并，所有 Source 处于同一上下文，因此编译器有足够的信息去优化生成成如下 high &lt;strong>perfromace&lt;/strong> 的代码。&lt;/p>
+&lt;pre>&lt;code>// Module Foo
+// Foo-Merged.swift
+@_inlineable
+public func max&amp;lt;Int&amp;gt;(_ x: Int, _ y: Int) -&amp;gt; Int {
+return y &amp;gt;= x ? y : x
+}
+func bar() {
+let x: Int = ...
+let y: Int = ...
+let ret = max&amp;lt;T&amp;gt;(x, y)
+...
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="dynamic-dispatch">Dynamic Dispatch&lt;/h3>
+&lt;p>假设有一个 &lt;code>class Car&lt;/code>。&lt;/p>
+&lt;pre>&lt;code>// Module A
+// File1.Swift
+class Car {
+// should not override
+var brand: String
+func turboCharge()
+// turboCharge implementation, called by turboCharge(), should not override
+func turboChargeImpl()
+}
+// File1.swift
+class Porsche: Car {
+var model: String
+override func turboCharge()
+// 对于子类，任何继承于父类的非 private func、property 都是以 Dynamic Dispatch
+// 的形式调用的，即使没有被 override
+// assumed to be overridden by compiler
+// func turboChargeImpl()
+}
+&lt;/code>&lt;/pre>
+&lt;p>然后我们有个 &lt;code>class Driver&lt;/code>。&lt;/p>
+&lt;pre>&lt;code>// File2.swift
+class Driver {
+var name: String
+func turbo(of car: Car) {
+print(&amp;quot;Strat turbo of \(car.brand)&amp;quot;)
+car.turboCharge()
+}
+}
+&lt;/code>&lt;/pre>
+&lt;p>那么对于 &lt;code>Driver.turbo&lt;/code> 编译器会生成如下伪代码。&lt;/p>
+&lt;pre>&lt;code>class Driver {
+···
+func turbo(a car: Car) {
+let brandGetter = Car.brandGetter(car)
+print(&amp;quot;Strat turbo of \(brandGetter(car))&amp;quot;)
+let turboCharge = Car.turboCharge(car)
+turboCharge(car)
+}
+···
+}
+&lt;/code>&lt;/pre>
+&lt;p>由于局限于单文件 &lt;code>Scope&lt;/code>，编译器无从得知所给到类的层级信息，自然无法得知有哪些 &lt;code>property&lt;/code>，&lt;code>func&lt;/code> 是被 &lt;code>override&lt;/code>的，所以编译器必须插入间接运算以完成 &lt;code>Dynamic Dispatch&lt;/code>。对于不会被 &lt;code>override&lt;/code> 的 &lt;code>Car.brand&lt;/code>、&lt;code>Car.turboChargeImpl&lt;/code>，可以通过 &lt;code>final&lt;/code> 限制子类的 &lt;code>override&lt;/code> 或者通过 &lt;code>private&lt;/code> 限制子类的 &lt;code>Access Control&lt;/code> 来达到 &lt;code>Static Dispatch&lt;/code>。&lt;/p>
+&lt;pre>&lt;code>class Car {
+···
+final var brand: String
+private func turboChargeImpl()
+}
+&lt;/code>&lt;/pre>
+&lt;p>于是编译器就会生成如下伪代码。&lt;/p>
+&lt;pre>&lt;code>class Driver {
+···
+func turbo(a car: Car) {
+print(&amp;quot;Strat turbo of \(car.brand)&amp;quot;)
+let turboCharge = Car.turboCharge(car)
+turboCharge(car)
+}
+···
+}
+&lt;/code>&lt;/pre>
+&lt;p>回到 &lt;code>WMO&lt;/code>，在上文基础上，假设有这样一个情景。&lt;/p>
+&lt;pre>&lt;code>// Module A
+// File2.swift
+class Driver {
+···
+func turbo(a porsche: Porsche) {
+porsche.turbo()
+}
+···
+}
+&lt;/code>&lt;/pre>
+&lt;p>这样一段代码会被改写成如下。&lt;/p>
+&lt;pre>&lt;code>class Driver {
+···
+func turbo(a porsche: Porsche) {
+let turboCharge = Porsche.turboCharge(porsche)
+turboCharge(car)
+}
+···
+}
+&lt;/code>&lt;/pre>
+&lt;p>在 &lt;code>class Prosche&lt;/code> 没有任何 &lt;code>subclass&lt;/code> 的情况下，&lt;code>Dynamic Dispatch&lt;/code> 实际上是毫无意义的，因此 &lt;code>WMO&lt;/code> 又一次发挥了作用，把 Visibility 提升到整个模块之后 Compiler 能理解 &lt;code>Prosche&lt;/code> 的类层级、并且 &lt;code>Prosche&lt;/code> 没有子类，因此 &lt;code>func turbo(a porsche: Porsche)&lt;/code> 是完全 Static 的，所以代码最终会被改写成如下。&lt;/p>
+&lt;pre>&lt;code>// Module A
+// A-Merged.Swift
+class Car {
+final var brand: String
+func turboCharge()
+private func turboChargeImpl()
+}
+class Porsche: Car {
+final var model: String
+override func turboCharge()
+}
+class Driver {
+func turbo(a car: Car) {
+print(&amp;quot;Strat turbo of \(car.brand)&amp;quot;)
+let turboCharge = Car.turboCharge(car)
+turboCharge(car)
+}
+func turbo(a porsche: Porsche) {
+porsche.turbo()
+}
+}
+&lt;/code>&lt;/pre>
+&lt;p>相比于 objc 的一切皆动态，Swift 在编译器能获得丰富的信息去避免 &lt;code>Dynamic Dispatch&lt;/code> 这也为什么 Swift 在 Object-Oriented Benchmark 上能秒杀 objc，可见一个设计优良的 &lt;code>class&lt;/code> 不仅在工程易维护性上带来许多方便，同时在性能上也能获得巨大的收益。&lt;/p>
+&lt;h2 id="wmo-的适用范围">&lt;code>WMO&lt;/code> 的适用范围&lt;/h2>
+&lt;p>但就如上文所说的，&lt;code>WMO&lt;/code> 下增量编译颗粒度上升至整个模块，意味着不管修改哪个文件，下一次 build 总是 Whole-Module build，大大增加了 build time，虽然 &lt;code>WMO&lt;/code> 带来的 clean build 时间缩短是可观的，但和 &lt;code>-Onone&lt;/code>、&lt;code>SFO&lt;/code> 下的增量编译相比并不在一个量级，所以这对于日常的开发是没有必要的，因此 &lt;code>WMO&lt;/code> 作为标配来说也仅仅是在 release build 的情况下，它并不是无敌的。&lt;/p>
+&lt;p>&lt;img src="./wmo.png" alt="wmo">&lt;/p>
+&lt;p>同时在开启了优化的情况下，&lt;code>LLDB&lt;/code> 也会表现的不正常&lt;/p>
+&lt;pre>&lt;code>MyApp was compiled with optimization - stepping may behave oddly; variables may not be available.
+&lt;/code>&lt;/pre>
+&lt;p>所以，如果有无法避免的理由需要在 &lt;strong>Debug&lt;/strong> 情况下要用到 &lt;code>WMO&lt;/code>，那么&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Debug&lt;/strong> 下打开 &lt;code>WMO&lt;/code>，&lt;code>Other Swift Flags&lt;/code> 里添加 &lt;code>-Onone&lt;/code>&lt;/li>
+&lt;li>&lt;strong>Debug&lt;/strong> 下关闭 &lt;code>WMO&lt;/code>，&lt;code>User-Defined&lt;/code> 里添加 &lt;code>SWIFT_WHOLE_MODULE_OPTIMIZATION&lt;/code> = &lt;code>YES&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>以上两种方式都可以把所有文件合并，且不做任何编译优化，减少了 Context 的分析，不但能够 Debug，而且相比于 &lt;code>Whole-Module Optimization&lt;/code> 还可以达到更快的编译速度。对于 CocoaPods 引入的 Swift framework，可以在 hook 里为每个 target 做配置。&lt;/p>
+&lt;pre>&lt;code class="language-ruby">post_install do |installer|
+installer.pods_project.targets.each do |target|
+target.build_configurations.each do |config|
+if config.name == 'Debug'
+config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Owholemodule'
+config.build_settings['OTHER_SWIFT_FLAGS'] = '-Onone $(inherited)'
+end
+end
+end
+end
+&lt;/code>&lt;/pre>
+&lt;h2 id="总结">总结&lt;/h2>
+&lt;p>&lt;code>WMO&lt;/code> 的情况下，配合良好的代码设计会给予整个工程带来不容忽视的收益，用 Apple 的话来说就是：&lt;/p>
+&lt;blockquote>
+&lt;p>All I need to do is to turn on Whole-Module Optimization. I don&amp;rsquo;t need to change code at all. By giving the compiler more information, by allowing the compiler to understand my class hierachy with more information, I was able to get this optimization for &lt;strong>free&lt;/strong> without any work on your part.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol start="0">
+&lt;li>&lt;a href="https://swift.org/blog/whole-module-optimizations/" target="_blank" rel="noopener">Whole-Module Optimization in Swift 3&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://developer.apple.com/videos/play/wwdc2015/409/" target="_blank" rel="noopener">Optimizing Swift Performance&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://developear.com/blog/2016/12/30/Speed-Swift-Compilation.html" target="_blank" rel="noopener">Speeding Up Compile Times of Swift Projects&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.skilled.io/u/swiftsummit/swift-with-a-hundred-engineers" target="_blank" rel="noopener">Swift with a hundred engineers&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://nondot.org/sabre/" target="_blank" rel="noopener">Chris Lattner&amp;rsquo;s Homepage&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>Introduce Objective-C Evolution</title><link>/2016/06/25/introduce-objective-c-evolution/</link><pubDate>Sat, 25 Jun 2016 10:31:29 +0000</pubDate><guid>/2016/06/25/introduce-objective-c-evolution/</guid><description>&lt;h2 id="序">序&lt;/h2>
+&lt;p>Swift 3.0 问世之际，随之而来的是 &lt;code>API&lt;/code> 的清晰语意、更加完备的泛型、更 Swift Style 的 C APIs 等等。这也意味着 Swift 未来霸主地位越来越难被撼动。回看 Objective-C，作为一门 1980s 诞生的语言，在 Swift 的持续迭代下，ObjC 越发失去生机，&lt;code>Type Inference&lt;/code> 的缺失、&lt;code>Dynamic Dispatch&lt;/code> 的性能开销、不安全的 &lt;code>runtime&lt;/code>，过度啰嗦的 API 设计，都使得其在各方面被 Swift 全面碾压，大概目前能谈得上优势的也只剩下强大的 &lt;code>runtime&lt;/code> 动态性和 C/C++ 混编了。&lt;/p>
+&lt;p>今次回顾下 Objective-C，依稀能看出语言设计上的年代感，对于 Objective-C 来说，如果当初 Swift 没有出现的话，Objective-C 3.0 是否能如期问世？&lt;/p>
+&lt;ul class="cta-group">
+&lt;li>
+&lt;a href="../objc-evolution-proposals" target="_blank" rel="noopener" class="btn btn-primary px-3 py-3">View &lt;strong>The Objective-C Programming Language Evolution&lt;/strong>&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="objective-c-evolution">Objective-C Evolution&lt;/h2>
+&lt;h3 id="开端">开端&lt;/h3>
+&lt;p>尽管 Swift 的语法与性能以其压倒性的优势凌驾于 ObjC 之上，但缺点和短板的也很明显：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>从 Swift 1.0 到 2.3 再到目前的 3.0，Swift 的飞速发展有目共睹，但与此同时其不稳定的 ABI 也一直被诟病，开发者们戏称道 Swift 1.0/2.0/3.0 是三门语言，虽然并没有那么夸张，但其对于代码的冲击性是确确实实的，对于小型团队来说 Swift 的版本迁移可能就几天就解决了，然而对大型项目来说，这个变化是毁灭性的。同时 Swift 持续迭代中产生的 &lt;code>bug&lt;/code>、&lt;code>issue&lt;/code> 并不能被很快的解决，那么势必我们会偶然间为 Swift 的发展而踩坑。通常来说，这些迁移所带来的额外成本在快速迭代的开发环境下是不被允许的。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Swift 表现和 C++ 在很多地方都十分相似，非常 static，这也意味着 Swift 在动态性上非常薄弱，stdlib 中的 &lt;code>Mirror&lt;/code> 相比于 ObjC 的 &lt;code>runtime&lt;/code>，简直就是小巫见大巫，再者 &lt;code>Foundation&lt;/code> 中的 &lt;code>KVC&lt;/code>、&lt;code>KVO&lt;/code> 在 Swift 中需要借助 &lt;code>NSObject&lt;/code> 和 &lt;code>dynamic&lt;/code> 来完成。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>对于一些有历史包袱或者偏底层的框架来说，它们无法从 C/C++ 剥离，而对于 C++，Swift 则必须通过 C、ObjC 来作为桥梁，无形中增加了开发成本，同时 Swift 对于指针的支持特别是函数指针并不是那么的友好，虽然这也无可厚非，毕竟 Swift 强调 &lt;code>safe&lt;/code>，指针本身就是 &lt;code>unsafe&lt;/code> 的，但使用上总有那么些许的不流畅。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>虽然目前的 Swift 依然有不少缺点，但作为一个积极的 Swift 布道者来说，其仍然是我目前为止评价最高的一门语言，其强大而优雅的语法特性、涵盖了多种模式的编码环境、内存管理哲学、以及针对性能所做的优化是目前的 Objective-C 望成莫及的。&lt;/p>
+&lt;div class="alert alert-info">
+&lt;div>
+了解更多
+&lt;/div>
+&lt;/div>
+&lt;div class="pub-list-item" style="margin-bottom: 1rem">
+&lt;i class="far fa-file-alt pub-icon" aria-hidden="true">&lt;/i>
+&lt;span class="article-metadata li-cite-author">
+&lt;span class="author-highlighted">
+徐旭栋&lt;/span>
+&lt;/span>
+(2016).
+&lt;a href="/2016/06/25/swift-%E8%AE%BE%E8%AE%A1%E5%93%B2%E5%AD%A6/">Swift 设计哲学&lt;/a>.
+&lt;p>
+&lt;/p>
+&lt;/div>
+&lt;h3 id="共生">共生&lt;/h3>
+&lt;p>事实上 Apple 为了让 Swift 和 Objective-C、Foundation 层面互相兼容，在 LLVM 上做了非常多的工作，同样在 Swift Native 层面也做了大量的 Cast 和 Bridge，以至于导致了好多 Bug，列举几个我遇到过的:&lt;/p>
+&lt;ul>
+&lt;li>NSError 的 &lt;code>overrelease&lt;/code>，出现在 NSError 和 Error 互相 Cast 的场景，主要挂在 &lt;code>tryDynamicCastNSErrorObjectToValue&lt;/code>，通过 Allocation 最终定位为 swift runtime 的 bug
+&lt;ul>
+&lt;li>&lt;a href="https://bugs.swift.org/browse/SR-9207" target="_blank" rel="noopener">SR-9207&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://stackoverflow.com/questions/62410980/crash-while-casting-object-in-swift" target="_blank" rel="noopener">Crash while casting object in swift&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>引入 Swift 的代价是巨大的，但带来的收益同样也很可观，客观来说 Objective-C 的地位已然被撼动，试问一句还能战多久？&lt;/p>
+&lt;h3 id="理想">理想&lt;/h3>
+&lt;p>Objective-C 最大优点在于非常动态，这同样也是其缺点。高度的动态性导致其类型的不安全，冗长的自描述语法导致编码时效率低下，和 C/C++ 高度兼容的多语言特性增加了编码方式的可能性，但也导致潜在要处理的编码场景变得更为复杂。&lt;/p>
+&lt;p>汲取现代语言的特性，展望 Objective-C 3.0 可拓展的特性：&lt;/p>
+&lt;ul>
+&lt;li>类似 &lt;code>var&lt;/code> 和 &lt;code>let&lt;/code> 关键字，参考 Swift，既满足了类型推导，又满足了可变性控制&lt;/li>
+&lt;li>&lt;code>guard&lt;/code> 和 &lt;code>defer&lt;/code> 关键字，参考 Go 和 Swift 构建优雅 Control Flow 的必要元素&lt;/li>
+&lt;li>&lt;code>aysnc&lt;/code> 和 &lt;code>await&lt;/code> 关键字和协程，参考 .NET&lt;/li>
+&lt;li>支持泛型和模版，目前的 Objective-C 仅支持轻量型泛型&lt;/li>
+&lt;li>以 &lt;code>.&lt;/code> 语法代替 &lt;code>[]&lt;/code>，事实上 Foundation 中大量的 &lt;code>getter&lt;/code> 都在逐渐适配成 @property，&lt;code>.&lt;/code> 语法的可用范围正在逐渐变多&lt;/li>
+&lt;li>参数的空指针自描述，参考 Swift，在 Swift 中由 Optional 完成，Objective-C 中有 &lt;code>nullability&lt;/code> 关键字，不过主要服务于 Objective-C 到 Swift 的 API naming&lt;/li>
+&lt;li>Protocol 的默认实现，参考 Swift&lt;/li>
+&lt;li>Access Control&lt;/li>
+&lt;/ul>
+&lt;h3 id="evolution">Evolution&lt;/h3>
+&lt;p>得益于 LLVM 以及出色的 Clang 前端，使得 Swift 以及一些现代语言的语法特性在 ObjC 中出现具有了可能性。拟参考 &lt;a href="https://github.com/apple/swift-evolution" target="_blank" rel="noopener">apple/swift-evolution&lt;/a> 的形式，基于对 Objective-C 原生特性拓展研究以及衍生特性的挖掘目的，建立 The Objective-C Programming Language Evolution 作为 Objective-C 的 CodeLab。&lt;/p>
+&lt;h3 id="结语">结语&lt;/h3>
+&lt;p>虽然目前 Swift 在苹果的推动下气势越来越猛、野心也越来越大，未来越来越多的语言特性、更完备的 &lt;code>stdlib&lt;/code> 以及更加稳定的 ABI 成为了苹果当下的主要目标。但包括苹果自己的框架在内，以及仍然有许多应用、优秀的开源库无法从 Objective-C/C++ 剥离。个人认为一些优秀并且已经被开源社区实现的特性是可以作为语言的标准特性加入到 Objective-C 的，就看 Apple 有没有这个意愿发布 Objective-C 3.0，毕竟 Apple 和 &lt;strong>
+&lt;i class="fab fa-steam pr-1 fa-fw">&lt;/i>G 胖&lt;/strong>还是不一样的。&lt;/p>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;div class="pub-list-item" style="margin-bottom: 1rem">
+&lt;i class="far fa-file-alt pub-icon" aria-hidden="true">&lt;/i>
+&lt;span class="article-metadata li-cite-author">
+&lt;span class="author-highlighted">
+徐旭栋&lt;/span>
+&lt;/span>
+(2016).
+&lt;a href="/post/tech-for-good/objc-evolution-proposals/">The Objective-C Programming Language Evolution&lt;/a>.
+&lt;p>
+&lt;/p>
+&lt;/div></description></item><item><title>Swift 设计哲学</title><link>/2016/06/25/swift-%E8%AE%BE%E8%AE%A1%E5%93%B2%E5%AD%A6/</link><pubDate>Sat, 25 Jun 2016 10:31:29 +0000</pubDate><guid>/2016/06/25/swift-%E8%AE%BE%E8%AE%A1%E5%93%B2%E5%AD%A6/</guid><description>&lt;h2 id="序">序&lt;/h2>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://developer.apple.com/forums/thread/16363" target="_blank" rel="noopener">Design decisions / goals / philosophy of Swift&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://forums.swift.org/t/language-design-philosophy-swift-vs-other-recent-languages/1338" target="_blank" rel="noopener">Language design philosophy, Swift vs Other recent languages&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>什么是数字签名【译注】</title><link>/2016/05/25/%E4%BB%80%E4%B9%88%E6%98%AF%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E8%AF%91%E6%B3%A8/</link><pubDate>Wed, 25 May 2016 00:00:00 +0000</pubDate><guid>/2016/05/25/%E4%BB%80%E4%B9%88%E6%98%AF%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E8%AF%91%E6%B3%A8/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
+&lt;p>故事的主人翁是 Bob，他有三个朋友 Pat、Doug 和 Susan。Bob 经常和他们网上冲浪，因为他的消息是明文传输的，在传递过程可能被人截获偷窥，也可能被人截获然后又篡改了，更有可能别人伪装成 Bob 本人跟他的好友通信，为了规避消息泄漏以及被篡改的风险，整个通信过程中会引入非对称加密算法以及数字签名。正文部分会添加个人的译注作为补充介绍一些背景与看法，接下来我们来看看 Bob 是怎么用非对称加密与好友通信的。&lt;/p>
+&lt;h2 id="正文">正文&lt;/h2>
+&lt;p>主人翁 Bob 得到了两把钥匙。其中一把称为&lt;strong>公钥&lt;/strong>，另一把称为&lt;strong>私钥&lt;/strong>。&lt;/p>
+&lt;div align="center">
+&lt;div align="center" style="display:inline-block">
+&lt;font style="font-size:3rem;color:#555555;">
+&lt;i class="far fa-meh pr-1 fa-fw">&lt;/i> &lt;/font>
+&lt;/div>
+&lt;div align="center" style="display:inline-block">
+&lt;font style="font-size:1rem;color:#005cc5;">
+&lt;i class="fas fa-key pr-1 fa-fw">&lt;/i> Public Key&lt;/font>&lt;br>
+&lt;font style="font-size:1rem;color:#c5005c;">
+&lt;i class="fas fa-key pr-1 fa-fw">&lt;/i> Private Key&lt;/font>
+&lt;/div>
+&lt;/div>
+&lt;blockquote>
+&lt;p>【&lt;strong>译注&lt;/strong>】&lt;/p>
+&lt;p>非对称加密算法（RSA）是内容加密的一类算法，它有两个密钥，公钥与私钥：&lt;/p>
+&lt;ul>
+&lt;li>公开的、可以被所有人都可以获取的称之为公钥。&lt;/li>
+&lt;li>只有持有者知道，其他任何人获取不到的称之为私钥。&lt;/li>
+&lt;/ul>
+&lt;p>通过公钥加密的内容，只能通过私钥解密，同样通过私钥加密的内容也只能用公钥解密，公钥和私钥只有称谓上不同，本质上没有任何区别，是很典型的用途决定命名。通常私钥加密公钥解密，我们称之为身份认证；公钥加密私钥解密，我们称之为加密。非对称加密算法的安全性很高，但因为计算量庞大，比较消耗性能。&lt;/p>
+&lt;/blockquote>
+&lt;p>Bob 的公钥可供任何需要的人使用，而他的私钥由他自己保密保存。密钥用于加密信息。将信息加密意味着“干扰”，只有拥有正确密钥的人才能将其解密并恢复成可读内容。Bob 两个密钥中的任意一个密钥都可以用来加密数据，并且使用另一个密钥解密数据。&lt;/p>
+&lt;div align="center">
+&lt;div style="display:inline-block">
+&lt;div style="display:inline-block">
+&lt;font style="font-size:3rem;color:#555555;">
+&lt;i class="far fa-user-tie pr-1 fa-fw">&lt;/i>&lt;/font>&lt;br>Pat
+&lt;/div>
+&lt;div style="display:inline-block">
+&lt;font style="font-size:3rem;color:#555555;">
+&lt;i class="far fa-user-nurse pr-1 fa-fw">&lt;/i>&lt;/font>&lt;br>Susan
+&lt;/div>
+&lt;div style="display:inline-block">
+&lt;font style="font-size:3rem;color:#555555;">
+&lt;i class="far fa-user-secret pr-1 fa-fw">&lt;/i>&lt;/font>&lt;br>Doug
+&lt;/div>
+&lt;div style="display:inline-block">
+&lt;font style="font-size:3rem;color:#555555;">
+&lt;i class="far fa-users pr-1 fa-fw">&lt;/i>&lt;/font>&lt;br>Others
+&lt;/div>
+&lt;p>&lt;b>Bob's Co-workers&lt;/b>&lt;/p>
+&lt;/div>
+&lt;div style="display:inline-block">&amp;nbsp&amp;nbsp&amp;nbsp&lt;/div>
+&lt;div align="left" style="display:inline-block">
+&lt;font style="font-size:1rem;color:#005cc5;">
+&lt;i class="fas fa-key pr-1 fa-fw">&lt;/i> Public Key&lt;/font>&lt;br>
+&lt;p>Anyone can get Bob's Public Key, &lt;br>but Bob keeps his Private Key &lt;br>to himself.&lt;/p>
+&lt;/div>
+&lt;/div>
+&lt;blockquote>
+&lt;p>【&lt;strong>译注&lt;/strong>】&lt;/p>
+&lt;p>这里可以理解成 Bob 把公钥直接复制成三份传输给了 Pat、Susan 以及 Doug。&lt;/p>
+&lt;/blockquote>
+&lt;p>Susan 可以使用 Bob 的公钥加密消息，Bob 获取到加密消息之后可以用他的私钥去解密消息。Bob 的每个同事都可以获取到 Susan 的加密消息，但在没有 Bob 的私钥的情况下，这些数据毫无价值。&lt;/p>
+&lt;pre>&lt;code class="language-mermaid">flowchart LR
+a1(&amp;quot;Hey Bob, how about lunch &amp;lt;br/&amp;gt; at Taco Bell. I hear they &amp;lt;br/&amp;gt;have free refills!&amp;quot;)
+a2(HNFmsEm6Un&amp;lt;br/&amp;gt;BejhhyCGKOK&amp;lt;br/&amp;gt;JUxhiygSBCEiC&amp;lt;br/&amp;gt;0QYIh/Hn3xgiK&amp;lt;br/&amp;gt;BcyLK1UcYiY&amp;lt;br/&amp;gt;lxx2lCFHDC/A)
+b1(HNFmsEm6Un&amp;lt;br/&amp;gt;BejhhyCGKOK&amp;lt;br/&amp;gt;JUxhiygSBCEiC&amp;lt;br/&amp;gt;0QYIh/Hn3xgiK&amp;lt;br/&amp;gt;BcyLK1UcYiY&amp;lt;br/&amp;gt;lxx2lCFHDC/A)
+b2(&amp;quot;Hey Bob, how about lunch &amp;lt;br/&amp;gt; at Taco Bell. I hear they &amp;lt;br/&amp;gt;have free refills!&amp;quot;)
+subgraph Susan
+a1--&amp;gt; |Encrypt with &amp;lt;br/&amp;gt;Public Key| a2
+end
+a2--&amp;gt; |Transfer| b1
+subgraph Bob
+b1--&amp;gt;|Decrypt with &amp;lt;br/&amp;gt;Private Key| b2
+end
+&lt;/code>&lt;/pre>
+&lt;blockquote>
+&lt;p>【&lt;strong>译注&lt;/strong>】&lt;/p>
+&lt;p>比如 Susan 要和 Bob 讨论去哪吃午饭，Susan 就可以先把自己的明文内容用 Bob 给她的公钥做一次加密，然后把加密的内容传送给 Bob，Bob 收到消息后，用他的私钥解密消息的内容。&lt;/p>
+&lt;p>通常公钥加密，私钥解密的过程我们称之为加密，完整的加密过程为：&lt;/p>
+&lt;ol>
+&lt;li>发送方（Susan）通过可逆算法对内容 Message 用公钥进行加密，得到加密后的内容并发送&lt;/li>
+&lt;li>接收方（Bob）接收 Message，并用私钥解密得到 Message，这个消息只有 Bob 的私钥能够解密&lt;/li>
+&lt;/ol>
+&lt;p>密码学范畴内，加密的目的是为了不让别人看到传送的内容，加密的策略是在特定加密算法以及双方约定的密钥的基础上进行的，比如使用非对称加密算法和用公钥加密；而解密的策略则需要相关的解密算法及约定的密钥，比如非对称加密算法和用私钥解密，整个加密的过程是可逆的。&lt;/p>
+&lt;p>更多可以参考分类 &lt;a href="">IAS. Information Assurance and Security&lt;/a>, &lt;a href="">Cryptography&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;p>在有了私钥和对应的软件后，Bob 可以在文档和其他数据上进行数字签名。数字签名可以理解为 Bob 在数据上打上了印记，这个印记对于 Bob 来说是独一无二的，很难伪造。此外，针对已经进行过签名的数据，数字签名能够保障对数据所做的任何篡改都可以被探知。&lt;/p>
+&lt;p>为了给一个文档签名，Bob 的软件通过“散列化”将数据压缩成几行，这几行的数据被称为消息摘要，并且没有任何方法能够将消息摘要还原成原始数据。Bob 的软件用私钥加密生成的消息摘要，这个结果就是数字签名。&lt;/p>
+&lt;pre>&lt;code class="language-mermaid">flowchart LR
+a1(Message)
+a2(Message Digest)
+a3(Digital Signature)
+a1--&amp;gt; |Hash| a2
+a2--&amp;gt; |Encrypt with &amp;lt;br/&amp;gt;Private Key| a3
+&lt;/code>&lt;/pre>
+&lt;p>最后，Bob 的软件将数字签名附加到文档中，此时所有被散列化的数据都已经被签名。Bob 现在把文件传给了 Pat。&lt;/p>
+&lt;blockquote>
+&lt;p>【&lt;strong>译注&lt;/strong>】&lt;/p>
+&lt;p>假设 Bob 收到 Pat 的消息后，决定给 Pat 回复。为了防止内容被篡改或者别人伪装成他的身份跟 Pat 通信，他决定先对消息的内容用散列算法做一次处理，得到一个哈希值，Bob 又用自己的私钥对哈希值做了一次加密得到一个数字签名，然后把签名和消息一起发送给 Pat。&lt;/p>
+&lt;p>Bob 的内容为明文传输，这个过程是可以被人拦截，但是 Bob 最担心的是内容被人篡改或者有人冒充自己跟 Pat 通信，而不是内容被窥探。这里其实涉及到了身份认证的概念，Bob 要向 Pat 证明通信的对方是 Bob 本人，同时也需要确保自己的内容是没被篡改的。&lt;/p>
+&lt;/blockquote>
+&lt;p>首先，Pat 的软件用 Bob 的公钥解密签名，将其还原为消息摘要。如果成功了，那么它证明了在文件上签名的人是 Bob，因为只有 Bob 才有他的私钥。随后，Pat 的软件将文档数据散列化成消息摘要，如果 Pat 生成的消息摘要与解密 Bob 的签名得到的消息摘要相同，则 Pat 知道被签名数据没有被更改。&lt;/p>
+&lt;pre>&lt;code class="language-mermaid">flowchart LR
+a1(Message &amp;lt;br/&amp;gt;+&amp;lt;br/&amp;gt;Digital Signature)
+a2(Message Digest)
+a3(Message Digest)
+a1--&amp;gt; |Hash| a2
+a1--&amp;gt; |Decrypt with Public Key| a3
+&lt;/code>&lt;/pre>
+&lt;blockquote>
+&lt;p>【&lt;strong>译注&lt;/strong>】&lt;/p>
+&lt;p>Pat 接收到了 Bob 的消息，首先用 Bob 给的公钥对签名作了解密处理，得到了哈希值 A，然后 Pat 用了同样的哈希算法对消息内容作了一次散列化处理，得到另外一个哈希值 B，对比 A 和 B 如果相同，那么可以确认内容是由 Bob 本人撰写并没有被篡改。&lt;/p>
+&lt;p>通常私钥加密，公钥解密的过程我们称之为身份认证，完整的认证过程为：&lt;/p>
+&lt;ol>
+&lt;li>发送方（Bob）通过不可逆算法对内容 Message 进行处理（散列化也就是哈希），得到的结果值 Hash Bob&lt;/li>
+&lt;li>发送方（Bob）用私钥加密 Hash Bob 得到结果值作为数字签名 Digital Signature 与 Message 一起发送&lt;/li>
+&lt;li>接收方（Pat）接收 Message 和 Digital Signature，用公钥解密数字签名，如果成功得到结果 Hash Bob 说明是由 Bob 的私钥进行的签名&lt;/li>
+&lt;li>接收方（Pat）同样对 Message 哈希处理得到 Hash Pat&lt;/li>
+&lt;li>如果 Hash Pat 和 Hash Bot 一致，则说明内容没被篡改&lt;/li>
+&lt;/ol>
+&lt;/blockquote>
+&lt;p>Doug 是我们的一个心怀不满的员工，他想欺骗 Pat。Doug 十分确定 Pat 收到一条被签名过消息以及一个属于 Bob 的公钥。在 Pat 不知情的情况下，Doug 用 Bob 的名字创建了一对密钥，带有欺骗性伪装成 Bob 并发送了这个生成的公钥。Pat 在没有亲自收到 Bob 的公钥的情况下，如何确定 Bob 的公钥是真实的？&lt;/p>
+&lt;blockquote>
+&lt;p>【&lt;strong>译注&lt;/strong>】&lt;/p>
+&lt;p>假设 Bob 是通过网络把公钥发送给他人的，如果 Doug 或者其他任何人截获了 Bob 给 Pat 的公钥。Doug 就开始伪装成 Bob 跟 Pat 无法确认对方是否是 Bob，所以需要引入第三方机构来验证 Bob 的真伪。&lt;/p>
+&lt;/blockquote>
+&lt;p>碰巧 Susan 在公司内的证书颁发中心工作，Susan 只需将 Bob 的公钥以及一些关于 Bob 的身份息进行数字签名，就可以为 Bob 创建数字证书。&lt;/p>
+&lt;pre>&lt;code class="language-mermaid">flowchart LR
+a1(Basic Info: &amp;lt;br/&amp;gt;Name &amp;lt;br/&amp;gt;Department &amp;lt;br/&amp;gt;Cubical Number&amp;lt;br/&amp;gt;Certificate Info: &amp;lt;br/&amp;gt;Expiration Date &amp;lt;br/&amp;gt;Serial Number&amp;lt;br/&amp;gt;&amp;lt;br/&amp;gt;Bob's Public Key)
+a2(Digital Certificate)
+subgraph Bob
+a1
+end
+a1--&amp;gt; |Sign Data| a2
+&lt;/code>&lt;/pre>
+&lt;p>现在，Bob 的同事们可以检查 Bob 的受信证书，以确保这个获取到的公钥的确属于 Bob。事实上除了 Susan 生成的证书签名，Bob 的公司没有人会接受其他任何签名。这使得 Susan 有权在私钥被盗或不再需要时撤销签名，甚至还有更广为接受的证书颁发机构来认证 Susan 的身份。现在假设 Bob 给 Pat 发送了一份签名文件，为了验证文档上的签名，Pat 的软件首先使用 Susan（证书颁发机构）的公钥来检查 Bob 证书上的签名，证书解密成功证明这个签名是用 Susan 的私钥创建的，表示是 Susan 创建了这个证书。证书的签名解密后，Pat 的软件可以检查 Bob 在证书颁发机构中是否信誉良好，以及所有与 Bob 身份相关的证书信息是否有被修改。随后，Pat 的软件从证书中提取 Bob 的公钥，并用它来检查 Bob 的签名。&lt;/p>
+&lt;blockquote>
+&lt;p>【&lt;strong>译注&lt;/strong>】&lt;/p>
+&lt;p>Bob 发现了自己的公钥被 Doug 获取之后，意识到公钥传输这个过程是有漏洞的，可以被拦截并伪装。所以文中的 Susan 作为第三方的权威认证就起到了关键作用，现实中我们会通过以权威机构“证书中心” (Certificate Authority, CA) 做认证。证书中心会用自己的私钥对 Bob 的公钥和 Bob 身份相关的信息一次加密。这样 Bob 通过网络将带有签名的数字证书传输给 Pat 后，Pat 可以用 CA 的公钥解密证书的签名，这样就可以安全获取 Bob 的公钥。&lt;/p>
+&lt;/blockquote>
+&lt;p>如果 Bob 的公钥成功解密了签名，那么 Pat 大可安心，签名是使用 Bob 的私钥创建的，这是因为 Susan 已经认证了匹配的公钥。当然如果签名有效，那么我们知道 Doug 没有试图更改签名内容。虽然这些步骤听起来可能很复杂，但它们都由 Pat 的软件在幕后处理。要验证一个签名，Pat 只需单击它。&lt;/p>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="http://www.youdzone.com/signature.html" target="_blank" rel="noopener">What is a Digital Signature?&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>快速枚举与迭代器</title><link>/2016/01/25/%E5%BF%AB%E9%80%9F%E6%9E%9A%E4%B8%BE%E4%B8%8E%E8%BF%AD%E4%BB%A3%E5%99%A8/</link><pubDate>Mon, 25 Jan 2016 00:00:00 +0000</pubDate><guid>/2016/01/25/%E5%BF%AB%E9%80%9F%E6%9E%9A%E4%B8%BE%E4%B8%8E%E8%BF%AD%E4%BB%A3%E5%99%A8/</guid><description>&lt;h2 id="swift-中的快速枚举">Swift 中的快速枚举&lt;/h2>
+&lt;h3 id="swift-中的-forin">Swift 中的 &lt;code>for...in&lt;/code>&lt;/h3>
+&lt;p>在 Swift 中所有实现了 &lt;code>Sequence&lt;/code> 的类型都能用 &lt;code>for...in&lt;/code> 来进行快速枚举，究其根本是因为 &lt;code>Sequence&lt;/code> 都实现了一个迭代器 &lt;code>func makeIterator() -&amp;gt; Iterator: IteratorProtocol&lt;/code>，我们实现一个支持随机枚举的类型。&lt;/p>
+&lt;pre>&lt;code class="language-swift">// 首先定义一个随机迭代器
+struct RandomIterator&amp;lt;T&amp;gt;: IteratorProtocol {
+typealias Element = T
+private var elements: [Element]
+private var index: Int = 0
+init(_ elements: [Element]) {
+self.elements = elements
+}
+mutating func next() -&amp;gt; T? {
+guard elements.count &amp;gt; 0 else {
+return nil
+}
+index = Int(arc4random_uniform(UInt32(elements.count)));
+let element = elements[index]
+defer {
+elements.remove(at: index)
+}
+return element;
+}
+}
+// 定义一个随机序列
+struct RandomSequence&amp;lt;T&amp;gt;: Sequence {
+typealias Element = T
+private var elements: [Element]
+init(_ elements: [Element]) {
+self.elements = elements
+}
+typealias Iterator = RandomIterator&amp;lt;Element&amp;gt;
+func makeIterator() -&amp;gt; Iterator {
+return RandomIterator(elements)
+}
+}
+&lt;/code>&lt;/pre>
+&lt;p>输出为如下所示。&lt;/p>
+&lt;pre>&lt;code class="language-swift">let seq = RandomSequence([1, 2, 3, 4, 5, 6, 7, 8, 9])
+let loopBegin = { print(&amp;quot;========= loop =========&amp;quot;) }
+loopBegin()
+for (i, e) in seq.enumerated() {
+print(&amp;quot;Elemet \(i) is \(e)&amp;quot;)
+}
+loopBegin()
+for (i, e) in seq.enumerated() {
+print(&amp;quot;Elemet \(i) is \(e)&amp;quot;)
+}
+// terminal
+========= loop =========
+Elemet 0 is 7
+Elemet 1 is 8
+Elemet 2 is 2
+Elemet 3 is 4
+Elemet 4 is 5
+Elemet 5 is 1
+Elemet 6 is 3
+Elemet 7 is 9
+Elemet 8 is 6
+========= loop =========
+Elemet 0 is 3
+Elemet 1 is 6
+Elemet 2 is 7
+Elemet 3 is 4
+Elemet 4 is 5
+Elemet 5 is 9
+Elemet 6 is 2
+Elemet 7 is 1
+Elemet 8 is 8
+&lt;/code>&lt;/pre>
+&lt;h3 id="swift-下的-forin-展开">Swift 下的 &lt;code>for...in&lt;/code> 展开&lt;/h3>
+&lt;p>Swift 下 &lt;code>for...in&lt;/code> 最终会被展开成如下代码。&lt;/p>
+&lt;pre>&lt;code class="language-swift">var iterator = seq.makeIterator()
+while let element = iterator.next() {
+print(element)
+}
+&lt;/code>&lt;/pre>
+&lt;h2 id="cocoa-中的-nsfastenumeration">Cocoa 中的 &lt;code>NSFastEnumeration&lt;/code>&lt;/h2>
+&lt;p>谈到 Cocoa 的 &lt;code>for...in&lt;/code>，自然会联系到 &lt;code>@protocol NSFastEnumeration&lt;/code>，其只一个方法需要实现。&lt;/p>
+&lt;pre>&lt;code class="language-objc">typedef struct {
+unsigned long state;
+id __unsafe_unretained _Nullable * _Nullable itemsPtr;
+unsigned long * _Nullable mutationsPtr;
+unsigned long extra[5];
+} NSFastEnumerationState;
+@protocol NSFastEnumeration
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained _Nullable [_Nonnull])buffer count:(NSUInteger)len;
+@end
+&lt;/code>&lt;/pre>
+&lt;ul>
+&lt;li>&lt;code>@param state&lt;/code> 它保存了整个快速枚举过程所需要的 &lt;code>Context&lt;/code>
+&lt;ul>
+&lt;li>&lt;code>itemsPtr&lt;/code> 迭代元素的数组&lt;/li>
+&lt;li>&lt;code>mutationsPtr&lt;/code> 一个标识符用于保证在枚举过程中的集合不被修改，这也是为什么在 &lt;code>for...in&lt;/code> Loop 中修改 &lt;code>Mutable Collection&lt;/code> 会导致 Crash 的原因&lt;/li>
+&lt;li>&lt;code>state&lt;/code> 和 &lt;code>extra&lt;/code> 保留字段，用于给 &lt;code>Iterator&lt;/code> 保存上下文的信息&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;code>@param buffer&lt;/code> 缓冲区，用于存放当前需要被迭代的元素&lt;/li>
+&lt;li>&lt;code>@param len&lt;/code> 缓冲区的长度&lt;/li>
+&lt;li>&lt;code>@return&lt;/code> 当前迭代缓冲区的元素个数，如果是 0 表示迭代完成&lt;/li>
+&lt;/ul>
+&lt;h3 id="protocol-nsfastenumeration-与-forin">&lt;code>@protocol NSFastEnumeration&lt;/code> 与 &lt;code>for...in&lt;/code>&lt;/h3>
+&lt;p>一段 &lt;code>for...in&lt;/code> Loop。&lt;/p>
+&lt;pre>&lt;code class="language-objc">id&amp;lt;NSFastEnumeration&amp;gt; enumatable;
+for (id element in enumatable) {
+NSLog(@&amp;quot;%@&amp;quot;, element);
+}
+&lt;/code>&lt;/pre>
+&lt;p>&lt;code>$ clang -rewrite-objc main.m&lt;/code> 之后如下所示：&lt;/p>
+&lt;pre>&lt;code class="language-cpp">id/*&amp;lt;NSFastEnumeration&amp;gt;*/ enumatable;
+{
+id element;
+// 初始化 NSFastEnumerationState Context
+struct __objcFastEnumerationState enumState = { 0 };
+// 开辟一块 size = 16 的缓冲区，用于给 Iterator 填充每次被迭代的元素
+id __rw_items[16];
+// 被迭代的集合
+id l_collection = (id) enumatable;
+// 首次迭代，向实现了 NSFastEnumeration 的该集合对象对象发送消息 &amp;quot;countByEnumeratingWithState:objects:count:&amp;quot;
+_WIN_NSUInteger limit =
+((_WIN_NSUInteger (*) (id, SEL, struct __objcFastEnumerationState *, id *, _WIN_NSUInteger))(void *)objc_msgSend)
+((id)l_collection,
+sel_registerName(&amp;quot;countByEnumeratingWithState:objects:count:&amp;quot;),
+&amp;amp;enumState, (id *)__rw_items, (_WIN_NSUInteger)16);
+// 检查 ret == 0 ?，如果为 0 表示迭代结束
+if (limit) {
+// 获取 Mutations flag，用于集合修改校验
+unsigned long startMutations = *enumState.mutationsPtr;
+do {
+unsigned long counter = 0;
+do {
+// 保证集合不被修改，否则抛出异常
+if (startMutations != *enumState.mutationsPtr) objc_enumerationMutation(l_collection);
+// 获取枚举的元素
+element = (id)enumState.itemsPtr[counter++];
+// for...in 的 body
+NSLog((NSString *)&amp;amp;__NSConstantStringImpl__var_folders__7_td3r8r7j44s2gh39zqkkhlym0000gn_T_main_b0cf04_mi_0, element);
+} while (counter &amp;lt; limit);
+// 当前元素遍历完毕，开始下一次迭代
+} while (
+(limit = ((_WIN_NSUInteger (*) (id, SEL, struct __objcFastEnumerationState *, id *, _WIN_NSUInteger))(void *)objc_msgSend)
+((id)l_collection,
+sel_registerName(&amp;quot;countByEnumeratingWithState:objects:count:&amp;quot;),
+&amp;amp;enumState, (id *)__rw_items, (_WIN_NSUInteger)16))
+);
+element = ((id)0)
+} else {
+element = ((id)0);
+}
+}
+&lt;/code>&lt;/pre>
+&lt;p>简而言之，在完整的迭代流程中，每次会给 Iterator 传入一个缓冲区 &lt;code>buffer&lt;/code>，用于填充需要被迭代的元素，同时会传入一个 &lt;code>NSFastEnumerationState&lt;/code> 用来提供当前迭代状态的上下文，当该方法返回值 &lt;code>ret != 0&lt;/code>，表示迭代并没有结束，反之亦然。相比于 &lt;code>IteratorProtocol&lt;/code> 的单个返回元素，&lt;code>NSFastEnumeration&lt;/code> 在调用过程中是批量返回元素的，在 &lt;code>Cocoa&lt;/code> 中和 &lt;code>IteratorProtocol&lt;/code> 的表现更加类似的则是 &lt;code>NSEnumerator&lt;/code> 这个抽象类。&lt;/p>
+&lt;pre>&lt;code class="language-objc">@interface NSEnumerator&amp;lt;ObjectType&amp;gt; : NSObject &amp;lt;NSFastEnumeration&amp;gt;
+- (nullable ObjectType)nextObject;
+@end
+&lt;/code>&lt;/pre>
+&lt;h3 id="实现一个基于-nsfastenumeration-的随机迭代器">实现一个基于 &lt;code>NSFastEnumeration&lt;/code> 的随机迭代器&lt;/h3>
+&lt;pre>&lt;code class="language-objc">// main.mm
+@interface RandomIterator: NSObject &amp;lt;NSFastEnumeration&amp;gt;
+@property (nonatomic, assign) std::vector&amp;lt;id&amp;gt; elements;
+@property (nonatomic, assign) int capicity;
+- (id)initWithElements:(NSArray&amp;lt;id&amp;gt; *)elements;
+@end
+@implementation RandomIterator
+- (id)initWithElements:(NSArray&amp;lt;NSObject *&amp;gt; *)elements {
+if ((self = super.init)) {
+for (auto e in elements) {
+_elements.push_back(e);
+}
+_capicity = (int)_elements.size();
+}
+return self;
+}
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id _Nullable __unsafe_unretained [])buffer count:(NSUInteger)len {
+auto countOfItemsAlreadyEnumerated = state-&amp;gt;state;
+// This is the initialization condition, so we'll do one-time setup here.
+if (countOfItemsAlreadyEnumerated == 0) {
+// state-&amp;gt;mutationsPtr MUST NOT be NULL and SHOULD NOT be set to self.
+state-&amp;gt;mutationsPtr = &amp;amp;state-&amp;gt;extra[0];
+}
+auto count = 0;
+if (countOfItemsAlreadyEnumerated &amp;lt; _elements.size()) {
+state-&amp;gt;itemsPtr = buffer;
+while(count &amp;lt; len) {
+auto randomIndex = (int)arc4random() % MAX(1, (_capicity - 1 - countOfItemsAlreadyEnumerated));
+buffer[countOfItemsAlreadyEnumerated++] = _elements[randomIndex];
+count++;
+if (_elements.size() == 1) {
+break;
+} else {
+_elements.erase(_elements.begin() + randomIndex);
+}
+}
+} else {
+count = 0;
+}
+state-&amp;gt;state = countOfItemsAlreadyEnumerated;
+return count;
+}
+@end
+&lt;/code>&lt;/pre>
+&lt;p>输出如下&lt;/p>
+&lt;pre>&lt;code class="language-cpp">int main(int argc, const char * argv[]) {
+auto elements = @[@1, @2, @3, @4, @5, @6, @7, @8, @9];
+id&amp;lt;NSFastEnumeration&amp;gt; enumatable = [RandomIterator.alloc initWithElements: elements];
+for (id element in enumatable) {
+NSLog(@&amp;quot;%@&amp;quot;, element);
+}
+return 0;
+}
+// terminal
+Iterator[30557:6346806] 3
+Iterator[30557:6346806] 1
+Iterator[30557:6346806] 7
+Iterator[30557:6346806] 5
+Iterator[30557:6346806] 6
+Iterator[30557:6346806] 2
+Iterator[30557:6346806] 8
+Iterator[30557:6346806] 4
+Iterator[30557:6346806] 9
+&lt;/code>&lt;/pre>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://developer.apple.com/library/content/samplecode/FastEnumerationSample/Introduction/Intro.html" target="_blank" rel="noopener">Enumeration Sample&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>Clang Attributes 使用文档</title><link>/2015/11/28/clang-attributes-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3/</link><pubDate>Sat, 28 Nov 2015 15:44:16 +0000</pubDate><guid>/2015/11/28/clang-attributes-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3/</guid><description>&lt;div class="alert alert-note">
+&lt;div>
+Continually Updated
+&lt;/div>
+&lt;/div>
+&lt;p>&lt;code>__attribute__&lt;/code> 最初作为 GNU C 的特性，为 C/C++、Objective-C/C++ 提供了编译器级别的标注，用来修饰一个变量、函数或类型，包括但不限于以下特性。&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html" target="_blank" rel="noopener">Function Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Variable-Attributes.html" target="_blank" rel="noopener">Variable Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Type-Attributes.html" target="_blank" rel="noopener">Type Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Label-Attributes.html" target="_blank" rel="noopener">Label Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Enumerator-Attributes.html" target="_blank" rel="noopener">Enumerator Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Statement-Attributes.html" target="_blank" rel="noopener">Statement Attributes&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>同样 Clang 也很好的兼容了 GGC 这一特性，并做了额外的扩展。&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html#calling-conventions" target="_blank" rel="noopener">Calling Conventions&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html#nullability-attributes" target="_blank" rel="noopener">Nullability Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html#amd-gpu-attributes" target="_blank" rel="noopener">AMD GPU Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html#consumed-annotation-checking" target="_blank" rel="noopener">Consumed Annotation Checking&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html#type-safety-checking" target="_blank" rel="noopener">Type Safety Checking&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html#opencl-address-spaces" target="_blank" rel="noopener">OpenCL Address Spaces&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://clang.llvm.org/docs/AttributeReference.html#customizing-swift-import" target="_blank" rel="noopener">Customizing Swift Import&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>诸如优化、错误检查之类的机械化任务理应由编译器去完成，但常言道“工欲善其事，必先利其器”只有让编译器更加懂你，才能把编译器的性能、优化发挥到极致。&lt;/p>
+&lt;details class="toc-inpage d-print-none " open>
+&lt;summary class="font-weight-bold">目录&lt;/summary>
+&lt;nav id="TableOfContents">
+&lt;ul>
+&lt;li>&lt;a href="#variable-attributes">Variable Attributes&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#noescape">&lt;code>noescape&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#section-__declspecallocate">&lt;code>section, __declspec(allocate)&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#used">&lt;code>used&lt;/code>&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#type-attributes">Type Attributes&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#objc_root_class">&lt;code>objc_root_class&lt;/code>&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#function-attributes">Function Attributes&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#overloadable">&lt;code>overloadable&lt;/code>&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#customizing-swift-import">Customizing Swift Import&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#swift_bridge">&lt;code>swift_bridge&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#swift_bridged">&lt;code>swift_bridged&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#swift_name">&lt;code>swift_name&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#swift_newtype">&lt;code>swift_newtype&lt;/code>&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#进一步了解">进一步了解&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/nav>
+&lt;/details>
+&lt;h2 id="variable-attributes">Variable Attributes&lt;/h2>
+&lt;h3 id="noescape">&lt;code>noescape&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>noescape&lt;/code>&lt;/td>
+&lt;td>&lt;code>clang::noescape&lt;/code>&lt;/td>
+&lt;td>&lt;code>clang::noescape&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="section-__declspecallocate">&lt;code>section, __declspec(allocate)&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>section&lt;/code>&lt;/td>
+&lt;td>&lt;code>gnu::section&lt;/code>&lt;/td>
+&lt;td>&lt;code>gnu::section&lt;/code>&lt;/td>
+&lt;td>&lt;code>allocate&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;code>section&lt;/code> 特性使得我们能将指定的变量或者函数插入到指定 section 中，比如把一个字符串直接塞入数据段。&lt;/p>
+&lt;pre>&lt;code class="language-c">char *string __attribute((section(&amp;quot;__DATA, Custom&amp;quot;))) = &amp;quot;I'm a pure string.&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h3 id="used">&lt;code>used&lt;/code>&lt;/h3>
+&lt;p>&lt;code>__attribute((used))&lt;/code> 用来修饰变量或者函数。通常默认情况下，没有被引用的符号会被链接器优化去除。标注 &lt;code>used&lt;/code> 之后意味着即使符号没有被引用，也不会被连接器优化掉。&lt;/p>
+&lt;h2 id="type-attributes">Type Attributes&lt;/h2>
+&lt;h3 id="objc_root_class">&lt;code>objc_root_class&lt;/code>&lt;/h3>
+&lt;p>在 &lt;code>Foundation&lt;/code> 中对应 &lt;code>OBJC_ROOT_CLASS&lt;/code>，&lt;code>__attribute__((objc_root_class))&lt;/code> 用于申明一个没有根类的 objc class，我们可以利用这个特性实现类似 &lt;code>name space&lt;/code> 的效果，使得 ObjC 变得更 Swift。&lt;/p>
+&lt;pre>&lt;code class="language-objc">__attribute__((objc_root_class)) @interface NotificationName
+@property (class, readonly) NSNotificationName NSApplicationDidFinishLaunching;
+@end
+@implementation NotificationName
++ (NSNotificationName)NSApplicationDidFinishLaunching {
+return NSApplicationDidFinishLaunchingNotification;
+}
+@end
+&lt;/code>&lt;/pre>
+&lt;h2 id="function-attributes">Function Attributes&lt;/h2>
+&lt;h3 id="overloadable">&lt;code>overloadable&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>overloadable&lt;/code>&lt;/td>
+&lt;td>&lt;code>clang::overloadable&lt;/code>&lt;/td>
+&lt;td>&lt;code>clang::overloadable&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Clang 为 C 引入了和 C++ 一样的 &lt;code>name mangling&lt;/code>，使用 &lt;code>overloadable&lt;/code> 对 C 函数进行 &lt;code>overload&lt;/code>。&lt;/p>
+&lt;pre>&lt;code class="language-c">#include &amp;lt;math.h&amp;gt;
+float __attribute__((overloadable)) tgsin(float x) {
+return sinf(x);
+}
+double __attribute__((overloadable)) tgsin(double x) {
+return sin(x);
+}
+long double __attribute__((overloadable)) tgsin(long double x) {
+return sinl(x);
+}
+&lt;/code>&lt;/pre>
+&lt;p>会得到类似于 &lt;code>_Z5tgsinf&lt;/code>、&lt;code>_Z5tgsind&lt;/code>、&lt;code>_Z5tgsine&lt;/code> 这三个符号，同样对于 ObjC Type。&lt;/p>
+&lt;pre>&lt;code class="language-objc">#import &amp;lt;Foundation/Foundation.h&amp;gt;
+void __attribute__((overloadable)) detectTypeof(NSInteger i) {
+fprintf(stdout, &amp;quot;%s\n&amp;quot;, @encode(typeof(i)));
+}
+void __attribute__((overloadable)) detectTypeof(CGFloat f) {
+fprintf(stdout, &amp;quot;%s\n&amp;quot;, @encode(typeof(f)));
+}
+void __attribute__((overloadable)) detectTypeof(NSString *string) {
+fprintf(stdout, &amp;quot;%s: NSString\n&amp;quot;, @encode(typeof(string)));
+}
+void __attribute__((overloadable)) detectTypeof(NSArray *array) {
+fprintf(stdout, &amp;quot;%s: NSArray\n&amp;quot;, @encode(typeof(array)));
+}
+void __attribute__((overloadable)) detectTypeof(NSObject *object) {
+fprintf(stdout, &amp;quot;%s: NSObject\n&amp;quot;, @encode(typeof(object)));
+}
+int main(int argc, const char * argv[]) {
+detectTypeof((NSInteger)1);
+detectTypeof(1.0);
+detectTypeof(@&amp;quot;Hello&amp;quot;);
+detectTypeof(@[@(1)]);
+detectTypeof(NSObject.new);
+return 0;
+}
+&lt;/code>&lt;/pre>
+&lt;p>运行结果如下所示。&lt;/p>
+&lt;pre>&lt;code class="language-bash">q
+d
+@: NSString
+@: NSArray
+@: NSObject
+&lt;/code>&lt;/pre>
+&lt;h2 id="customizing-swift-import">Customizing Swift Import&lt;/h2>
+&lt;h3 id="swift_bridge">&lt;code>swift_bridge&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>swift_bridge&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;code>swift_bridge&lt;/code> 用于将 ObjC 的声明和 Swift 类型进行 Bridge，为 Swift Interoperability 的体现，更多可以参考 &lt;a href="https://developer.apple.com/videos/play/wwdc2015/401/" target="_blank" rel="noopener">WWDC&lt;/a>。Swift 标准库中的相当一部分类型都有 Interoperability 特性，与 Cocoa 有一层隐式 bridge，比如 &lt;code>NSArray&lt;/code>、&lt;code>NSMutableArray&lt;/code> 和 &lt;code>Swift.Array&lt;/code>。&lt;/p>
+&lt;p>下方例子中，ObjC 类 &lt;code>DerivatedObjCClass&lt;/code> 被 bridge 到 Swift 中的 &lt;code>DerivatedClass&lt;/code>。&lt;/p>
+&lt;pre>&lt;code>__attribute__((objc_root_class))
+@interface BaseClass
+- (instancetype)init;
+@end
+__attribute__((__swift_bridge__(&amp;quot;DerivatedClass&amp;quot;)))
+@interface DerivatedObjCClass: BaseClass
+@end
+&lt;/code>&lt;/pre>
+&lt;p>更多相关内容可以参考 LLVM 的 Phab Review D87532 &lt;a href="https://reviews.llvm.org/D87532" target="_blank" rel="noopener">Sema: add support for &lt;code>__attribute__((__swift_bridge__))&lt;/code>&lt;/a> 以及 swift 的 &lt;a href="https://github.com/apple/swift/blob/41d5e57b5586fccd4ba3823e8ac4690b7b30ec59/lib/ClangImporter/ImportType.cpp#L944" target="_blank" rel="noopener">ClangImporter&lt;/a>。&lt;/p>
+&lt;h3 id="swift_bridged">&lt;code>swift_bridged&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>swift_bridged&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>在 CoreFoundation 中对应 &lt;code>CF_SWIFT_BRIDGED_TYPEDEF&lt;/code>，配合 &lt;code>swift_bridge&lt;/code> 使用，用于被 &lt;code>swift_bridge&lt;/code> 描述的类型的 &lt;code>typedef&lt;/code> 类型。以 &lt;code>NSString&lt;/code> -&amp;gt; &lt;code>Swift.String&lt;/code> 为例，在 ObjC 中有如下声明：&lt;/p>
+&lt;pre>&lt;code class="language-objc">@interface NSString;
+typedef NSString *AliasedString __attribute__((__swift_bridged_typedef__));
+extern void foo(AliasedString _Nonnull str);
+&lt;/code>&lt;/pre>
+&lt;p>在 Swift 中会被 Bridge 为：&lt;/p>
+&lt;pre>&lt;code class="language-swift">func foo(_ str: String) -&amp;gt; Void
+&lt;/code>&lt;/pre>
+&lt;p>这个操作同样会由 Swift Compiler 直接完成，无需开发者手动声明。&lt;/p>
+&lt;h3 id="swift_name">&lt;code>swift_name&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>swift_name&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>在 CoreFoundation 中对应 &lt;code>CF_SWIFT_NAME&lt;/code>，&lt;code>swift_name&lt;/code> 为 C/ObjC 的声明提供了在 Swift 中符号名，默认情况会根据 Swift Compiler 的算法规则自动生成。&lt;/p>
+&lt;pre>&lt;code>@interface NSData
+- (instancetype)initWithData:(NSData *)data __attribute__((__swift_name__(&amp;quot;Data.init(_:)&amp;quot;)));
+@end
+void __attribute__((__swift_name__(&amp;quot;squareRoot()&amp;quot;))) sqrtf(float f);
+&lt;/code>&lt;/pre>
+&lt;h3 id="swift_newtype">&lt;code>swift_newtype&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>swift_newtype&lt;/code> &lt;code>swift_wrapper&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>在 CoreFoundation 中对应 &lt;code>_CF_TYPED_EXTENSIBLE_ENUM&lt;/code>。&lt;/p>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html" target="_blank" rel="noopener">Attributes in Clang&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Attribute-Syntax.html" target="_blank" rel="noopener">Attribute Syntax&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Enumerator-Attributes.html" target="_blank" rel="noopener">Enumerator Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.keil.com/support/man/docs/armcc/armcc_chr1359124965789.htm" target="_blank" rel="noopener">Compiler-specific Features&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://nshipster.com/__attribute__" target="_blank" rel="noopener">NSHipster __ attribute __&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>Xcode 插件整理</title><link>/2015/01/03/xcode-%E6%8F%92%E4%BB%B6%E6%95%B4%E7%90%86/</link><pubDate>Sat, 03 Jan 2015 00:00:01 +0000</pubDate><guid>/2015/01/03/xcode-%E6%8F%92%E4%BB%B6%E6%95%B4%E7%90%86/</guid><description>&lt;div class="alert alert-warning">
+&lt;div>
+Xocde Plug-in 在 Xcode 8 之后已被禁用
+&lt;/div>
+&lt;/div>
+&lt;h2 id="xcode-插件备忘清单">Xcode 插件备忘清单&lt;/h2>
+&lt;h3 id="alcatrazhttpsgithubcomalcatrazalcatraz">&lt;a href="https://github.com/alcatraz/Alcatraz" target="_blank" rel="noopener">Alcatraz&lt;/a>&lt;/h3>
+&lt;p>用于搜索、安装、管理 Xcode 插件的插件，持项目模版和 Xcode 字体主题，省去了手动 Clone 再编译的过程。&lt;/p>
+&lt;h3 id="bbudebuggertuckawayhttpsgithubcomneonichubbudebuggertuckaway">&lt;a href="https://github.com/neonichu/BBUDebuggerTuckAway" target="_blank" rel="noopener">BBUDebuggerTuckAway&lt;/a>&lt;/h3>
+&lt;p>当编辑代码的时候，能自动隐藏 &lt;code>Debugger&lt;/code>，尤其适用于边调试边修改的情况。&lt;/p>
+&lt;h3 id="clangformat-xcodehttpsgithubcomtravisjefferyclangformat-xcode">&lt;a href="https://github.com/travisjeffery/ClangFormat-Xcode" target="_blank" rel="noopener">ClangFormat-Xcode&lt;/a>&lt;/h3>
+&lt;p>使用 &lt;code>ClangFormat&lt;/code> 来格式化代码风格，支持 LLVM，Google，Chromium，Mozilla，WebKit，或者自定义设置，代码洁癖必备之一。使用自定义格式时 &lt;code>ClangFormat&lt;/code> 会从当前正在输入的文件的最近一级的父目录依次向上查找，直到找到用于确定代码风格的 &lt;code>.clang-format&lt;/code> 文件，因此通常放在工程文件根目录即可，文件内容使用 YAML 格式，具体风格配置可以参考 &lt;a href="http://clang.llvm.org/docs/ClangFormatStyleOptions.html" target="_blank" rel="noopener">Clang-Format Style Options&lt;/a> ，或者 &lt;a href="http://clangformat.com" target="_blank" rel="noopener">clangformat.com&lt;/a>。&lt;/p>
+&lt;h3 id="cocoapods-xcode-pluginhttpsgithubcomkattralicocoapods-xcode-plugin">&lt;a href="https://github.com/kattrali/cocoapods-xcode-plugin" target="_blank" rel="noopener">cocoapods-xcode-plugin&lt;/a>&lt;/h3>
+&lt;p>CocoaPods 的 Xcode 插件，省去命令行的步骤，直接在 Xcode 中对 CocoaPods 进行管理。&lt;/p>
+&lt;h3 id="colorsense-for-xcodehttpsgithubcomomzcolorsense-for-xcode">&lt;a href="https://github.com/omz/ColorSense-for-Xcode" target="_blank" rel="noopener">ColorSense-for-Xcode&lt;/a>&lt;/h3>
+&lt;p>高效插件，可视化的 &lt;code>UIColor/NSColor&lt;/code>。&lt;/p>
+&lt;h3 id="fuzzyautocompletepluginhttpsgithubcomfuzzyautocompletefuzzyautocompleteplugin">&lt;a href="https://github.com/FuzzyAutocomplete/FuzzyAutocompletePlugin" target="_blank" rel="noopener">FuzzyAutocompletePlugin&lt;/a>&lt;/h3>
+&lt;p>模糊匹配输入，比 Xcode 的前缀匹配要方便许多，主要通过 &lt;code>hook&lt;/code> 了 Xcode 自带的 &lt;code>IDEOpenQuicklyPattern&lt;/code> 实现。&lt;/p>
+&lt;div class="alert alert-note">
+&lt;div>
+Xcode 8 自带了模糊匹配
+&lt;/div>
+&lt;/div>
+&lt;h3 id="hostringsense-for-xcodehttpsgithubcomholtwickhostringsense-for-xcode">&lt;a href="https://github.com/holtwick/HOStringSense-for-Xcode" target="_blank" rel="noopener">HOStringSense-for-Xcode&lt;/a>&lt;/h3>
+&lt;p>在 &lt;code>ColorSense-for-Xcode&lt;/code> 基础上进行的修改，可视化编辑多种文本，正则表达式、多行文本、内联 &lt;code>HTML&lt;/code> 等等。&lt;/p>
+&lt;h3 id="ksimagenamed-xcodehttpsgithubcomksutherksimagenamed-xcode">&lt;a href="https://github.com/ksuther/KSImageNamed-Xcode" target="_blank" rel="noopener">KSImageNamed-Xcode&lt;/a>&lt;/h3>
+&lt;p>使用 &lt;code>[NSImage/UIImage imageNamed:]&lt;/code> 方法时，会给出所有工程文件中可选图片，并提图片预览。&lt;/p>
+&lt;h3 id="scxcodeminimaphttpsgithubcomstefanceriuscxcodeminimap">&lt;a href="https://github.com/stefanceriu/SCXcodeMiniMap" target="_blank" rel="noopener">SCXcodeMiniMap&lt;/a>&lt;/h3>
+&lt;p>为 Xcode 编辑器增加了一个 MiniMap，不过会挡住报错提示以及较长的的代码的末端，同时支持各种语法高亮。&lt;/p>
+&lt;h3 id="scxcodeswitchexpanderhttpsgithubcomstefanceriuscxcodeswitchexpander">&lt;a href="https://github.com/stefanceriu/SCXcodeSwitchExpander" target="_blank" rel="noopener">SCXcodeSwitchExpander&lt;/a>&lt;/h3>
+&lt;p>与 SCXcodeMiniMap 为同一作者，为 swith 语句自动补全所有的 case，只能适用于枚举类型。&lt;/p>
+&lt;h3 id="vvdocumenter-xcodehttpsgithubcomonevcatvvdocumenter-xcode">&lt;a href="https://github.com/onevcat/VVDocumenter-Xcode" target="_blank" rel="noopener">VVDocumenter-Xcode&lt;/a>&lt;/h3>
+&lt;p>输入 &lt;code>///&lt;/code> 即可生成一个简易文档模版。&lt;/p>
+&lt;div class="alert alert-note">
+&lt;div>
+在 Xcode 8 已被苹果集成
+&lt;/div>
+&lt;/div>
+&lt;h3 id="xalignhttpsgithubcomqfishxalign">&lt;a href="https://github.com/qfish/XAlign" target="_blank" rel="noopener">XAlign&lt;/a>&lt;/h3>
+&lt;p>用于对齐代码，可以根据 =、Marco、Property 进行对齐，强迫症和代码洁癖必备&lt;/p>
+&lt;h3 id="xcodecolorshttpsgithubcomrobbiehansonxcodecolors">&lt;a href="https://github.com/robbiehanson/XcodeColors" target="_blank" rel="noopener">XcodeColors&lt;/a>&lt;/h3>
+&lt;p>更改 NSLog 在 console 中输出的颜色，CocoaLumberjack 的依赖项&lt;/p>
+&lt;h3 id="xtodohttpsgithubcomtraworxtodo">&lt;a href="https://github.com/trawor/XToDo" target="_blank" rel="noopener">XToDo&lt;/a>&lt;/h3>
+&lt;p>允许使用 &lt;code>TODO&lt;/code>，&lt;code>FIXME&lt;/code>，&lt;code>???&lt;/code>，&lt;code>!!!&lt;/code> 这些符号来标记需要完成的工作，汇总显示。&lt;/p>
+&lt;h3 id="xvimhttpsgithubcomxvimprojectxvim">&lt;a href="https://github.com/XVimProject/XVim" target="_blank" rel="noopener">XVim&lt;/a>&lt;/h3>
+&lt;p>让熟悉使用 &lt;code>vim&lt;/code> 的开发者在 Xcode 中也能够有完整的 Vim 体验。&lt;/p></description></item><item><title>关于 NSURL +URLWithString: 返回 nil</title><link>/2014/12/03/%E5%85%B3%E4%BA%8E-nsurl-urlwithstring-%E8%BF%94%E5%9B%9E-nil/</link><pubDate>Wed, 03 Dec 2014 20:44:39 +0000</pubDate><guid>/2014/12/03/%E5%85%B3%E4%BA%8E-nsurl-urlwithstring-%E8%BF%94%E5%9B%9E-nil/</guid><description>&lt;p>当 url 字符串中含有特殊字符时，例如空格、汉字等，则必须对 url 字符串进行转义编码，否则 &lt;code>[NSURL URLWithString: urlString]&lt;/code> 将返回 &lt;code>nil&lt;/code>。&lt;/p>
+&lt;pre>&lt;code class="language-objc">#import &amp;lt;Foundation/Foundation.h&amp;gt;
+int main(int argc, const char * argv[]) {
+@autoreleasepool {
+NSString *urlString = [NSString stringWithFormat: @&amp;quot;https://www.google.com.hk/search?q=WWDC 2014&amp;quot;];
+NSURL *url = [NSURL URLWithString:urlString];
+NSLog(@&amp;quot;%@&amp;quot;, url);
+}
+return 0;
+}
+&lt;/code>&lt;/pre>
+&lt;p>输出的 url 结果为。&lt;/p>
+&lt;pre>&lt;code>21:07:11.784 test[8883:320995] (null)
+&lt;/code>&lt;/pre>
+&lt;p>对 &lt;code>urlString&lt;/code> 进行编码以及输出的 &lt;code>url&lt;/code> 结果。&lt;/p>
+&lt;pre>&lt;code class="language-objc">#import &amp;lt;Foundation/Foundation.h&amp;gt;
+int main(int argc, const char * argv[]) {
+@autoreleasepool {
+NSString *urlString = [NSString stringWithFormat: @&amp;quot;https://www.google.com.hk/search?q=WWDC 2014&amp;quot;];
+NSURL *url = [NSURL URLWithString: [urlString stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
+NSLog(@&amp;quot;%@&amp;quot;, url);
+}
+return 0;
+}
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code>21:09:18.640 test[8985:327779] https://www.google.com.hk/search?q=WWDC%202014
+&lt;/code>&lt;/pre>
+&lt;p>空格被转义为 &lt;code>UTF-8&lt;/code> 编码，例如汉字&amp;quot;的&amp;quot;的 &lt;code>UTF-8&lt;/code> 编码为 &lt;code>0xE7 0x9A 0x84&lt;/code>，percent encode 之后就是 &lt;code>%E7%9A%84&lt;/code>。&lt;/p>
+&lt;div class="alert alert-note">
+&lt;div>
+2015-07-20 Updated
+&lt;/div>
+&lt;/div>
+&lt;p>在 iOS 9.0 / OSX 10.11 之后 &lt;code>- stringByReplacingPercentEscapesUsingEncoding:&lt;/code> 就被废弃了，我们可以用 &lt;code>- stringByAddingPercentEncodingWithAllowedCharacters:&lt;/code> 代替，参数类型为 &lt;code>NSCharacterSet&lt;/code>。这个方法会把所有 Character Set 以外的字符进行 &lt;code>UTF-8 Percent Encoding&lt;/code>，支持 url 编码的 Character Set 有如下所示。&lt;/p>
+&lt;pre>&lt;code class="language-objc">+ URLFragmentAllowedCharacterSet // 7-bit ASCII 不包含 &amp;quot;#%&amp;lt;&amp;gt;[\]^`{|}
++ URLHostAllowedCharacterSet // 7-bit ASCII 不包含 &amp;quot;#%/&amp;lt;&amp;gt;?@\^`{|}
++ URLPasswordAllowedCharacterSet // 7-bit ASCII 不包含 &amp;quot;#%/:&amp;lt;&amp;gt;?@[\]^`{|}
++ URLPathAllowedCharacterSet // 7-bit ASCII 不包含 &amp;quot;#%;&amp;lt;&amp;gt;?[\]^`{|}
++ URLQueryAllowedCharacterSet // 7-bit ASCII 不包含 &amp;quot;#%&amp;lt;&amp;gt;[\]^`{|}
++ URLUserAllowedCharacterSet // 7-bit ASCII 不包含 &amp;quot;#%/:&amp;lt;&amp;gt;?@[\]^`
+&lt;/code>&lt;/pre>
+&lt;p>自定义的 &lt;code>NSCharacterSet&lt;/code> 如下所示。&lt;/p>
+&lt;pre>&lt;code class="language-objc">[[NSCharacterSet characterSetWithCharactersInString:@&amp;quot; \&amp;quot;#%/:&amp;lt;&amp;gt;?@[\\]^`{|}&amp;quot;] invertedSet]
+&lt;/code>&lt;/pre>
+&lt;p>所以最终的编码以及控制台输出就如下所示。&lt;/p>
+&lt;pre>&lt;code class="language-objc">#import &amp;lt;Foundation/Foundation.h&amp;gt;
+int main(int argc, const char * argv[]) {
+@autoreleasepool {
+NSString *urlString = [NSString stringWithFormat:@&amp;quot;https://www.google.com.hk/search?q=WWDC 2014&amp;quot;];
+NSURL *url = [NSURL URLWithString: [urlString stringByAddingPercentEncodingWithAllowedCharacters: NSCharacterSet.URLQueryAllowedCharacterSet]];
+NSLog(@&amp;quot;%@&amp;quot;, url);
+}
+return 0;
+}
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code>21:09:18.640 test[8985:327779] https://www.google.com.hk/search?q=WWDC%202014
+&lt;/code>&lt;/pre></description></item><item><title>git submodule 使用过程中遇到的问题</title><link>/2014/10/04/git-submodule-%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</link><pubDate>Sat, 04 Oct 2014 21:01:15 +0000</pubDate><guid>/2014/10/04/git-submodule-%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</guid><description>&lt;h2 id="添加-submodule">添加 submodule&lt;/h2>
+&lt;p>为仓库添加 &lt;code>submodule&lt;/code> ⬇&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ git submodule add {repo-url} /local/repo/path
+&lt;/code>&lt;/pre>
+&lt;h2 id="git-clone-带有-submodule-的工程">git clone 带有 submodule 的工程&lt;/h2>
+&lt;pre>&lt;code class="language-bash">$ git clone {repo-url}
+&lt;/code>&lt;/pre>
+&lt;p>完成之后，submodule 的代码并没有一起 clone 到本地，查看工作区可以发现 &lt;code>submodule&lt;/code> 的上下文内容。&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>.gitmodules&lt;/code> 存在，里面包含了 submodule 的 url 和 &lt;code>{path/to/submodule-name}&lt;/code>&lt;/li>
+&lt;li>&lt;code>{path/to/submodule-name}&lt;/code> 存在，但是文件夹是空的&lt;/li>
+&lt;li>&lt;code>.git/config&lt;/code> 里没有submodule库的信息&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code class="language-bash">$ git status
+&lt;/code>&lt;/pre>
+&lt;p>没有发现有更改的地方。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ git submodule status
+&lt;/code>&lt;/pre>
+&lt;p>可以看到 submodule &lt;code>hash&lt;/code>，前面带有 &lt;code>-&lt;/code> 表示 submodule 还没有 &lt;code>checkout&lt;/code>。&lt;/p>
+&lt;h2 id="拉取-submodule">拉取 submodule&lt;/h2>
+&lt;p>&lt;code>git submodule init&lt;/code> 利用工作区 &lt;code>.gitmodules&lt;/code> 的信息，在 &lt;code>.git/config&lt;/code> 里建立了 &lt;code>submodule&lt;/code> 索引 &lt;code>submodule.$name.url&lt;/code>，通过如下命令可以看到 &lt;code>submodule&lt;/code> 的索引。&lt;/p>
+&lt;pre>&lt;code class="language-bash">cat .git/config
+&lt;/code>&lt;/pre>
+&lt;p>&lt;code>git submodule update&lt;/code> 默认走的是 &lt;code>git submodule update --checkout&lt;/code>，利用 &lt;code>superproject&lt;/code> 里记录的 &lt;code>hash&lt;/code> 来 &lt;code>checkout&lt;/code> submodule，这里就有个坑了。&lt;/p>
+&lt;p>文档中是这么描述的。&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>checkout&lt;/strong>
+the commit recorded in the superproject will be checked out in the submodule on a detached HEAD.
+If &amp;ndash;force is specified, the submodule will be checked out (using git checkout &amp;ndash;force if appropriate), even if the commit specified in the index of the containing repository already matches the commit checked out in the submodule.&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>detached HEAD&lt;/code> 不属于任何一条 &lt;code>tree&lt;/code>，如果之后忘记 &lt;code>checkout&lt;/code> 到某条分支上的话，那之后所有 submodule 的 commit 都基于这个 &lt;code>detached HEAD&lt;/code>，那么我们就不得不使用 &lt;code>cherry-pick&lt;/code>，把基于 &lt;code>detached HEAD&lt;/code> 提交的 commit 提交 pick 到已有的分支上。&lt;/p>
+&lt;p>并且当 &lt;code>submodule&lt;/code> 的嵌套层级太深的话，一层层的去 submodule 进行 &lt;code>init&lt;/code> 以及 &lt;code>update&lt;/code> 显然是不可取的，所以可以通过递归的方式去执行命令，这样能够做到 clone 主库以及递归拉取所有 submodule。&lt;/p>
+&lt;pre>&lt;code class="language-bash">git clone {path/to/repo-name} --recurse
+&lt;/code>&lt;/pre>
+&lt;h2 id="修改-submodule">修改 submodule&lt;/h2>
+&lt;p>通常在实际项目中执行 &lt;code>submodule update&lt;/code> 的流程如下所示。&lt;/p>
+&lt;ol>
+&lt;li>当 repo-A 目录下的 repo-B 为 submodule，在对其进行修改之后，查看此时的工作区状态。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">$ git status
+On branch master
+Changes not staged for commit:
+(use &amp;quot;git add &amp;lt;file&amp;gt;...&amp;quot; to update what will be committed)
+(use &amp;quot;git checkout -- &amp;lt;file&amp;gt;...&amp;quot; to discard changes in working directory)
+(commit or discard the untracked or modified content in submodules)
+modified: repo-B (modified content, untracked content)
+$ git diff
+diff --git a/submodules/repo-B b/submodules/repo-B
+--- a/submodules/repo-B
++++ b/submodules/repo-B
+@@ -1 +1 @@
+-Subproject commit b449370e24b331e97f6d74ca2862fcd4e3c5bd4e
++Subproject commit b449370e24b331e97f6d74ca2862fcd4e3c5bd4e-dirty
+&lt;/code>&lt;/pre>
+&lt;ol start="2">
+&lt;li>发现 submodule 是 modified 并且工作目录 dirty，执行 submodule 提交修改。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">$ cd submodules/repo-B
+$ git stage *
+$ git commit -am 'Update content'
+$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+(use &amp;quot;git push&amp;quot; to publish your local commits)
+nothing to commit, working directory clean
+&lt;/code>&lt;/pre>
+&lt;ol start="3">
+&lt;li>回到主项目，查看状态输出，显示 submodule 的 &lt;code>hash&lt;/code> 已更新。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">$ git status
+On branch master
+Changes not staged for commit:
+(use &amp;quot;git add/rm &amp;lt;file&amp;gt;...&amp;quot; to update what will be committed)
+(use &amp;quot;git checkout -- &amp;lt;file&amp;gt;...&amp;quot; to discard changes in working directory)
+modified: repo-B (new commits)
+$ git diff
+diff --git a/submodules/repo-B b/submodules/repo-B
+--- a/submodules/repo-B
++++ b/submodules/repo-B
+@@ -1 +1 @@
+-Subproject commit b449370e24b331e97f6d74ca2862fcd4e3c5bd4e
++Subproject commit db560723ded8d1a0839dc08fb1e4324b30545c05
+&lt;/code>&lt;/pre>
+&lt;ol start="4">
+&lt;li>主工程提交修改。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">$ git stage *
+$ git status
+On branch master
+Changes to be committed:
+(use &amp;quot;git reset HEAD &amp;lt;file&amp;gt;...&amp;quot; to unstage)
+modified: repo-B
+$ git commit -am 'Update submodule'
+&lt;/code>&lt;/pre>
+&lt;h2 id="从远程库更新-submodule">从远程库更新 submodule&lt;/h2>
+&lt;p>当远程库的提交里记录的 submodule hash 有更新时，拉取远程库后，我们需要 update 本地的 submodule。git submodule update 会比较主项目记录的 submodule hash 和 submodule 自身当前的 HEAD hash，git 会强制把 submodule 的 HEAD checkout 到 git 记录的 hash，因为是 checkout 所以 detached HEAD 的问题会再一次出现。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ git submodule update
+Submodule path 'submodules/repo-B': checked out 'db560723ded8d1a0839dc08fb1e4324b30545c05'
+$ cd submodules/repo-B
+$ git log --decorate --all
+commit 3b754aca54077269aedb328c6e738ab8a7ab3077 (master) # current submodule HEAD hash
+Author: username &amp;lt;username@exmail.com&amp;gt;
+Date: Sat Dec 5 22:26:21 2015 +0800
+Modify _config.yml
+commit db560723ded8d1a0839dc08fb1e4324b30545c05 (HEAD) # main project submodule hash
+Author: username &amp;lt;username@exmail.com&amp;gt;
+Date: Sat Dec 5 21:46:40 2015 +0800
+Modify _config.yml, Add two image
+commit b449370e24b331e97f6d74ca2862fcd4e3c5bd4e (origin/master, origin/HEAD)
+Author: username &amp;lt;username@exmail.com&amp;gt;
+Date: Tue Dec 1 20:06:31 2015 +0800
+Modify _config.yml
+$ git status
+HEAD detached at db56072
+$ git branch
+* (HEAD detached at db56072)
+master
+&lt;/code>&lt;/pre>
+&lt;p>要从根本上摆脱 &lt;code>detached HEAD&lt;/code> 的问题，使用 &lt;code>rebase&lt;/code>、&lt;code>merge&lt;/code> 是正确的方式。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;code>git submodule update --rebase&lt;/code>
+the current branch of the submodule will be rebased onto the commit recorded in the superproject.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>git submodule update --merge&lt;/code>
+the commit recorded in the superproject will be merged into the current branch in the submodule.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://git-scm.com/doc" target="_blank" rel="noopener">git Documentation&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>用 Hexo 搭建个人博客</title><link>/2014/06/12/%E7%94%A8-hexo-%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</link><pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate><guid>/2014/06/12/%E7%94%A8-hexo-%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</guid><description>&lt;p>今次通过 Hexo 生成静态博客网站，所以配置服务器的流程可以省去，直接托管在 Github Pages 上即可，这也目前轻量级博客的趋势。&lt;/p>
+&lt;h2 id="环境安装">环境安装&lt;/h2>
+&lt;h3 id="node-环境安装">Node 环境安装&lt;/h3>
+&lt;h4 id="安装-nvmhttpsgithubcomcreationixnvm">安装 &lt;a href="https://github.com/creationix/nvm" target="_blank" rel="noopener">NVM&lt;/a>&lt;/h4>
+&lt;p>在终端中运行如下命令。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.29.0/install.sh | bash
+&lt;/code>&lt;/pre>
+&lt;h4 id="安装-nodejshttpsnodejsorgen">安装 &lt;a href="https://nodejs.org/en/" target="_blank" rel="noopener">Node.js&lt;/a>&lt;/h4>
+&lt;p>使用如下命令查找远程库版本。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ nvm ls-remote
+&lt;/code>&lt;/pre>
+&lt;p>找到合适的版本并安装。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ nvm install 5.1.0
+&lt;/code>&lt;/pre>
+&lt;h3 id="安装-hexohttpshexoio">安装 &lt;a href="https://hexo.io" target="_blank" rel="noopener">Hexo&lt;/a>&lt;/h3>
+&lt;p>Hexo 有丰富的&lt;a href="https://hexo.io/plugins/" target="_blank" rel="noopener">插件&lt;/a>和&lt;a href="https://hexo.io/themes/" target="_blank" rel="noopener">主题&lt;/a>，如果不能满足需求的话还可以&lt;a href="https://hexo.io/api/" target="_blank" rel="noopener">自己动手&lt;/a>，使用如下命令全局安装 &lt;code>hexo-cli&lt;/code>。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ npm install hexo-cli -g
+&lt;/code>&lt;/pre>
+&lt;p>安装 Hexo 所需的依赖包。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ npm install hexo-renderer-ejs --save
+$ npm install hexo-renderer-stylus --save
+$ npm install hexo-renderer-marked --save
+&lt;/code>&lt;/pre>
+&lt;p>或者直接通过 &lt;code>package.json&lt;/code> 一步到位。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ npm intall
+&lt;/code>&lt;/pre>
+&lt;h2 id="添加文章-posts">添加文章 Posts&lt;/h2>
+&lt;p>找个文件夹初始化 Blog 的工作目录。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ cd &amp;quot;/path/to/blog&amp;quot;
+$ hexo init
+&lt;/code>&lt;/pre>
+&lt;p>生成一篇文章。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ hexo new &amp;quot;用 Hexo 搭建个人博客&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;p>使用 &lt;code>vim&lt;/code> 或者其他 &lt;code>Markdown Editor&lt;/code> 编辑文章。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ cd source/_posts
+$ vim 用-Hexo-搭建个人博客.md
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>附上 &lt;code>Markdown&lt;/code> &lt;a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">语法&lt;/a>&lt;/strong>。写完博文之后生成 &lt;code>html&lt;/code>、&lt;code>css&lt;/code>、&lt;code>.js&lt;/code> 等静态网页文件，生成之后的内容在博客根目录 &lt;code>public&lt;/code> 文件夹下，里面就是博客需要部署的内容。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ hexo generate
+&lt;/code>&lt;/pre>
+&lt;p>启动本地 Hexo 服务器。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ hexo server
+INFO Hexo is running at http://0.0.0.0:4000/. Press Ctrl+C to stop.
+&lt;/code>&lt;/pre>
+&lt;p>在浏览器内输入&lt;a href="http:localhost:4000/" target="_blank" rel="noopener">本地服务器地址&lt;/a>预览博客。&lt;/p>
+&lt;h2 id="部署至-github">部署至 Github&lt;/h2>
+&lt;p>部署到 Github 上用于 Github Pages 的 repo 有两种形式：&lt;/p>
+&lt;ol>
+&lt;li>主页级 repo，页面部署到 &lt;code>master&lt;/code> 分支下，访问 Github Pages 时使用 &lt;code>username.github.io&lt;/code>，常用于个人主页。&lt;/li>
+&lt;li>项目级 repo，页面部署到 &lt;code>gh-pages&lt;/code> 分支，访问 Github Pages 时使用 &lt;code>username.github.io/repo-name&lt;/code>，常用于项目主页。&lt;/li>
+&lt;/ol>
+&lt;p>在 _config.yml 内配置完部署信息后 (&lt;code>deploy&lt;/code> 字段) 执行如下命令。&lt;/p>
+&lt;pre>&lt;code>$ hexo clean
+$ hexo generate
+$ hexo deploy
+&lt;/code>&lt;/pre>
+&lt;p>或者使用如下命令。&lt;/p>
+&lt;pre>&lt;code>$ hexo g
+$ hexo d
+&lt;/code>&lt;/pre>
+&lt;p>完成部署至 Github，过个几分钟等 Github 更新完缓存再打开 &lt;code>{username}.github.io/{blog-repo}&lt;/code> 或者 &lt;code>{username}.github.io&lt;/code> 就能看到 Github Pages。&lt;/p>
+&lt;h2 id="绑定域名">绑定域名&lt;/h2>
+&lt;p>Github 使用一系列 &lt;strong>name-based&lt;/strong> 虚拟 &lt;code>WWW&lt;/code> server 部署所有静态博客的 wwwroot 目录。虚拟服务器的地址就是上文提及的 &lt;code>{username}.github.io&lt;/code> 和 &lt;code>{username}.github.io/{repo-name}&lt;/code>，因此将需要绑定的域名指向 Github 的服务器 &lt;a href="https://github.io">https://github.io&lt;/a>，把域名解析权下放到 Github。&lt;/p>
+&lt;p>同时 Github 服务器需要知道如何解析域名，所以 Github Pages 用户需要将绑定的域名通过 wwwroot 目录下的 CNAME 文件告知 WWW server 域名 =&amp;gt; &lt;code>repo/branch&lt;/code> 的映射关系，所以在根目录 source 文件夹下建立一个 CNAME 文本文件，内容为绑定的域名。&lt;/p>
+&lt;p>完成之后，输入命令查询下 dns 解析结果。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ dig blog.alchemistxxd.com
+; &amp;lt;&amp;lt;&amp;gt;&amp;gt; DiG 9.8.3-P1 &amp;lt;&amp;lt;&amp;gt;&amp;gt; blog.alchemistxxd.com
+;; global options: +cmd
+;; Got answer:
+;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERY, status: NOERROR, id: 45658
+;; flags: qr rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 0
+;; QUESTION SECTION:
+;blog.alchemistxxd.com. IN A
+;; ANSWER SECTION:
+blog.alchemistxxd.com. 600 IN CNAME alchemistxxd.github.io.
+alchemistxxd.github.io. 2816 IN CNAME github.map.fastly.net.
+github.map.fastly.net. 142 IN A 103.245.222.133
+;; Query time: 299 msec
+;; SERVER: 222.44.10.48#53(222.44.10.48)
+;; WHEN: Wed Dec 2 23:41:45 2015
+;; MSG SIZE rcvd: 126
+&lt;/code>&lt;/pre>
+&lt;p>终わり&lt;/p>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://pages.github.com/" target="_blank" rel="noopener">Github Pages&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://hexo.io/" target="_blank" rel="noopener">Hexo.io&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://hexo.io/docs/" target="_blank" rel="noopener">Hexo Documentation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.npmjs.com/" target="_blank" rel="noopener">npm Docs&lt;/a>&lt;/li>
+&lt;/ol></description></item></channel></rss>

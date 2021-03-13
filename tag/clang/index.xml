@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Clang | 徐旭栋</title><link>/tag/clang/</link><atom:link href="/tag/clang/index.xml" rel="self" type="application/rss+xml"/><description>Clang</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Sat, 28 Nov 2015 15:44:16 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>Clang</title><link>/tag/clang/</link></image><item><title>Clang Attributes 使用文档</title><link>/2015/11/28/clang-attributes-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3/</link><pubDate>Sat, 28 Nov 2015 15:44:16 +0000</pubDate><guid>/2015/11/28/clang-attributes-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3/</guid><description>&lt;div class="alert alert-note">
+&lt;div>
+Continually Updated
+&lt;/div>
+&lt;/div>
+&lt;p>&lt;code>__attribute__&lt;/code> 最初作为 GNU C 的特性，为 C/C++、Objective-C/C++ 提供了编译器级别的标注，用来修饰一个变量、函数或类型，包括但不限于以下特性。&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html" target="_blank" rel="noopener">Function Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Variable-Attributes.html" target="_blank" rel="noopener">Variable Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Type-Attributes.html" target="_blank" rel="noopener">Type Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Label-Attributes.html" target="_blank" rel="noopener">Label Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Enumerator-Attributes.html" target="_blank" rel="noopener">Enumerator Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Statement-Attributes.html" target="_blank" rel="noopener">Statement Attributes&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>同样 Clang 也很好的兼容了 GGC 这一特性，并做了额外的扩展。&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html#calling-conventions" target="_blank" rel="noopener">Calling Conventions&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html#nullability-attributes" target="_blank" rel="noopener">Nullability Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html#amd-gpu-attributes" target="_blank" rel="noopener">AMD GPU Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html#consumed-annotation-checking" target="_blank" rel="noopener">Consumed Annotation Checking&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html#type-safety-checking" target="_blank" rel="noopener">Type Safety Checking&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html#opencl-address-spaces" target="_blank" rel="noopener">OpenCL Address Spaces&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://clang.llvm.org/docs/AttributeReference.html#customizing-swift-import" target="_blank" rel="noopener">Customizing Swift Import&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>诸如优化、错误检查之类的机械化任务理应由编译器去完成，但常言道“工欲善其事，必先利其器”只有让编译器更加懂你，才能把编译器的性能、优化发挥到极致。&lt;/p>
+&lt;details class="toc-inpage d-print-none " open>
+&lt;summary class="font-weight-bold">目录&lt;/summary>
+&lt;nav id="TableOfContents">
+&lt;ul>
+&lt;li>&lt;a href="#variable-attributes">Variable Attributes&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#noescape">&lt;code>noescape&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#section-__declspecallocate">&lt;code>section, __declspec(allocate)&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#used">&lt;code>used&lt;/code>&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#type-attributes">Type Attributes&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#objc_root_class">&lt;code>objc_root_class&lt;/code>&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#function-attributes">Function Attributes&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#overloadable">&lt;code>overloadable&lt;/code>&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#customizing-swift-import">Customizing Swift Import&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#swift_bridge">&lt;code>swift_bridge&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#swift_bridged">&lt;code>swift_bridged&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#swift_name">&lt;code>swift_name&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#swift_newtype">&lt;code>swift_newtype&lt;/code>&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#进一步了解">进一步了解&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/nav>
+&lt;/details>
+&lt;h2 id="variable-attributes">Variable Attributes&lt;/h2>
+&lt;h3 id="noescape">&lt;code>noescape&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>noescape&lt;/code>&lt;/td>
+&lt;td>&lt;code>clang::noescape&lt;/code>&lt;/td>
+&lt;td>&lt;code>clang::noescape&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="section-__declspecallocate">&lt;code>section, __declspec(allocate)&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>section&lt;/code>&lt;/td>
+&lt;td>&lt;code>gnu::section&lt;/code>&lt;/td>
+&lt;td>&lt;code>gnu::section&lt;/code>&lt;/td>
+&lt;td>&lt;code>allocate&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;code>section&lt;/code> 特性使得我们能将指定的变量或者函数插入到指定 section 中，比如把一个字符串直接塞入数据段。&lt;/p>
+&lt;pre>&lt;code class="language-c">char *string __attribute((section(&amp;quot;__DATA, Custom&amp;quot;))) = &amp;quot;I'm a pure string.&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h3 id="used">&lt;code>used&lt;/code>&lt;/h3>
+&lt;p>&lt;code>__attribute((used))&lt;/code> 用来修饰变量或者函数。通常默认情况下，没有被引用的符号会被链接器优化去除。标注 &lt;code>used&lt;/code> 之后意味着即使符号没有被引用，也不会被连接器优化掉。&lt;/p>
+&lt;h2 id="type-attributes">Type Attributes&lt;/h2>
+&lt;h3 id="objc_root_class">&lt;code>objc_root_class&lt;/code>&lt;/h3>
+&lt;p>在 &lt;code>Foundation&lt;/code> 中对应 &lt;code>OBJC_ROOT_CLASS&lt;/code>，&lt;code>__attribute__((objc_root_class))&lt;/code> 用于申明一个没有根类的 objc class，我们可以利用这个特性实现类似 &lt;code>name space&lt;/code> 的效果，使得 ObjC 变得更 Swift。&lt;/p>
+&lt;pre>&lt;code class="language-objc">__attribute__((objc_root_class)) @interface NotificationName
+@property (class, readonly) NSNotificationName NSApplicationDidFinishLaunching;
+@end
+@implementation NotificationName
++ (NSNotificationName)NSApplicationDidFinishLaunching {
+return NSApplicationDidFinishLaunchingNotification;
+}
+@end
+&lt;/code>&lt;/pre>
+&lt;h2 id="function-attributes">Function Attributes&lt;/h2>
+&lt;h3 id="overloadable">&lt;code>overloadable&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>overloadable&lt;/code>&lt;/td>
+&lt;td>&lt;code>clang::overloadable&lt;/code>&lt;/td>
+&lt;td>&lt;code>clang::overloadable&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Clang 为 C 引入了和 C++ 一样的 &lt;code>name mangling&lt;/code>，使用 &lt;code>overloadable&lt;/code> 对 C 函数进行 &lt;code>overload&lt;/code>。&lt;/p>
+&lt;pre>&lt;code class="language-c">#include &amp;lt;math.h&amp;gt;
+float __attribute__((overloadable)) tgsin(float x) {
+return sinf(x);
+}
+double __attribute__((overloadable)) tgsin(double x) {
+return sin(x);
+}
+long double __attribute__((overloadable)) tgsin(long double x) {
+return sinl(x);
+}
+&lt;/code>&lt;/pre>
+&lt;p>会得到类似于 &lt;code>_Z5tgsinf&lt;/code>、&lt;code>_Z5tgsind&lt;/code>、&lt;code>_Z5tgsine&lt;/code> 这三个符号，同样对于 ObjC Type。&lt;/p>
+&lt;pre>&lt;code class="language-objc">#import &amp;lt;Foundation/Foundation.h&amp;gt;
+void __attribute__((overloadable)) detectTypeof(NSInteger i) {
+fprintf(stdout, &amp;quot;%s\n&amp;quot;, @encode(typeof(i)));
+}
+void __attribute__((overloadable)) detectTypeof(CGFloat f) {
+fprintf(stdout, &amp;quot;%s\n&amp;quot;, @encode(typeof(f)));
+}
+void __attribute__((overloadable)) detectTypeof(NSString *string) {
+fprintf(stdout, &amp;quot;%s: NSString\n&amp;quot;, @encode(typeof(string)));
+}
+void __attribute__((overloadable)) detectTypeof(NSArray *array) {
+fprintf(stdout, &amp;quot;%s: NSArray\n&amp;quot;, @encode(typeof(array)));
+}
+void __attribute__((overloadable)) detectTypeof(NSObject *object) {
+fprintf(stdout, &amp;quot;%s: NSObject\n&amp;quot;, @encode(typeof(object)));
+}
+int main(int argc, const char * argv[]) {
+detectTypeof((NSInteger)1);
+detectTypeof(1.0);
+detectTypeof(@&amp;quot;Hello&amp;quot;);
+detectTypeof(@[@(1)]);
+detectTypeof(NSObject.new);
+return 0;
+}
+&lt;/code>&lt;/pre>
+&lt;p>运行结果如下所示。&lt;/p>
+&lt;pre>&lt;code class="language-bash">q
+d
+@: NSString
+@: NSArray
+@: NSObject
+&lt;/code>&lt;/pre>
+&lt;h2 id="customizing-swift-import">Customizing Swift Import&lt;/h2>
+&lt;h3 id="swift_bridge">&lt;code>swift_bridge&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>swift_bridge&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;code>swift_bridge&lt;/code> 用于将 ObjC 的声明和 Swift 类型进行 Bridge，为 Swift Interoperability 的体现，更多可以参考 &lt;a href="https://developer.apple.com/videos/play/wwdc2015/401/" target="_blank" rel="noopener">WWDC&lt;/a>。Swift 标准库中的相当一部分类型都有 Interoperability 特性，与 Cocoa 有一层隐式 bridge，比如 &lt;code>NSArray&lt;/code>、&lt;code>NSMutableArray&lt;/code> 和 &lt;code>Swift.Array&lt;/code>。&lt;/p>
+&lt;p>下方例子中，ObjC 类 &lt;code>DerivatedObjCClass&lt;/code> 被 bridge 到 Swift 中的 &lt;code>DerivatedClass&lt;/code>。&lt;/p>
+&lt;pre>&lt;code>__attribute__((objc_root_class))
+@interface BaseClass
+- (instancetype)init;
+@end
+__attribute__((__swift_bridge__(&amp;quot;DerivatedClass&amp;quot;)))
+@interface DerivatedObjCClass: BaseClass
+@end
+&lt;/code>&lt;/pre>
+&lt;p>更多相关内容可以参考 LLVM 的 Phab Review D87532 &lt;a href="https://reviews.llvm.org/D87532" target="_blank" rel="noopener">Sema: add support for &lt;code>__attribute__((__swift_bridge__))&lt;/code>&lt;/a> 以及 swift 的 &lt;a href="https://github.com/apple/swift/blob/41d5e57b5586fccd4ba3823e8ac4690b7b30ec59/lib/ClangImporter/ImportType.cpp#L944" target="_blank" rel="noopener">ClangImporter&lt;/a>。&lt;/p>
+&lt;h3 id="swift_bridged">&lt;code>swift_bridged&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>swift_bridged&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>在 CoreFoundation 中对应 &lt;code>CF_SWIFT_BRIDGED_TYPEDEF&lt;/code>，配合 &lt;code>swift_bridge&lt;/code> 使用，用于被 &lt;code>swift_bridge&lt;/code> 描述的类型的 &lt;code>typedef&lt;/code> 类型。以 &lt;code>NSString&lt;/code> -&amp;gt; &lt;code>Swift.String&lt;/code> 为例，在 ObjC 中有如下声明：&lt;/p>
+&lt;pre>&lt;code class="language-objc">@interface NSString;
+typedef NSString *AliasedString __attribute__((__swift_bridged_typedef__));
+extern void foo(AliasedString _Nonnull str);
+&lt;/code>&lt;/pre>
+&lt;p>在 Swift 中会被 Bridge 为：&lt;/p>
+&lt;pre>&lt;code class="language-swift">func foo(_ str: String) -&amp;gt; Void
+&lt;/code>&lt;/pre>
+&lt;p>这个操作同样会由 Swift Compiler 直接完成，无需开发者手动声明。&lt;/p>
+&lt;h3 id="swift_name">&lt;code>swift_name&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>swift_name&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>在 CoreFoundation 中对应 &lt;code>CF_SWIFT_NAME&lt;/code>，&lt;code>swift_name&lt;/code> 为 C/ObjC 的声明提供了在 Swift 中符号名，默认情况会根据 Swift Compiler 的算法规则自动生成。&lt;/p>
+&lt;pre>&lt;code>@interface NSData
+- (instancetype)initWithData:(NSData *)data __attribute__((__swift_name__(&amp;quot;Data.init(_:)&amp;quot;)));
+@end
+void __attribute__((__swift_name__(&amp;quot;squareRoot()&amp;quot;))) sqrtf(float f);
+&lt;/code>&lt;/pre>
+&lt;h3 id="swift_newtype">&lt;code>swift_newtype&lt;/code>&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>GNU&lt;/th>
+&lt;th>C++11&lt;/th>
+&lt;th>C2x&lt;/th>
+&lt;th>__declspec&lt;/th>
+&lt;th>Keyword&lt;/th>
+&lt;th>Pragma&lt;/th>
+&lt;th>Pragma clang attribute&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>swift_newtype&lt;/code> &lt;code>swift_wrapper&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>在 CoreFoundation 中对应 &lt;code>_CF_TYPED_EXTENSIBLE_ENUM&lt;/code>。&lt;/p>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="http://clang.llvm.org/docs/AttributeReference.html" target="_blank" rel="noopener">Attributes in Clang&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Attribute-Syntax.html" target="_blank" rel="noopener">Attribute Syntax&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gcc.gnu.org/onlinedocs/gcc/Enumerator-Attributes.html" target="_blank" rel="noopener">Enumerator Attributes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.keil.com/support/man/docs/armcc/armcc_chr1359124965789.htm" target="_blank" rel="noopener">Compiler-specific Features&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://nshipster.com/__attribute__" target="_blank" rel="noopener">NSHipster __ attribute __&lt;/a>&lt;/li>
+&lt;/ol></description></item></channel></rss>

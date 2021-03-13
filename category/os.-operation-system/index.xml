@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>OS. Operation System | 徐旭栋</title><link>/category/os.-operation-system/</link><atom:link href="/category/os.-operation-system/index.xml" rel="self" type="application/rss+xml"/><description>OS. Operation System</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Mon, 10 Dec 2018 10:31:29 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>OS. Operation System</title><link>/category/os.-operation-system/</link></image><item><title>HT0013 如何向 iOS 系统中添加自定义字体</title><link>/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/</link><pubDate>Mon, 10 Dec 2018 10:31:29 +0000</pubDate><guid>/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/</guid><description>&lt;p>为 iPhoneOS / iPadOS 设备添加自定义字体。&lt;/p>
+&lt;p>以下高级步骤主要适用于系统管理员以及熟悉命令行的其他人员。&lt;/p>
+&lt;h2 id="概览">概览&lt;/h2>
+&lt;p>iOS 并不限制第三方添加字体到系统之中，当你有自定义字体想在你的 app 或者其他系统内建应用（e.g. Notes.app, Pages.app）中使用时，通过 iOS 提供的多种方法你可以实现不同的结果。&lt;/p>
+&lt;h2 id="为应用添加自定义字体">为应用添加自定义字体&lt;/h2>
+&lt;p>为一个 app 添加字体，字体的使用范围限制于当前 app 之中，如图所示，将字体拖入至工程，并勾选对应的 Target Membership。&lt;/p>
+&lt;figure id="figure-adding-a-custom-font-to-your-app">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://docs-assets.developer.apple.com/published/35bc80c902/d373ed5c-a36b-46fe-9bd8-bf49700072be.png" alt="Adding a Custom Font to Your App" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Adding a Custom Font to Your App
+&lt;/figcaption>&lt;/figure>
+&lt;p>通过 Info.plist &lt;strong>UIAppFonts&lt;/strong> (Fonts provided by application) 字段向 Xcode 工程注册字体，完成之后就可以像其他 iOS 内建字体一样使用你的自定义字体。&lt;/p>
+&lt;p>更多请参考 Apple 文档 &lt;a href="https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app" target="_blank" rel="noopener">Adding a Custom Font to Your App | Apple Developer Documentation&lt;/a>。&lt;/p>
+&lt;h2 id="向-ios-系统注册自定义字体">向 iOS 系统注册自定义字体&lt;/h2>
+&lt;p>为系统内建的应用提供自定字体需要用到 iOS 13 新提供的 CoreText 的 API，同时需要在 App.entitlements 中添加 Fonts Capability 并勾选 Install Fonts，使用字体时需要勾选 Use Installed Fonts。&lt;/p>
+&lt;figure id="figure-wwdc19-session-227">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="WWDC19 Session 227" srcset="
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_9ca56f76f669a9bb2328814904fa0a72.png 400w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_9247fa423d8040f4d4794ff63936225f.png 760w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_9ca56f76f669a9bb2328814904fa0a72.png"
+width="760"
+height="265"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+WWDC19 Session 227
+&lt;/figcaption>&lt;/figure>
+&lt;figure id="figure-adding-a-custom-font-to-your-app">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://docs-assets.developer.apple.com/published/1b7e45d9c2/f9329213-4abb-413e-a339-4b91ee4bf554.png" alt="Adding a Custom Font to Your App" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Adding a Custom Font to Your App
+&lt;/figcaption>&lt;/figure>
+&lt;p>如果其他 app 需要使用通过 CTFontManagerRegisterFontURLS 进行注册的字体，需要通过 CTFontManagerRequestFonts 进行 request 才能获得字体。&lt;/p>
+&lt;figure id="figure-wwdc19-session-227">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="WWDC19 Session 227" srcset="
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_d835121eea6317e508f6ec0613a1a020.png 400w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_3f5f43825a98d8037f1011dc43c66f45.png 760w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_d835121eea6317e508f6ec0613a1a020.png"
+width="760"
+height="308"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+WWDC19 Session 227
+&lt;/figcaption>&lt;/figure>
+&lt;p>更多请参考 &lt;a href="https://developer.apple.com/videos/play/wwdc2019/227/" target="_blank" rel="noopener">Font Management and Text Scaling - WWDC 2019 - Videos - Apple Developer&lt;/a>。&lt;/p>
+&lt;h2 id="通过-mobileconfig-向-ios-系统添加自定义字体">通过 .mobileconfig 向 iOS 系统添加自定义字体&lt;/h2>
+&lt;p>通过 CoreText 提供的 API 有需要使用 CTFontManagerRequestFonts 的限制，所以无法适用于部分没有使用此 API 的 app (e.g. Notes.app)，因此可以通过 Apple Configurator 2 生成字体 Profile 来配置字体，打开 Apple Configurator 2 并切换到 Fonts 页面，点击右侧的 Configure，就会弹出对话框要求选择字体。
+单个描述文件的容量上限约为 20 megabytes，所以对于较小西文字体文件，可以将整个 Font Family 配置到同一个描述文件中，对于较大的非西文字体，则应该逐个单独添加。&lt;/p>
+&lt;figure >
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="" srcset="
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_0f4b7d4bad2f0c26aeda9a2d176e8267.png 400w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_83820084f4395201ee05488b62318eb0.png 760w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_0f4b7d4bad2f0c26aeda9a2d176e8267.png"
+width="760"
+height="659"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;/figure>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app" target="_blank" rel="noopener">Adding a Custom Font to Your App | Apple Developer Documentation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://developer.apple.com/videos/play/wwdc2019/227/" target="_blank" rel="noopener">Font Management and Text Scaling - WWDC 2019 - Videos - Apple Developer&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://stackoverflow.com/questions/57653398/ios-13-custom-fonts-download-and-installation" target="_blank" rel="noopener">iOS 13 Custom Fonts download and installation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://fonts.google.com" target="_blank" rel="noopener">Browse Fonts - Google Fonts&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.google.cn/get/noto/" target="_blank" rel="noopener">Google Noto Fonts&lt;/a>&lt;/li>
+&lt;/ol></description></item></channel></rss>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Foundation | 徐旭栋</title><link>/tag/foundation/</link><atom:link href="/tag/foundation/index.xml" rel="self" type="application/rss+xml"/><description>Foundation</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Wed, 03 Dec 2014 20:44:39 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>Foundation</title><link>/tag/foundation/</link></image><item><title>关于 NSURL +URLWithString: 返回 nil</title><link>/2014/12/03/%E5%85%B3%E4%BA%8E-nsurl-urlwithstring-%E8%BF%94%E5%9B%9E-nil/</link><pubDate>Wed, 03 Dec 2014 20:44:39 +0000</pubDate><guid>/2014/12/03/%E5%85%B3%E4%BA%8E-nsurl-urlwithstring-%E8%BF%94%E5%9B%9E-nil/</guid><description>&lt;p>当 url 字符串中含有特殊字符时，例如空格、汉字等，则必须对 url 字符串进行转义编码，否则 &lt;code>[NSURL URLWithString: urlString]&lt;/code> 将返回 &lt;code>nil&lt;/code>。&lt;/p>
+&lt;pre>&lt;code class="language-objc">#import &amp;lt;Foundation/Foundation.h&amp;gt;
+int main(int argc, const char * argv[]) {
+@autoreleasepool {
+NSString *urlString = [NSString stringWithFormat: @&amp;quot;https://www.google.com.hk/search?q=WWDC 2014&amp;quot;];
+NSURL *url = [NSURL URLWithString:urlString];
+NSLog(@&amp;quot;%@&amp;quot;, url);
+}
+return 0;
+}
+&lt;/code>&lt;/pre>
+&lt;p>输出的 url 结果为。&lt;/p>
+&lt;pre>&lt;code>21:07:11.784 test[8883:320995] (null)
+&lt;/code>&lt;/pre>
+&lt;p>对 &lt;code>urlString&lt;/code> 进行编码以及输出的 &lt;code>url&lt;/code> 结果。&lt;/p>
+&lt;pre>&lt;code class="language-objc">#import &amp;lt;Foundation/Foundation.h&amp;gt;
+int main(int argc, const char * argv[]) {
+@autoreleasepool {
+NSString *urlString = [NSString stringWithFormat: @&amp;quot;https://www.google.com.hk/search?q=WWDC 2014&amp;quot;];
+NSURL *url = [NSURL URLWithString: [urlString stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
+NSLog(@&amp;quot;%@&amp;quot;, url);
+}
+return 0;
+}
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code>21:09:18.640 test[8985:327779] https://www.google.com.hk/search?q=WWDC%202014
+&lt;/code>&lt;/pre>
+&lt;p>空格被转义为 &lt;code>UTF-8&lt;/code> 编码，例如汉字&amp;quot;的&amp;quot;的 &lt;code>UTF-8&lt;/code> 编码为 &lt;code>0xE7 0x9A 0x84&lt;/code>，percent encode 之后就是 &lt;code>%E7%9A%84&lt;/code>。&lt;/p>
+&lt;div class="alert alert-note">
+&lt;div>
+2015-07-20 Updated
+&lt;/div>
+&lt;/div>
+&lt;p>在 iOS 9.0 / OSX 10.11 之后 &lt;code>- stringByReplacingPercentEscapesUsingEncoding:&lt;/code> 就被废弃了，我们可以用 &lt;code>- stringByAddingPercentEncodingWithAllowedCharacters:&lt;/code> 代替，参数类型为 &lt;code>NSCharacterSet&lt;/code>。这个方法会把所有 Character Set 以外的字符进行 &lt;code>UTF-8 Percent Encoding&lt;/code>，支持 url 编码的 Character Set 有如下所示。&lt;/p>
+&lt;pre>&lt;code class="language-objc">+ URLFragmentAllowedCharacterSet // 7-bit ASCII 不包含 &amp;quot;#%&amp;lt;&amp;gt;[\]^`{|}
++ URLHostAllowedCharacterSet // 7-bit ASCII 不包含 &amp;quot;#%/&amp;lt;&amp;gt;?@\^`{|}
++ URLPasswordAllowedCharacterSet // 7-bit ASCII 不包含 &amp;quot;#%/:&amp;lt;&amp;gt;?@[\]^`{|}
++ URLPathAllowedCharacterSet // 7-bit ASCII 不包含 &amp;quot;#%;&amp;lt;&amp;gt;?[\]^`{|}
++ URLQueryAllowedCharacterSet // 7-bit ASCII 不包含 &amp;quot;#%&amp;lt;&amp;gt;[\]^`{|}
++ URLUserAllowedCharacterSet // 7-bit ASCII 不包含 &amp;quot;#%/:&amp;lt;&amp;gt;?@[\]^`
+&lt;/code>&lt;/pre>
+&lt;p>自定义的 &lt;code>NSCharacterSet&lt;/code> 如下所示。&lt;/p>
+&lt;pre>&lt;code class="language-objc">[[NSCharacterSet characterSetWithCharactersInString:@&amp;quot; \&amp;quot;#%/:&amp;lt;&amp;gt;?@[\\]^`{|}&amp;quot;] invertedSet]
+&lt;/code>&lt;/pre>
+&lt;p>所以最终的编码以及控制台输出就如下所示。&lt;/p>
+&lt;pre>&lt;code class="language-objc">#import &amp;lt;Foundation/Foundation.h&amp;gt;
+int main(int argc, const char * argv[]) {
+@autoreleasepool {
+NSString *urlString = [NSString stringWithFormat:@&amp;quot;https://www.google.com.hk/search?q=WWDC 2014&amp;quot;];
+NSURL *url = [NSURL URLWithString: [urlString stringByAddingPercentEncodingWithAllowedCharacters: NSCharacterSet.URLQueryAllowedCharacterSet]];
+NSLog(@&amp;quot;%@&amp;quot;, url);
+}
+return 0;
+}
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code>21:09:18.640 test[8985:327779] https://www.google.com.hk/search?q=WWDC%202014
+&lt;/code>&lt;/pre></description></item></channel></rss>

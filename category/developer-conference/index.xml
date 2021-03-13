@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Developer Conference | 徐旭栋</title><link>/category/developer-conference/</link><atom:link href="/category/developer-conference/index.xml" rel="self" type="application/rss+xml"/><description>Developer Conference</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Thu, 20 Sep 2018 09:00:00 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>Developer Conference</title><link>/category/developer-conference/</link></image><item><title>Google Developer Days China 2018 参会记录</title><link>/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/</link><pubDate>Thu, 20 Sep 2018 09:00:00 +0000</pubDate><guid>/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/</guid><description>&lt;h2 id="tensorflow-亲儿子">TensorFlow 亲儿子&lt;/h2>
+&lt;p>TensorFlow 是本届 GDD 的重点照顾对象，在开幕演讲中一位 Googla AI 的产品经理对 Google AI 的应用落地场景进行了简单的介绍，同时推荐了自家今年三月份的上线的 &lt;a href="https://developers.google.com/machine-learning/crash-course/" target="_blank" rel="noopener">MLCC&lt;/a>，旨在帮助广大爱好者快速无障碍入门 AI，在大幅降低门槛的前提下，使得每个人都能参与到其中。&lt;/p>
+&lt;div class="gallery">
+&lt;a data-fancybox="gallery-album-tensorflow" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/album-tensorflow/anna-goldie.jpg" data-caption="Google AI 妹子工程师上台对自家 TensorFlow 进行了一波带有东北腔的美式中文吹爆">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/album-tensorflow/anna-goldie_hu1fdb335153f0d2d0545519bf98049712_2163713_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="Google AI 妹子工程师上台对自家 TensorFlow 进行了一波带有东北腔的美式中文吹爆" width="253" height="190">
+&lt;/a>
+&lt;a data-fancybox="gallery-album-tensorflow" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/album-tensorflow/lstm-networks.jpg" data-caption="中国海洋大学的科研人员借助 TensorFlow，通过使用 LSTM NetWorks 对 SST 进行可靠的预测，以达到分析全球气候状况的目的">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/album-tensorflow/lstm-networks_hu4039956df141fc22aba2cdc6a530014a_2213994_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="中国海洋大学的科研人员借助 TensorFlow，通过使用 LSTM NetWorks 对 SST 进行可靠的预测，以达到分析全球气候状况的目的" width="253" height="190">
+&lt;/a>
+&lt;a data-fancybox="gallery-album-tensorflow" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/album-tensorflow/opensource.jpg" data-caption="开源社区对于 TensorFlow 的贡献量，全球 1700 万的下载量中有 200 万来自中国用户贡献">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/album-tensorflow/opensource_hud1d1d31e0d1eba5a215940f27ce8804b_1596409_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="开源社区对于 TensorFlow 的贡献量，全球 1700 万的下载量中有 200 万来自中国用户贡献" width="253" height="190">
+&lt;/a>
+&lt;a data-fancybox="gallery-album-tensorflow" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/album-tensorflow/tensorflow-china.jpg" data-caption="在中国正在使用 TensorFlow 的公司">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/album-tensorflow/tensorflow-china_hu5db801f804357f93cc2291fb1f1cbdf1_2398937_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="在中国正在使用 TensorFlow 的公司" width="253" height="190">
+&lt;/a>
+&lt;/div>
+&lt;p>同时一起宣布的还有 Google AI 中国中心会在北京以及上海举行机器学习应用冬令营，并且在可能的情况下会提供 Google AI 工程师的实习机会，将其更好的运用到实战。&lt;/p>
+&lt;p>紧接着开幕演讲，主会场在 11:00 召开了面向所有开发者的 TensorFlow 简介。&lt;/p>
+&lt;figure id="figure-introduce-to-tensorflow">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Introduce to Tensorflow" srcset="
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/introduce-to-tensorflow_hu23ce946b82d0ce5dd327bbcf3ba4e682_2091819_6fb137a1a1dd585dfd1162b78cc4eb15.jpg 400w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/introduce-to-tensorflow_hu23ce946b82d0ce5dd327bbcf3ba4e682_2091819_c101f7a97aa68b7481af0de65dcfabb3.jpg 760w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/introduce-to-tensorflow_hu23ce946b82d0ce5dd327bbcf3ba4e682_2091819_1200x1200_fit_q75_lanczos.jpg 1200w"
+src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/introduce-to-tensorflow_hu23ce946b82d0ce5dd327bbcf3ba4e682_2091819_6fb137a1a1dd585dfd1162b78cc4eb15.jpg"
+width="760"
+height="570"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Introduce to Tensorflow
+&lt;/figcaption>&lt;/figure>
+&lt;p>会上介绍了什么是 TensorFlow、它是如何运作的、它该如何使用。介绍了 TensorFlow 这个平台如何更方便的帮助开发者构建要用于人工智能应用中的机器学习模型。&lt;/p>
+&lt;p>会上展示了一个 Fashion MNIST 的现场 Demo。&lt;/p>
+&lt;figure id="figure-fashion-mnist">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Fashion MNIST" srcset="
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/fashion-mnist_hub32d6cb42ca210947571c154672526ae_2056479_c69cc09e08735e50a4989b3a146242cc.jpg 400w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/fashion-mnist_hub32d6cb42ca210947571c154672526ae_2056479_1819129b27d44ab0240e031d165f51e6.jpg 760w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/fashion-mnist_hub32d6cb42ca210947571c154672526ae_2056479_1200x1200_fit_q75_lanczos.jpg 1200w"
+src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/fashion-mnist_hub32d6cb42ca210947571c154672526ae_2056479_c69cc09e08735e50a4989b3a146242cc.jpg"
+width="760"
+height="570"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Fashion MNIST
+&lt;/figcaption>&lt;/figure>
+&lt;p>具体演示了如何利用 Keras 对 70000 个训练样本、10 个类别进行神经网络训练，包涵 Keras 一系列的：&lt;/p>
+&lt;ol>
+&lt;li>&lt;a href="https://keras.io/models/sequential/" target="_blank" rel="noopener">Sequential Model 的建立&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://keras.io/losses" target="_blank" rel="noopener">loss 函数的配置&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://keras.io/optimizers/" target="_blank" rel="noopener">Optimizer 的选择&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://keras.io/getting-started/sequential-model-guide/#training" target="_blank" rel="noopener">Model 的训练方式&lt;/a>&lt;/li>
+&lt;/ol>
+&lt;p>大部分演示内容的要点都可以在 &lt;a href="https://keras.io" target="_blank" rel="noopener">Keras Documentation&lt;/a> 中找到。&lt;/p>
+&lt;p>在 20 号当天下午还有一场《编写机器学习的7个步骤》Keynote 以及 21 号一整天的《TensorFlow 专场》传销大会。内容涵盖了：&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/tensorflow/swift" target="_blank" rel="noopener">Swift for TensorFlow&lt;/a> 以及 &lt;a href="https://js.tensorflow.org" target="_blank" rel="noopener">tensorflow.js&lt;/a>，Swift 版本的 TensorFlow 早在今年 4 月已经开源，笔者感到很欣慰，作为一个 Apple Developer 终于不用担心苹果倒闭后需要面临失业的问题&lt;/li>
+&lt;li>TensorFlow Lite 允许 App 开发者压缩和优化 TensorFlow 模型，使之能在 Android、iOS 和各种物联网设备上运行，使得在未连接到云端的移动设备上运行智能应用变得可能&lt;/li>
+&lt;li>TensorFlow 的 DistributionStrategy Class 使得将工作量分散到多个 GPU、多节点训练变得可能，为训练大型机器学习模型提供了实际的解决方案&lt;/li>
+&lt;/ul>
+&lt;p>不过由于时间关系上述的 Keynote 笔者都没能参与，还是非常可惜的。&lt;/p>
+&lt;h2 id="flutter-的磅礴野心">Flutter 的磅礴野心&lt;/h2>
+&lt;p>&lt;a href="https://flutter.io" target="_blank" rel="noopener">Flutter&lt;/a> 可以说是本届 GDD 上的焦点主题，在此次大会上 Google 公布了 Flutter Release Preview 2，距离 Flutter 正式 Release 也变得指日可待。&lt;/p>
+&lt;figure id="figure-flutter-release-preview-2">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Flutter Release Preview 2" srcset="
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-release-preview-2_hued49deb0a14b6e58ca973ce633a329a7_2063494_2ac1b74ec625e50e0576bf8cab2de7c0.jpg 400w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-release-preview-2_hued49deb0a14b6e58ca973ce633a329a7_2063494_7bd0764087684d87e2f3196cb07dc5c3.jpg 760w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-release-preview-2_hued49deb0a14b6e58ca973ce633a329a7_2063494_1200x1200_fit_q75_lanczos.jpg 1200w"
+src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-release-preview-2_hued49deb0a14b6e58ca973ce633a329a7_2063494_2ac1b74ec625e50e0576bf8cab2de7c0.jpg"
+width="760"
+height="570"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Flutter Release Preview 2
+&lt;/figcaption>&lt;/figure>
+&lt;p>在 20 日当天有关 Flutter 的 Keynote 一共被安排了 4 场，下午 4:45 开始的连续两场的内容关注点都在 Flutter 底层原理剖析以及 High Performance 上，因此笔者选择了去这两场。&lt;/p>
+&lt;p>笔者在等待 Keynote 开始的期间，去产品展示区溜达了一圈，溜着溜着就溜到了 Flutter 展台，只见 Flutter 的几个工程师一直被围在人群之中回答问题，周围围观的吃瓜开发者疯狂输出问题，场面异常劲爆。Flutter 展台也是为数不多的吃瓜群众把注意力全放在内容本身而不是礼品和贴纸上的展台了。笔者靠着精致的走位顺利插入展台前排。在实际体验之后发现 Flutter 在运行过程中，除了部分场景下（大部分是 ScrollView 的场景下）出现了不跟手的情况，大部分情况下都十分流畅，在和 Flutter 工程师交流后也得到了解答，无论是 iOS 和 Android 都是基于 Skia 的 API 进行渲染，并且 iOS 底层和安卓一样也是基于 OpenGL ES 实现的，关于 iOS Skia 是如何编译可以参考这篇&lt;a href="https://skia.org/user/build" target="_blank" rel="noopener">文档&lt;/a>。&lt;/p>
+&lt;div class="gallery">
+&lt;a data-fancybox="gallery-youtube-and-flutter" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/youtube-and-flutter/flutter-booth.jpg" data-caption="带着蓝带子吊牌的老哥就是之后 Keynote 的主讲，一旁的 YouTube 展台异常冷清">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/youtube-and-flutter/flutter-booth_huf875a42ff9fca7575da9d1bff11b50d9_2320467_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="带着蓝带子吊牌的老哥就是之后 Keynote 的主讲，一旁的 YouTube 展台异常冷清" width="253" height="190">
+&lt;/a>
+&lt;a data-fancybox="gallery-youtube-and-flutter" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/youtube-and-flutter/flutter-demo.jpg" data-caption="Flutter 展台 Demo 应用">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/youtube-and-flutter/flutter-demo_hu70c92a06a13a95bb3317a70bae1f5e0f_1447665_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="Flutter 展台 Demo 应用" width="253" height="190">
+&lt;/a>
+&lt;a data-fancybox="gallery-youtube-and-flutter" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/youtube-and-flutter/youtube-and-flutter.jpg" data-caption="Youtube and Flutter">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/youtube-and-flutter/youtube-and-flutter_hu4b9095b2f3544e6ecd551cf375daaa3b_2245381_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="Youtube and Flutter" width="158" height="190">
+&lt;/a>
+&lt;/div>
+&lt;p>回到 Flutter 分会场，第一场 Flutter Keynote 的主题是《剖析你的 Flutter App》。整场 Keynote 围绕着什么是性能展开。通过横向对比双平台的 Render Architecture 异同，纵向对比 Native 与 JS 调用 Native API 的产生的不必要的性能损耗，最终引出 Flutter 渲染理念，更少的计算量带来更多的性能提升。&lt;/p>
+&lt;div class="gallery">
+&lt;a data-fancybox="gallery-flutter" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter/flutter-android.jpg" data-caption="Flutter 对比安卓渲染模式">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter/flutter-android_hu1eff9f1b8e4d6ac497153867d3f5128c_1604899_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="Flutter 对比安卓渲染模式" width="253" height="190">
+&lt;/a>
+&lt;a data-fancybox="gallery-flutter" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter/flutter-ios.jpg" >
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter/flutter-ios_hua37f23709de7a837aebcf2805a48fc06_1508116_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="flutter-ios.jpg" width="253" height="190">
+&lt;/a>
+&lt;a data-fancybox="gallery-flutter" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter/flutter-render-trees.jpg" data-caption="Flutter 渲染树">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter/flutter-render-trees_huab76dc0e2213f26375630af78f6da406_1519427_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="Flutter 渲染树" width="253" height="190">
+&lt;/a>
+&lt;a data-fancybox="gallery-flutter" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter/flutter-render.jpg" data-caption="Flutter 渲染模式">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter/flutter-render_huad1cc7d470f243fa02404ffa062974d8_1545912_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="Flutter 渲染模式" width="253" height="190">
+&lt;/a>
+&lt;a data-fancybox="gallery-flutter" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter/rendering-performance.jpg" data-caption="Flutter 渲染性能">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter/rendering-performance_hub014db27618155f59f88c7a3734f609a_1367062_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="Flutter 渲染性能" width="253" height="190">
+&lt;/a>
+&lt;/div>
+&lt;p>不过虽然听上去很美好，但是 Flutter 的性能表现实际上是与开发者的实现息息相关。Flutter 和大部分视图渲染架构一样也是通过遍历树去寻找渲染节点，存在节点遍历即存在性能损失，而这部分性能损失需要开发者手动去优化，官方在 Build 与 Paint 这两个 Phase 中结合现场演示给出了几条性能优化的实战建议：&lt;/p>
+&lt;p>如何提高 Build 效率？&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>尽量降低遍历的出发点&lt;/p>
+&lt;ul>
+&lt;li>通过标脏 &lt;code>setState&lt;/code> 来实现&lt;/li>
+&lt;li>通过 &lt;code>InheritedWidget&lt;/code> 来传递 &lt;code>state&lt;/code>&lt;/li>
+&lt;li>热重载&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>重用同一子组件实例&lt;/p>
+&lt;ul>
+&lt;li>能有效的做到在遍历至子组件时做到停止遍历&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>如何提高 &lt;code>Paint&lt;/code> 效率？&lt;/p>
+&lt;ul>
+&lt;li>设置 &lt;code>RepaintBoundary&lt;/code>，在整个绘制树产生一次重绘时，通过 &lt;code>RepaintBoundary&lt;/code> 来阻断重绘的区域&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>因此性能优化的重任落到开发者的身上了，又是一项体力活。在整个演示过程中使用到了一部分 Profile 工具以及 Debug Flag 来监测 App 的 Performance，具体可以在 &lt;a href="https://flutter.io/ui-performance/" target="_blank" rel="noopener">Flutter Performance Profiling&lt;/a> 以及 &lt;a href="https://flutter.io/debugging/" target="_blank" rel="noopener">Debugging Flutter Apps&lt;/a> 找到。&lt;/p>
+&lt;p>到了第二场 Keynote 上来了个幽默的老哥，这场的主题是《深入介绍 Flutter Graphics 性能》。&lt;/p>
+&lt;figure id="figure-深入介绍-flutter-graphics-性能">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="深入介绍 Flutter Graphics 性能" srcset="
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-graphics-hero_hu87d6677356d87be9ca0c2ee20c4c44ca_1888068_6c511a255e8d12964d65702fc494d103.jpg 400w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-graphics-hero_hu87d6677356d87be9ca0c2ee20c4c44ca_1888068_2b7405d7404827fd862d21175f9e3fc9.jpg 760w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-graphics-hero_hu87d6677356d87be9ca0c2ee20c4c44ca_1888068_1200x1200_fit_q75_lanczos.jpg 1200w"
+src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-graphics-hero_hu87d6677356d87be9ca0c2ee20c4c44ca_1888068_6c511a255e8d12964d65702fc494d103.jpg"
+width="760"
+height="570"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+深入介绍 Flutter Graphics 性能
+&lt;/figcaption>&lt;/figure>
+&lt;p>在进行了一轮 Skia 牛逼吹爆后，进入正题，主要内容围绕着通过分析绘图指令来不断优化 App 的性能。Flutter 的渲染原理是将一个渲染帧录制成 SkPicture (skp) 提交给 Skia 进行渲染，利用这个特点，通过捕捉一帧 skp，配合 &lt;a href="https://debugger.skia.org" target="_blank" rel="noopener">Skia Debugger&lt;/a>，可以精确分析到单个渲染帧中每一条绘图指令，整场 Keynote 大部分时间都花在现场演示优化，具体不在此赘述。&lt;/p>
+&lt;div class="gallery">
+&lt;a data-fancybox="gallery-flutter-graphics" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-graphics/flutter-performance.jpg" data-caption="Flutter 的性能">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-graphics/flutter-performance_hud6c8169b0e0a361d8eacd79e4f3ec7ff_1442523_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="Flutter 的性能" width="253" height="190">
+&lt;/a>
+&lt;a data-fancybox="gallery-flutter-graphics" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-graphics/skia-engine.jpg" data-caption="Skia 渲染引擎">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-graphics/skia-engine_huaf124712f91153b8146f01355ddf9c63_1345155_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="Skia 渲染引擎" width="253" height="190">
+&lt;/a>
+&lt;a data-fancybox="gallery-flutter-graphics" href="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-graphics/what-is-flutter.jpg" data-caption="Flutter 是什么">
+&lt;img src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/flutter-graphics/what-is-flutter_hub0ee9d9ab335e333f022435f633609ed_1369568_0x190_resize_q75_lanczos.jpg" loading="lazy" alt="Flutter 是什么" width="253" height="190">
+&lt;/a>
+&lt;/div>
+&lt;p>值得一提的是，在实际调试过程中，官方不推荐且极其不推荐使用 iOS 模拟器进行调试，理由是 Skia 在 iOS 模拟器使用 CPU 作为渲染后端，和真机的 GPU 后端会有较大的性能上的出入。&lt;/p>
+&lt;h2 id="android-把路走宽了">Android 把路走宽了&lt;/h2>
+&lt;p>随着业界毒瘤果的 iPhone X 开卖，国内各大安卓厂商也纷纷跟风推出刘海屏的机器，说实话笔者个人认为刘海屏这个设计真的很丑。面对这么一大波国产刘海屏手机，谷歌非但没置之不理，反而却十分接地气的在 Android 9 中添加了刘海屏的适配方案&lt;a href="https://developer.android.com/about/versions/pie/android-9.0" target="_blank" rel="noopener">显示屏缺口支持&lt;/a>，颇有大厂风范。&lt;/p>
+&lt;p>在 Android 9 中利用 DeepMind 通过对 App 进行使用频率分组来尽可能降低 CPU 唤醒频率以达到延长电池的续航能力，官方称唤醒频率被有效的降低了 30%。&lt;/p>
+&lt;figure id="figure-android-battery">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Android Battery" srcset="
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-battery_huc9b07b7ba0118b71b01bc4577fc9716f_2402510_99adaac751857353187588045b0a0e20.jpg 400w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-battery_huc9b07b7ba0118b71b01bc4577fc9716f_2402510_6bedd627bdf5c3a621e5a2f850a75cda.jpg 760w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-battery_huc9b07b7ba0118b71b01bc4577fc9716f_2402510_1200x1200_fit_q75_lanczos.jpg 1200w"
+src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-battery_huc9b07b7ba0118b71b01bc4577fc9716f_2402510_99adaac751857353187588045b0a0e20.jpg"
+width="760"
+height="570"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Android Battery
+&lt;/figcaption>&lt;/figure>
+&lt;p>对于非 SDK 接口的调用在 Android 9 会被限制，具体可以参考&lt;a href="https://developer.android.com/about/versions/pie/restrictions-non-sdk-interfaces" target="_blank" rel="noopener">对非 SDK 接口的限制&lt;/a>，旨在提高应用的稳定性。&lt;/p>
+&lt;figure id="figure-android-sdk-restrict">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Android SDK Restrict" srcset="
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-sdk-restrict_hu44e463f5ecadd5b47db528c89b2c9457_1734877_5b7d126874902607e0a757822b8f4ad0.jpg 400w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-sdk-restrict_hu44e463f5ecadd5b47db528c89b2c9457_1734877_5f840b63a1d51dd4de6616155dc8ea75.jpg 760w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-sdk-restrict_hu44e463f5ecadd5b47db528c89b2c9457_1734877_1200x1200_fit_q75_lanczos.jpg 1200w"
+src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-sdk-restrict_hu44e463f5ecadd5b47db528c89b2c9457_1734877_5b7d126874902607e0a757822b8f4ad0.jpg"
+width="760"
+height="570"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Android SDK Restrict
+&lt;/figcaption>&lt;/figure>
+&lt;p>Google 在 2018 Google I/O 上发布了新的框架组件 JetPack，今次在 GDD 上再次拿出来发酵一下，大致如上图所示。其中的 Navigation 和 iOS 中的 Storyboard 有着异曲同工之妙。JetPack 包含了大量的简化开发的新框架，具体可以参考官方文档 &lt;a href="https://developer.android.google.cn/jetpack/" target="_blank" rel="noopener">Android Jetpack&lt;/a>。&lt;/p>
+&lt;figure id="figure-android-jetpack">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Android JetPack" srcset="
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-jetpack_hu0f33d6c6dffc19f934386e70496598e5_2106348_07b8366a66eaef2ccee0b4df1b05f7f2.jpg 400w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-jetpack_hu0f33d6c6dffc19f934386e70496598e5_2106348_dd816be24917cc2ce422fda99a1e6a00.jpg 760w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-jetpack_hu0f33d6c6dffc19f934386e70496598e5_2106348_1200x1200_fit_q75_lanczos.jpg 1200w"
+src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-jetpack_hu0f33d6c6dffc19f934386e70496598e5_2106348_07b8366a66eaef2ccee0b4df1b05f7f2.jpg"
+width="760"
+height="570"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Android JetPack
+&lt;/figcaption>&lt;/figure>
+&lt;p>Google 通过 &lt;a href="https://developer.android.google.cn/platform/technology/app-bundle/" target="_blank" rel="noopener">Android App Bundle&lt;/a> 进行 apk 的动态分发，以提供 apk 的瘦身效果。在 iOS 中有类似的 &lt;a href="https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/On_Demand_Resources_Guide/Tagging.html" target="_blank" rel="noopener">On Demand resource&lt;/a>，但比起 Android App Bundle] 有着更多的局限性。&lt;/p>
+&lt;figure id="figure-android-app-bundle">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Android APP Bundle" srcset="
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-app-bundle_hub1c43d67d0ff200f9045f7633b8e83ad_2221506_4716b29e07475790c33db4a0b8d50537.jpg 400w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-app-bundle_hub1c43d67d0ff200f9045f7633b8e83ad_2221506_24458c817490e57e22ef4a94084e97d4.jpg 760w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-app-bundle_hub1c43d67d0ff200f9045f7633b8e83ad_2221506_1200x1200_fit_q75_lanczos.jpg 1200w"
+src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/android-app-bundle_hub1c43d67d0ff200f9045f7633b8e83ad_2221506_4716b29e07475790c33db4a0b8d50537.jpg"
+width="760"
+height="570"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Android APP Bundle
+&lt;/figcaption>&lt;/figure>
+&lt;h2 id="还有-wearosfirebasearcore">还有 WearOS、Firebase、ARCore&lt;/h2>
+&lt;h4 id="wearos">WearOS&lt;/h4>
+&lt;p>WearOS 在这届 GDD 上更多的是商业上的介绍，广告以及产品上的介绍比较多，在开幕式上也花了一定的篇幅去介绍 WearOS 的合作伙伴以及品牌。与开发者相关的有《Wear OS 表盘开发入门》以及《Wear OS 应用开发入门》，由于时间有限没有前去与会。&lt;/p>
+&lt;figure id="figure-arcore">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="ARCore" srcset="
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/arcore_huaf8692f3e3b6ed4d627c2ba9337c3574_2508752_89142d9f41f3158fc5f79f1ed761cba7.jpg 400w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/arcore_huaf8692f3e3b6ed4d627c2ba9337c3574_2508752_cd41d06f2ab78b24febe848adc995f69.jpg 760w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/arcore_huaf8692f3e3b6ed4d627c2ba9337c3574_2508752_1200x1200_fit_q75_lanczos.jpg 1200w"
+src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/arcore_huaf8692f3e3b6ed4d627c2ba9337c3574_2508752_89142d9f41f3158fc5f79f1ed761cba7.jpg"
+width="760"
+height="570"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+ARCore
+&lt;/figcaption>&lt;/figure>
+&lt;h4 id="arcore">ARCore&lt;/h4>
+&lt;p>ARCore 也是本届 GDD 的焦点之一，ARCore 是 Google 的增强现实体验构建平台。 ARCore 利用不同的 API 让您的手机能够感知其环境、了解现实世界并与信息进行交互。今次 Google 一共安排了 2 场 Codelab 以及 4 场面向开发者的 Keynote 来帮助开发者更快更平滑的入门 ARCore 开发，非常遗憾的是笔者没有更多的时间去参与到其中。&lt;/p>
+&lt;h4 id="firebase">Firebase&lt;/h4>
+&lt;p>这次大会上重点介绍了下 Firebase 的 Realtime Database，看上去和 CloudKit 差不多，主要的重点还是之后的 ML Kit for Firebase。结合了 ML Kit 的 Firebase 在 TensorFlow Lite 助力下，App 可以动态加载训练模型而非直接打包在 App 中，从而达到模型热升级的目的，对中小型开发团队来说是相当有好的。&lt;/p>
+&lt;figure id="figure-ml-kit">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="ML Kit" srcset="
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/mlkit_hu40e6832b51e0a0438476c820377137ed_1577279_10c54f9eb7bda1369a3291fdd3131b18.jpg 400w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/mlkit_hu40e6832b51e0a0438476c820377137ed_1577279_f3bae333066a69be9381edd99c04aaff.jpg 760w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/mlkit_hu40e6832b51e0a0438476c820377137ed_1577279_1200x1200_fit_q75_lanczos.jpg 1200w"
+src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/mlkit_hu40e6832b51e0a0438476c820377137ed_1577279_10c54f9eb7bda1369a3291fdd3131b18.jpg"
+width="760"
+height="570"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+ML Kit
+&lt;/figcaption>&lt;/figure>
+&lt;h2 id="最后">最后&lt;/h2>
+&lt;p>总得来说，这次 GDD 还是收获不小，Google 给予了开发者对于未来技术的引导、解答以及分享。技术分享有深有浅，还有许多非开发相关、针对商业市场的 Keynote 可供选择。未来 TensorFlow 依然是 Google 的绝对重点，Android 的整个生态越发趋于完善与规范，Flutter 蓄势待发准备大一统。不过比较可惜的是今年没有 IoT 的开发版可以拿，期待明年的 GDD。&lt;/p>
+&lt;figure id="figure-終わり">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="終わり" srcset="
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/end_hu13e20c60a373f387b083b057ce766f7c_1133942_ee8a5097cd79f390bb91dc4983fac579.jpg 400w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/end_hu13e20c60a373f387b083b057ce766f7c_1133942_ce6aaedc1cab9145d244bb9d25ffbf4e.jpg 760w,
+/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/end_hu13e20c60a373f387b083b057ce766f7c_1133942_1200x1200_fit_q75_lanczos.jpg 1200w"
+src="/talk/google-developer-days-china-2018-%E5%8F%82%E4%BC%9A%E8%AE%B0%E5%BD%95/end_hu13e20c60a373f387b083b057ce766f7c_1133942_ee8a5097cd79f390bb91dc4983fac579.jpg"
+width="760"
+height="570"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+終わり
+&lt;/figcaption>&lt;/figure></description></item></channel></rss>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Essay | 徐旭栋</title><link>/tag/essay/</link><atom:link href="/tag/essay/index.xml" rel="self" type="application/rss+xml"/><description>Essay</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Wed, 11 Sep 2019 00:00:00 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>Essay</title><link>/tag/essay/</link></image><item><title>如何写出一篇好博文</title><link>/2019/09/11/%E5%A6%82%E4%BD%95%E5%86%99%E5%87%BA%E4%B8%80%E7%AF%87%E5%A5%BD%E5%8D%9A%E6%96%87/</link><pubDate>Wed, 11 Sep 2019 00:00:00 +0000</pubDate><guid>/2019/09/11/%E5%A6%82%E4%BD%95%E5%86%99%E5%87%BA%E4%B8%80%E7%AF%87%E5%A5%BD%E5%8D%9A%E6%96%87/</guid><description>&lt;h2 id="序">序&lt;/h2>
+&lt;p>谈起这个博客，建立之初只是为了记录一些技术相关的话题，用来沉淀一些日常学习的技术知识点以及做备忘用。随着时间流逝已经 5 个年头了，写作也变成了一个习惯保持了下来，也不断的尝试从原来的计算机科学学术类逐渐扩大到 STEM 乃至其他的各类型的文章。&lt;/p>
+&lt;ul class="cta-group">
+&lt;li>
+&lt;a href="/post/gossip/first-post" target="_blank" rel="noopener" class="btn btn-primary px-3 py-3">&lt;strong>创篇号&lt;/strong> (2014)&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;p>随着不断的学习与深入，就越发会觉得自身各类知识面的狭窄与片面，潜在的求知欲被这种外在的驱动力所激发，促使着你不断挖掘知识的深度与拓宽学术广度。在写作过程中，如何组织与管理跨学科文章，如何针对选题主旨拿捏文本表现形式成为了不小的问题。由于理工科和文科在学术侧重上的区别会导致行文风格和段落组织大相径庭，比如 STEM 更强调数理逻辑和科学证明，会以各类图表和数据来增加文本说服力；在文章的选题上存在强调客观事实的文档或者说明类，也存在发表个人观点的强主观意愿的内容，不同的文章会有不同的处理方式，后续有机会抽几个章节赘述。&lt;/p>
+&lt;h2 id="为什么要写文章">为什么要写文章&lt;/h2>
+&lt;p>就如美国物理学家&lt;a href="https://en.wikipedia.org/wiki/John_Archibald_Wheeler" target="_blank" rel="noopener">约翰·阿奇博尔德·惠勒&lt;/a>所说：&lt;/p>
+&lt;blockquote>
+&lt;p>“One can only learn by teaching.” — John Archibald Wheeler&lt;/p>
+&lt;/blockquote>
+&lt;p>以教为学是一个很好的学习方法，如果一个复杂深奥的问题能用直白浅显的语言讲清楚并传授给他人，那么说明这个知识点已经被学习者真正理解并运用。通常这么做可以促使你剖析知识要点，用你自己对领域知识的了解程度去做易懂的总结，这个过程会促使你回顾你学习过的内容，对知识盲区进行查漏补缺，直到最终能够用大白话、最简单的术语去描述并让人听懂。从个人角度来说，写文章的本质就是学习的沉淀，沉淀的目的是为了提炼再利用，这个过程就是一个知识的提炼总结以及教授传递。就好比字典、词典存在的意义：&lt;/p>
+&lt;ul>
+&lt;li>提供语言领域内的使用指南&lt;/li>
+&lt;li>字、词汇、语言的知识点速查&lt;/li>
+&lt;li>知识的传递&lt;/li>
+&lt;/ul>
+&lt;p>写文章简单，写出有深度的文章难，写出即易懂又有深度的文章是难中之难。只学不沉淀必然会遗忘，再次遇到同样的问题就需要花时间重新回忆或直接踩坑，这就是写作与沉淀的目的。同样，在提炼沉淀之余，分类与索引也是必不可少的，上文提到写作的重要目的之一是再利用，如果只是写了文章而从不去使用，那就好比把一篇很有营养的文章加入了你的收藏夹，心想下次一定能用到，渐渐的你就会发现收藏夹越来越臃肿难以管理，最终变成你成长过程中的过客，这样的场景是不是似曾相识。&lt;/p>
+&lt;p>所以本博客的所有文章会以忽略选题的内容为前提，把文章内容涉及到的学科领域作为类别归属，在此基础上以 CIP 的策略作分类化管理，使得学科特定的知识点查找与索引会非常简便。&lt;/p>
+&lt;h2 id="写作工具">写作工具&lt;/h2>
+&lt;h3 id="博客系统">博客系统&lt;/h3>
+&lt;h4 id="hugo">Hugo&lt;/h4>
+&lt;p>开发者文档&lt;/p>
+&lt;p>&lt;a href="https://gohugo.io/documentation/" target="_blank" rel="noopener">Docs&lt;/a>&lt;/p>
+&lt;h4 id="hexo">Hexo&lt;/h4>
+&lt;p>关于 Hexo 的搭建可以参考
+&lt;div class="pub-list-item" style="margin-bottom: 1rem">
+&lt;i class="far fa-file-alt pub-icon" aria-hidden="true">&lt;/i>
+&lt;span class="article-metadata li-cite-author">
+&lt;span class="author-highlighted">
+徐旭栋&lt;/span>
+&lt;/span>
+(2014).
+&lt;a href="/2014/06/12/%E7%94%A8-hexo-%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">用 Hexo 搭建个人博客&lt;/a>.
+&lt;p>
+&lt;/p>
+&lt;/div>
+&lt;/p>
+&lt;h3 id="用富媒体润色文本">用富媒体润色文本&lt;/h3>
+&lt;h4 id="图标">图标&lt;/h4>
+&lt;p>&lt;a href="https://www.flaticon.com" target="_blank" rel="noopener">flaticon&lt;/a>&lt;/p>
+&lt;h4 id="图床">图床&lt;/h4>
+&lt;p>出于各种目的，比如减少服务器的压力、加快加载速度、减少发布包的体积等，图片资源会通常以 CDN 的形式来存储与部署，这里就要用到各种 CDN 服务。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;h5 id="github-user-images">GitHub &lt;code>user-images&lt;/code>&lt;/h5>
+&lt;p>在 GitHub 提 &lt;code>issue&lt;/code> 时添加图片，GitHub 会将图片资源会分发至 CDN，生成地址为 &lt;code>user-images.githubusercontent.com/{path}/{hash}&lt;/code> 的链接，从某种角度来看 GitHub 可以用来作图床。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="用更强说服力的图表代替语言">用更强说服力的图表代替语言&lt;/h3>
+&lt;h4 id="mermaid">Mermaid&lt;/h4>
+&lt;p>&lt;a href="https://mermaid-js.github.io/mermaid/#/" target="_blank" rel="noopener">Mermaid&lt;/a> 是一个集流程图、状态图、时序图、甘特图绘制库，使用 DSL 代码就可以绘制出漂亮清晰的图片，配合上 markdown 是 STEM 相关文章的利器，同时提供了&lt;a href="https://mermaid-js.github.io/mermaid-live-editor/" target="_blank" rel="noopener">在线编辑器&lt;/a>提供实时预览。&lt;/p>
+&lt;h4 id="plotly">Plotly&lt;/h4>
+&lt;p>&lt;a href="https://plotly.com" target="_blank" rel="noopener">Plotly&lt;/a> 是一个通过 &lt;code>JSON&lt;/code> 作为数据源的图标绘制工具，并且提供了可视化&lt;a href="http://plotly-json-editor.getforge.io" target="_blank" rel="noopener">在线编辑工具&lt;/a>。&lt;/p>
+&lt;h2 id="文章的表现力">文章的表现力&lt;/h2>
+&lt;p>表现力需要更具选题的内容来作具体调整。&lt;/p>
+&lt;h3 id="stem">STEM&lt;/h3>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;div class="pub-list-item" style="margin-bottom: 1rem">
+&lt;i class="far fa-file-alt pub-icon" aria-hidden="true">&lt;/i>
+&lt;span class="article-metadata li-cite-author">
+&lt;span class="author-highlighted">
+徐旭栋&lt;/span>
+&lt;/span>
+(2014).
+&lt;a href="/2014/06/11/%E5%88%9B%E7%AF%87%E5%8F%B7/">创篇号&lt;/a>.
+&lt;p>
+&lt;/p>
+&lt;/div>
+&lt;/li>
+&lt;/ol></description></item><item><title>创篇号</title><link>/2014/06/11/%E5%88%9B%E7%AF%87%E5%8F%B7/</link><pubDate>Wed, 11 Jun 2014 00:00:00 +0000</pubDate><guid>/2014/06/11/%E5%88%9B%E7%AF%87%E5%8F%B7/</guid><description>&lt;p>在浮躁快餐文化的催化下，人逐渐变的懒散与缺乏耐性，在这样的环境下要想压抑住浮躁的内心、放平心态好好学习也成了一件非常不容易的事情。&lt;/p>
+&lt;p>走马观花是很多人在学习过程中遇到的问题，在从外部获取各种信息时我们总想着尽可能多的去汲取知识，却忽略了对于知识的复习与运用，渐渐的就会丧失了自我思考的能力，并且根据 &lt;a href="https://en.wikipedia.org/wiki/Forgetting_curve" target="_blank" rel="noopener">Forgetting curve&lt;/a>，学过的东西如果不用也不整理那要不了多久就会忘的一干二净，所以知识点的沉淀与复习运用是很重要的。于是乎觉着学习的东西要有个地方来沉淀复盘下，一直想趁着有时间搭个博客来纪录下以后学习的历程，沉淀下有关技术学习以及生活的点滴。所以，从今天开始写博文，在学习之路上留下点技术印记。&lt;/p></description></item></channel></rss>

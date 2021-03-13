@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>The Objective-C Programming Language | 徐旭栋</title><link>/category/the-objective-c-programming-language/</link><atom:link href="/category/the-objective-c-programming-language/index.xml" rel="self" type="application/rss+xml"/><description>The Objective-C Programming Language</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Sat, 25 Jun 2016 10:31:29 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>The Objective-C Programming Language</title><link>/category/the-objective-c-programming-language/</link></image><item><title>Introduce Objective-C Evolution</title><link>/2016/06/25/introduce-objective-c-evolution/</link><pubDate>Sat, 25 Jun 2016 10:31:29 +0000</pubDate><guid>/2016/06/25/introduce-objective-c-evolution/</guid><description>&lt;h2 id="序">序&lt;/h2>
+&lt;p>Swift 3.0 问世之际，随之而来的是 &lt;code>API&lt;/code> 的清晰语意、更加完备的泛型、更 Swift Style 的 C APIs 等等。这也意味着 Swift 未来霸主地位越来越难被撼动。回看 Objective-C，作为一门 1980s 诞生的语言，在 Swift 的持续迭代下，ObjC 越发失去生机，&lt;code>Type Inference&lt;/code> 的缺失、&lt;code>Dynamic Dispatch&lt;/code> 的性能开销、不安全的 &lt;code>runtime&lt;/code>，过度啰嗦的 API 设计，都使得其在各方面被 Swift 全面碾压，大概目前能谈得上优势的也只剩下强大的 &lt;code>runtime&lt;/code> 动态性和 C/C++ 混编了。&lt;/p>
+&lt;p>今次回顾下 Objective-C，依稀能看出语言设计上的年代感，对于 Objective-C 来说，如果当初 Swift 没有出现的话，Objective-C 3.0 是否能如期问世？&lt;/p>
+&lt;ul class="cta-group">
+&lt;li>
+&lt;a href="../objc-evolution-proposals" target="_blank" rel="noopener" class="btn btn-primary px-3 py-3">View &lt;strong>The Objective-C Programming Language Evolution&lt;/strong>&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="objective-c-evolution">Objective-C Evolution&lt;/h2>
+&lt;h3 id="开端">开端&lt;/h3>
+&lt;p>尽管 Swift 的语法与性能以其压倒性的优势凌驾于 ObjC 之上，但缺点和短板的也很明显：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>从 Swift 1.0 到 2.3 再到目前的 3.0，Swift 的飞速发展有目共睹，但与此同时其不稳定的 ABI 也一直被诟病，开发者们戏称道 Swift 1.0/2.0/3.0 是三门语言，虽然并没有那么夸张，但其对于代码的冲击性是确确实实的，对于小型团队来说 Swift 的版本迁移可能就几天就解决了，然而对大型项目来说，这个变化是毁灭性的。同时 Swift 持续迭代中产生的 &lt;code>bug&lt;/code>、&lt;code>issue&lt;/code> 并不能被很快的解决，那么势必我们会偶然间为 Swift 的发展而踩坑。通常来说，这些迁移所带来的额外成本在快速迭代的开发环境下是不被允许的。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Swift 表现和 C++ 在很多地方都十分相似，非常 static，这也意味着 Swift 在动态性上非常薄弱，stdlib 中的 &lt;code>Mirror&lt;/code> 相比于 ObjC 的 &lt;code>runtime&lt;/code>，简直就是小巫见大巫，再者 &lt;code>Foundation&lt;/code> 中的 &lt;code>KVC&lt;/code>、&lt;code>KVO&lt;/code> 在 Swift 中需要借助 &lt;code>NSObject&lt;/code> 和 &lt;code>dynamic&lt;/code> 来完成。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>对于一些有历史包袱或者偏底层的框架来说，它们无法从 C/C++ 剥离，而对于 C++，Swift 则必须通过 C、ObjC 来作为桥梁，无形中增加了开发成本，同时 Swift 对于指针的支持特别是函数指针并不是那么的友好，虽然这也无可厚非，毕竟 Swift 强调 &lt;code>safe&lt;/code>，指针本身就是 &lt;code>unsafe&lt;/code> 的，但使用上总有那么些许的不流畅。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>虽然目前的 Swift 依然有不少缺点，但作为一个积极的 Swift 布道者来说，其仍然是我目前为止评价最高的一门语言，其强大而优雅的语法特性、涵盖了多种模式的编码环境、内存管理哲学、以及针对性能所做的优化是目前的 Objective-C 望成莫及的。&lt;/p>
+&lt;div class="alert alert-info">
+&lt;div>
+了解更多
+&lt;/div>
+&lt;/div>
+&lt;div class="pub-list-item" style="margin-bottom: 1rem">
+&lt;i class="far fa-file-alt pub-icon" aria-hidden="true">&lt;/i>
+&lt;span class="article-metadata li-cite-author">
+&lt;span class="author-highlighted">
+徐旭栋&lt;/span>
+&lt;/span>
+(2016).
+&lt;a href="/2016/06/25/swift-%E8%AE%BE%E8%AE%A1%E5%93%B2%E5%AD%A6/">Swift 设计哲学&lt;/a>.
+&lt;p>
+&lt;/p>
+&lt;/div>
+&lt;h3 id="共生">共生&lt;/h3>
+&lt;p>事实上 Apple 为了让 Swift 和 Objective-C、Foundation 层面互相兼容，在 LLVM 上做了非常多的工作，同样在 Swift Native 层面也做了大量的 Cast 和 Bridge，以至于导致了好多 Bug，列举几个我遇到过的:&lt;/p>
+&lt;ul>
+&lt;li>NSError 的 &lt;code>overrelease&lt;/code>，出现在 NSError 和 Error 互相 Cast 的场景，主要挂在 &lt;code>tryDynamicCastNSErrorObjectToValue&lt;/code>，通过 Allocation 最终定位为 swift runtime 的 bug
+&lt;ul>
+&lt;li>&lt;a href="https://bugs.swift.org/browse/SR-9207" target="_blank" rel="noopener">SR-9207&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://stackoverflow.com/questions/62410980/crash-while-casting-object-in-swift" target="_blank" rel="noopener">Crash while casting object in swift&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>引入 Swift 的代价是巨大的，但带来的收益同样也很可观，客观来说 Objective-C 的地位已然被撼动，试问一句还能战多久？&lt;/p>
+&lt;h3 id="理想">理想&lt;/h3>
+&lt;p>Objective-C 最大优点在于非常动态，这同样也是其缺点。高度的动态性导致其类型的不安全，冗长的自描述语法导致编码时效率低下，和 C/C++ 高度兼容的多语言特性增加了编码方式的可能性，但也导致潜在要处理的编码场景变得更为复杂。&lt;/p>
+&lt;p>汲取现代语言的特性，展望 Objective-C 3.0 可拓展的特性：&lt;/p>
+&lt;ul>
+&lt;li>类似 &lt;code>var&lt;/code> 和 &lt;code>let&lt;/code> 关键字，参考 Swift，既满足了类型推导，又满足了可变性控制&lt;/li>
+&lt;li>&lt;code>guard&lt;/code> 和 &lt;code>defer&lt;/code> 关键字，参考 Go 和 Swift 构建优雅 Control Flow 的必要元素&lt;/li>
+&lt;li>&lt;code>aysnc&lt;/code> 和 &lt;code>await&lt;/code> 关键字和协程，参考 .NET&lt;/li>
+&lt;li>支持泛型和模版，目前的 Objective-C 仅支持轻量型泛型&lt;/li>
+&lt;li>以 &lt;code>.&lt;/code> 语法代替 &lt;code>[]&lt;/code>，事实上 Foundation 中大量的 &lt;code>getter&lt;/code> 都在逐渐适配成 @property，&lt;code>.&lt;/code> 语法的可用范围正在逐渐变多&lt;/li>
+&lt;li>参数的空指针自描述，参考 Swift，在 Swift 中由 Optional 完成，Objective-C 中有 &lt;code>nullability&lt;/code> 关键字，不过主要服务于 Objective-C 到 Swift 的 API naming&lt;/li>
+&lt;li>Protocol 的默认实现，参考 Swift&lt;/li>
+&lt;li>Access Control&lt;/li>
+&lt;/ul>
+&lt;h3 id="evolution">Evolution&lt;/h3>
+&lt;p>得益于 LLVM 以及出色的 Clang 前端，使得 Swift 以及一些现代语言的语法特性在 ObjC 中出现具有了可能性。拟参考 &lt;a href="https://github.com/apple/swift-evolution" target="_blank" rel="noopener">apple/swift-evolution&lt;/a> 的形式，基于对 Objective-C 原生特性拓展研究以及衍生特性的挖掘目的，建立 The Objective-C Programming Language Evolution 作为 Objective-C 的 CodeLab。&lt;/p>
+&lt;h3 id="结语">结语&lt;/h3>
+&lt;p>虽然目前 Swift 在苹果的推动下气势越来越猛、野心也越来越大，未来越来越多的语言特性、更完备的 &lt;code>stdlib&lt;/code> 以及更加稳定的 ABI 成为了苹果当下的主要目标。但包括苹果自己的框架在内，以及仍然有许多应用、优秀的开源库无法从 Objective-C/C++ 剥离。个人认为一些优秀并且已经被开源社区实现的特性是可以作为语言的标准特性加入到 Objective-C 的，就看 Apple 有没有这个意愿发布 Objective-C 3.0，毕竟 Apple 和 &lt;strong>
+&lt;i class="fab fa-steam pr-1 fa-fw">&lt;/i>G 胖&lt;/strong>还是不一样的。&lt;/p>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;div class="pub-list-item" style="margin-bottom: 1rem">
+&lt;i class="far fa-file-alt pub-icon" aria-hidden="true">&lt;/i>
+&lt;span class="article-metadata li-cite-author">
+&lt;span class="author-highlighted">
+徐旭栋&lt;/span>
+&lt;/span>
+(2016).
+&lt;a href="/post/tech-for-good/objc-evolution-proposals/">The Objective-C Programming Language Evolution&lt;/a>.
+&lt;p>
+&lt;/p>
+&lt;/div></description></item><item><title>Swift 设计哲学</title><link>/2016/06/25/swift-%E8%AE%BE%E8%AE%A1%E5%93%B2%E5%AD%A6/</link><pubDate>Sat, 25 Jun 2016 10:31:29 +0000</pubDate><guid>/2016/06/25/swift-%E8%AE%BE%E8%AE%A1%E5%93%B2%E5%AD%A6/</guid><description>&lt;h2 id="序">序&lt;/h2>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://developer.apple.com/forums/thread/16363" target="_blank" rel="noopener">Design decisions / goals / philosophy of Swift&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://forums.swift.org/t/language-design-philosophy-swift-vs-other-recent-languages/1338" target="_blank" rel="noopener">Language design philosophy, Swift vs Other recent languages&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>快速枚举与迭代器</title><link>/2016/01/25/%E5%BF%AB%E9%80%9F%E6%9E%9A%E4%B8%BE%E4%B8%8E%E8%BF%AD%E4%BB%A3%E5%99%A8/</link><pubDate>Mon, 25 Jan 2016 00:00:00 +0000</pubDate><guid>/2016/01/25/%E5%BF%AB%E9%80%9F%E6%9E%9A%E4%B8%BE%E4%B8%8E%E8%BF%AD%E4%BB%A3%E5%99%A8/</guid><description>&lt;h2 id="swift-中的快速枚举">Swift 中的快速枚举&lt;/h2>
+&lt;h3 id="swift-中的-forin">Swift 中的 &lt;code>for...in&lt;/code>&lt;/h3>
+&lt;p>在 Swift 中所有实现了 &lt;code>Sequence&lt;/code> 的类型都能用 &lt;code>for...in&lt;/code> 来进行快速枚举，究其根本是因为 &lt;code>Sequence&lt;/code> 都实现了一个迭代器 &lt;code>func makeIterator() -&amp;gt; Iterator: IteratorProtocol&lt;/code>，我们实现一个支持随机枚举的类型。&lt;/p>
+&lt;pre>&lt;code class="language-swift">// 首先定义一个随机迭代器
+struct RandomIterator&amp;lt;T&amp;gt;: IteratorProtocol {
+typealias Element = T
+private var elements: [Element]
+private var index: Int = 0
+init(_ elements: [Element]) {
+self.elements = elements
+}
+mutating func next() -&amp;gt; T? {
+guard elements.count &amp;gt; 0 else {
+return nil
+}
+index = Int(arc4random_uniform(UInt32(elements.count)));
+let element = elements[index]
+defer {
+elements.remove(at: index)
+}
+return element;
+}
+}
+// 定义一个随机序列
+struct RandomSequence&amp;lt;T&amp;gt;: Sequence {
+typealias Element = T
+private var elements: [Element]
+init(_ elements: [Element]) {
+self.elements = elements
+}
+typealias Iterator = RandomIterator&amp;lt;Element&amp;gt;
+func makeIterator() -&amp;gt; Iterator {
+return RandomIterator(elements)
+}
+}
+&lt;/code>&lt;/pre>
+&lt;p>输出为如下所示。&lt;/p>
+&lt;pre>&lt;code class="language-swift">let seq = RandomSequence([1, 2, 3, 4, 5, 6, 7, 8, 9])
+let loopBegin = { print(&amp;quot;========= loop =========&amp;quot;) }
+loopBegin()
+for (i, e) in seq.enumerated() {
+print(&amp;quot;Elemet \(i) is \(e)&amp;quot;)
+}
+loopBegin()
+for (i, e) in seq.enumerated() {
+print(&amp;quot;Elemet \(i) is \(e)&amp;quot;)
+}
+// terminal
+========= loop =========
+Elemet 0 is 7
+Elemet 1 is 8
+Elemet 2 is 2
+Elemet 3 is 4
+Elemet 4 is 5
+Elemet 5 is 1
+Elemet 6 is 3
+Elemet 7 is 9
+Elemet 8 is 6
+========= loop =========
+Elemet 0 is 3
+Elemet 1 is 6
+Elemet 2 is 7
+Elemet 3 is 4
+Elemet 4 is 5
+Elemet 5 is 9
+Elemet 6 is 2
+Elemet 7 is 1
+Elemet 8 is 8
+&lt;/code>&lt;/pre>
+&lt;h3 id="swift-下的-forin-展开">Swift 下的 &lt;code>for...in&lt;/code> 展开&lt;/h3>
+&lt;p>Swift 下 &lt;code>for...in&lt;/code> 最终会被展开成如下代码。&lt;/p>
+&lt;pre>&lt;code class="language-swift">var iterator = seq.makeIterator()
+while let element = iterator.next() {
+print(element)
+}
+&lt;/code>&lt;/pre>
+&lt;h2 id="cocoa-中的-nsfastenumeration">Cocoa 中的 &lt;code>NSFastEnumeration&lt;/code>&lt;/h2>
+&lt;p>谈到 Cocoa 的 &lt;code>for...in&lt;/code>，自然会联系到 &lt;code>@protocol NSFastEnumeration&lt;/code>，其只一个方法需要实现。&lt;/p>
+&lt;pre>&lt;code class="language-objc">typedef struct {
+unsigned long state;
+id __unsafe_unretained _Nullable * _Nullable itemsPtr;
+unsigned long * _Nullable mutationsPtr;
+unsigned long extra[5];
+} NSFastEnumerationState;
+@protocol NSFastEnumeration
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained _Nullable [_Nonnull])buffer count:(NSUInteger)len;
+@end
+&lt;/code>&lt;/pre>
+&lt;ul>
+&lt;li>&lt;code>@param state&lt;/code> 它保存了整个快速枚举过程所需要的 &lt;code>Context&lt;/code>
+&lt;ul>
+&lt;li>&lt;code>itemsPtr&lt;/code> 迭代元素的数组&lt;/li>
+&lt;li>&lt;code>mutationsPtr&lt;/code> 一个标识符用于保证在枚举过程中的集合不被修改，这也是为什么在 &lt;code>for...in&lt;/code> Loop 中修改 &lt;code>Mutable Collection&lt;/code> 会导致 Crash 的原因&lt;/li>
+&lt;li>&lt;code>state&lt;/code> 和 &lt;code>extra&lt;/code> 保留字段，用于给 &lt;code>Iterator&lt;/code> 保存上下文的信息&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;code>@param buffer&lt;/code> 缓冲区，用于存放当前需要被迭代的元素&lt;/li>
+&lt;li>&lt;code>@param len&lt;/code> 缓冲区的长度&lt;/li>
+&lt;li>&lt;code>@return&lt;/code> 当前迭代缓冲区的元素个数，如果是 0 表示迭代完成&lt;/li>
+&lt;/ul>
+&lt;h3 id="protocol-nsfastenumeration-与-forin">&lt;code>@protocol NSFastEnumeration&lt;/code> 与 &lt;code>for...in&lt;/code>&lt;/h3>
+&lt;p>一段 &lt;code>for...in&lt;/code> Loop。&lt;/p>
+&lt;pre>&lt;code class="language-objc">id&amp;lt;NSFastEnumeration&amp;gt; enumatable;
+for (id element in enumatable) {
+NSLog(@&amp;quot;%@&amp;quot;, element);
+}
+&lt;/code>&lt;/pre>
+&lt;p>&lt;code>$ clang -rewrite-objc main.m&lt;/code> 之后如下所示：&lt;/p>
+&lt;pre>&lt;code class="language-cpp">id/*&amp;lt;NSFastEnumeration&amp;gt;*/ enumatable;
+{
+id element;
+// 初始化 NSFastEnumerationState Context
+struct __objcFastEnumerationState enumState = { 0 };
+// 开辟一块 size = 16 的缓冲区，用于给 Iterator 填充每次被迭代的元素
+id __rw_items[16];
+// 被迭代的集合
+id l_collection = (id) enumatable;
+// 首次迭代，向实现了 NSFastEnumeration 的该集合对象对象发送消息 &amp;quot;countByEnumeratingWithState:objects:count:&amp;quot;
+_WIN_NSUInteger limit =
+((_WIN_NSUInteger (*) (id, SEL, struct __objcFastEnumerationState *, id *, _WIN_NSUInteger))(void *)objc_msgSend)
+((id)l_collection,
+sel_registerName(&amp;quot;countByEnumeratingWithState:objects:count:&amp;quot;),
+&amp;amp;enumState, (id *)__rw_items, (_WIN_NSUInteger)16);
+// 检查 ret == 0 ?，如果为 0 表示迭代结束
+if (limit) {
+// 获取 Mutations flag，用于集合修改校验
+unsigned long startMutations = *enumState.mutationsPtr;
+do {
+unsigned long counter = 0;
+do {
+// 保证集合不被修改，否则抛出异常
+if (startMutations != *enumState.mutationsPtr) objc_enumerationMutation(l_collection);
+// 获取枚举的元素
+element = (id)enumState.itemsPtr[counter++];
+// for...in 的 body
+NSLog((NSString *)&amp;amp;__NSConstantStringImpl__var_folders__7_td3r8r7j44s2gh39zqkkhlym0000gn_T_main_b0cf04_mi_0, element);
+} while (counter &amp;lt; limit);
+// 当前元素遍历完毕，开始下一次迭代
+} while (
+(limit = ((_WIN_NSUInteger (*) (id, SEL, struct __objcFastEnumerationState *, id *, _WIN_NSUInteger))(void *)objc_msgSend)
+((id)l_collection,
+sel_registerName(&amp;quot;countByEnumeratingWithState:objects:count:&amp;quot;),
+&amp;amp;enumState, (id *)__rw_items, (_WIN_NSUInteger)16))
+);
+element = ((id)0)
+} else {
+element = ((id)0);
+}
+}
+&lt;/code>&lt;/pre>
+&lt;p>简而言之，在完整的迭代流程中，每次会给 Iterator 传入一个缓冲区 &lt;code>buffer&lt;/code>，用于填充需要被迭代的元素，同时会传入一个 &lt;code>NSFastEnumerationState&lt;/code> 用来提供当前迭代状态的上下文，当该方法返回值 &lt;code>ret != 0&lt;/code>，表示迭代并没有结束，反之亦然。相比于 &lt;code>IteratorProtocol&lt;/code> 的单个返回元素，&lt;code>NSFastEnumeration&lt;/code> 在调用过程中是批量返回元素的，在 &lt;code>Cocoa&lt;/code> 中和 &lt;code>IteratorProtocol&lt;/code> 的表现更加类似的则是 &lt;code>NSEnumerator&lt;/code> 这个抽象类。&lt;/p>
+&lt;pre>&lt;code class="language-objc">@interface NSEnumerator&amp;lt;ObjectType&amp;gt; : NSObject &amp;lt;NSFastEnumeration&amp;gt;
+- (nullable ObjectType)nextObject;
+@end
+&lt;/code>&lt;/pre>
+&lt;h3 id="实现一个基于-nsfastenumeration-的随机迭代器">实现一个基于 &lt;code>NSFastEnumeration&lt;/code> 的随机迭代器&lt;/h3>
+&lt;pre>&lt;code class="language-objc">// main.mm
+@interface RandomIterator: NSObject &amp;lt;NSFastEnumeration&amp;gt;
+@property (nonatomic, assign) std::vector&amp;lt;id&amp;gt; elements;
+@property (nonatomic, assign) int capicity;
+- (id)initWithElements:(NSArray&amp;lt;id&amp;gt; *)elements;
+@end
+@implementation RandomIterator
+- (id)initWithElements:(NSArray&amp;lt;NSObject *&amp;gt; *)elements {
+if ((self = super.init)) {
+for (auto e in elements) {
+_elements.push_back(e);
+}
+_capicity = (int)_elements.size();
+}
+return self;
+}
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id _Nullable __unsafe_unretained [])buffer count:(NSUInteger)len {
+auto countOfItemsAlreadyEnumerated = state-&amp;gt;state;
+// This is the initialization condition, so we'll do one-time setup here.
+if (countOfItemsAlreadyEnumerated == 0) {
+// state-&amp;gt;mutationsPtr MUST NOT be NULL and SHOULD NOT be set to self.
+state-&amp;gt;mutationsPtr = &amp;amp;state-&amp;gt;extra[0];
+}
+auto count = 0;
+if (countOfItemsAlreadyEnumerated &amp;lt; _elements.size()) {
+state-&amp;gt;itemsPtr = buffer;
+while(count &amp;lt; len) {
+auto randomIndex = (int)arc4random() % MAX(1, (_capicity - 1 - countOfItemsAlreadyEnumerated));
+buffer[countOfItemsAlreadyEnumerated++] = _elements[randomIndex];
+count++;
+if (_elements.size() == 1) {
+break;
+} else {
+_elements.erase(_elements.begin() + randomIndex);
+}
+}
+} else {
+count = 0;
+}
+state-&amp;gt;state = countOfItemsAlreadyEnumerated;
+return count;
+}
+@end
+&lt;/code>&lt;/pre>
+&lt;p>输出如下&lt;/p>
+&lt;pre>&lt;code class="language-cpp">int main(int argc, const char * argv[]) {
+auto elements = @[@1, @2, @3, @4, @5, @6, @7, @8, @9];
+id&amp;lt;NSFastEnumeration&amp;gt; enumatable = [RandomIterator.alloc initWithElements: elements];
+for (id element in enumatable) {
+NSLog(@&amp;quot;%@&amp;quot;, element);
+}
+return 0;
+}
+// terminal
+Iterator[30557:6346806] 3
+Iterator[30557:6346806] 1
+Iterator[30557:6346806] 7
+Iterator[30557:6346806] 5
+Iterator[30557:6346806] 6
+Iterator[30557:6346806] 2
+Iterator[30557:6346806] 8
+Iterator[30557:6346806] 4
+Iterator[30557:6346806] 9
+&lt;/code>&lt;/pre>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://developer.apple.com/library/content/samplecode/FastEnumerationSample/Introduction/Intro.html" target="_blank" rel="noopener">Enumeration Sample&lt;/a>&lt;/li>
+&lt;/ol></description></item></channel></rss>

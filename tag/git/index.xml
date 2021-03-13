@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>git | 徐旭栋</title><link>/tag/git/</link><atom:link href="/tag/git/index.xml" rel="self" type="application/rss+xml"/><description>git</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Sat, 04 Oct 2014 21:01:15 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>git</title><link>/tag/git/</link></image><item><title>git submodule 使用过程中遇到的问题</title><link>/2014/10/04/git-submodule-%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</link><pubDate>Sat, 04 Oct 2014 21:01:15 +0000</pubDate><guid>/2014/10/04/git-submodule-%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</guid><description>&lt;h2 id="添加-submodule">添加 submodule&lt;/h2>
+&lt;p>为仓库添加 &lt;code>submodule&lt;/code> ⬇&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ git submodule add {repo-url} /local/repo/path
+&lt;/code>&lt;/pre>
+&lt;h2 id="git-clone-带有-submodule-的工程">git clone 带有 submodule 的工程&lt;/h2>
+&lt;pre>&lt;code class="language-bash">$ git clone {repo-url}
+&lt;/code>&lt;/pre>
+&lt;p>完成之后，submodule 的代码并没有一起 clone 到本地，查看工作区可以发现 &lt;code>submodule&lt;/code> 的上下文内容。&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>.gitmodules&lt;/code> 存在，里面包含了 submodule 的 url 和 &lt;code>{path/to/submodule-name}&lt;/code>&lt;/li>
+&lt;li>&lt;code>{path/to/submodule-name}&lt;/code> 存在，但是文件夹是空的&lt;/li>
+&lt;li>&lt;code>.git/config&lt;/code> 里没有submodule库的信息&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code class="language-bash">$ git status
+&lt;/code>&lt;/pre>
+&lt;p>没有发现有更改的地方。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ git submodule status
+&lt;/code>&lt;/pre>
+&lt;p>可以看到 submodule &lt;code>hash&lt;/code>，前面带有 &lt;code>-&lt;/code> 表示 submodule 还没有 &lt;code>checkout&lt;/code>。&lt;/p>
+&lt;h2 id="拉取-submodule">拉取 submodule&lt;/h2>
+&lt;p>&lt;code>git submodule init&lt;/code> 利用工作区 &lt;code>.gitmodules&lt;/code> 的信息，在 &lt;code>.git/config&lt;/code> 里建立了 &lt;code>submodule&lt;/code> 索引 &lt;code>submodule.$name.url&lt;/code>，通过如下命令可以看到 &lt;code>submodule&lt;/code> 的索引。&lt;/p>
+&lt;pre>&lt;code class="language-bash">cat .git/config
+&lt;/code>&lt;/pre>
+&lt;p>&lt;code>git submodule update&lt;/code> 默认走的是 &lt;code>git submodule update --checkout&lt;/code>，利用 &lt;code>superproject&lt;/code> 里记录的 &lt;code>hash&lt;/code> 来 &lt;code>checkout&lt;/code> submodule，这里就有个坑了。&lt;/p>
+&lt;p>文档中是这么描述的。&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>checkout&lt;/strong>
+the commit recorded in the superproject will be checked out in the submodule on a detached HEAD.
+If &amp;ndash;force is specified, the submodule will be checked out (using git checkout &amp;ndash;force if appropriate), even if the commit specified in the index of the containing repository already matches the commit checked out in the submodule.&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>detached HEAD&lt;/code> 不属于任何一条 &lt;code>tree&lt;/code>，如果之后忘记 &lt;code>checkout&lt;/code> 到某条分支上的话，那之后所有 submodule 的 commit 都基于这个 &lt;code>detached HEAD&lt;/code>，那么我们就不得不使用 &lt;code>cherry-pick&lt;/code>，把基于 &lt;code>detached HEAD&lt;/code> 提交的 commit 提交 pick 到已有的分支上。&lt;/p>
+&lt;p>并且当 &lt;code>submodule&lt;/code> 的嵌套层级太深的话，一层层的去 submodule 进行 &lt;code>init&lt;/code> 以及 &lt;code>update&lt;/code> 显然是不可取的，所以可以通过递归的方式去执行命令，这样能够做到 clone 主库以及递归拉取所有 submodule。&lt;/p>
+&lt;pre>&lt;code class="language-bash">git clone {path/to/repo-name} --recurse
+&lt;/code>&lt;/pre>
+&lt;h2 id="修改-submodule">修改 submodule&lt;/h2>
+&lt;p>通常在实际项目中执行 &lt;code>submodule update&lt;/code> 的流程如下所示。&lt;/p>
+&lt;ol>
+&lt;li>当 repo-A 目录下的 repo-B 为 submodule，在对其进行修改之后，查看此时的工作区状态。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">$ git status
+On branch master
+Changes not staged for commit:
+(use &amp;quot;git add &amp;lt;file&amp;gt;...&amp;quot; to update what will be committed)
+(use &amp;quot;git checkout -- &amp;lt;file&amp;gt;...&amp;quot; to discard changes in working directory)
+(commit or discard the untracked or modified content in submodules)
+modified: repo-B (modified content, untracked content)
+$ git diff
+diff --git a/submodules/repo-B b/submodules/repo-B
+--- a/submodules/repo-B
++++ b/submodules/repo-B
+@@ -1 +1 @@
+-Subproject commit b449370e24b331e97f6d74ca2862fcd4e3c5bd4e
++Subproject commit b449370e24b331e97f6d74ca2862fcd4e3c5bd4e-dirty
+&lt;/code>&lt;/pre>
+&lt;ol start="2">
+&lt;li>发现 submodule 是 modified 并且工作目录 dirty，执行 submodule 提交修改。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">$ cd submodules/repo-B
+$ git stage *
+$ git commit -am 'Update content'
+$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+(use &amp;quot;git push&amp;quot; to publish your local commits)
+nothing to commit, working directory clean
+&lt;/code>&lt;/pre>
+&lt;ol start="3">
+&lt;li>回到主项目，查看状态输出，显示 submodule 的 &lt;code>hash&lt;/code> 已更新。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">$ git status
+On branch master
+Changes not staged for commit:
+(use &amp;quot;git add/rm &amp;lt;file&amp;gt;...&amp;quot; to update what will be committed)
+(use &amp;quot;git checkout -- &amp;lt;file&amp;gt;...&amp;quot; to discard changes in working directory)
+modified: repo-B (new commits)
+$ git diff
+diff --git a/submodules/repo-B b/submodules/repo-B
+--- a/submodules/repo-B
++++ b/submodules/repo-B
+@@ -1 +1 @@
+-Subproject commit b449370e24b331e97f6d74ca2862fcd4e3c5bd4e
++Subproject commit db560723ded8d1a0839dc08fb1e4324b30545c05
+&lt;/code>&lt;/pre>
+&lt;ol start="4">
+&lt;li>主工程提交修改。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">$ git stage *
+$ git status
+On branch master
+Changes to be committed:
+(use &amp;quot;git reset HEAD &amp;lt;file&amp;gt;...&amp;quot; to unstage)
+modified: repo-B
+$ git commit -am 'Update submodule'
+&lt;/code>&lt;/pre>
+&lt;h2 id="从远程库更新-submodule">从远程库更新 submodule&lt;/h2>
+&lt;p>当远程库的提交里记录的 submodule hash 有更新时，拉取远程库后，我们需要 update 本地的 submodule。git submodule update 会比较主项目记录的 submodule hash 和 submodule 自身当前的 HEAD hash，git 会强制把 submodule 的 HEAD checkout 到 git 记录的 hash，因为是 checkout 所以 detached HEAD 的问题会再一次出现。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ git submodule update
+Submodule path 'submodules/repo-B': checked out 'db560723ded8d1a0839dc08fb1e4324b30545c05'
+$ cd submodules/repo-B
+$ git log --decorate --all
+commit 3b754aca54077269aedb328c6e738ab8a7ab3077 (master) # current submodule HEAD hash
+Author: username &amp;lt;username@exmail.com&amp;gt;
+Date: Sat Dec 5 22:26:21 2015 +0800
+Modify _config.yml
+commit db560723ded8d1a0839dc08fb1e4324b30545c05 (HEAD) # main project submodule hash
+Author: username &amp;lt;username@exmail.com&amp;gt;
+Date: Sat Dec 5 21:46:40 2015 +0800
+Modify _config.yml, Add two image
+commit b449370e24b331e97f6d74ca2862fcd4e3c5bd4e (origin/master, origin/HEAD)
+Author: username &amp;lt;username@exmail.com&amp;gt;
+Date: Tue Dec 1 20:06:31 2015 +0800
+Modify _config.yml
+$ git status
+HEAD detached at db56072
+$ git branch
+* (HEAD detached at db56072)
+master
+&lt;/code>&lt;/pre>
+&lt;p>要从根本上摆脱 &lt;code>detached HEAD&lt;/code> 的问题，使用 &lt;code>rebase&lt;/code>、&lt;code>merge&lt;/code> 是正确的方式。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;code>git submodule update --rebase&lt;/code>
+the current branch of the submodule will be rebased onto the commit recorded in the superproject.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>git submodule update --merge&lt;/code>
+the commit recorded in the superproject will be merged into the current branch in the submodule.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://git-scm.com/doc" target="_blank" rel="noopener">git Documentation&lt;/a>&lt;/li>
+&lt;/ol></description></item></channel></rss>

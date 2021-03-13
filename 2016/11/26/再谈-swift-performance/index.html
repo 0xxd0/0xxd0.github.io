@@ -1,0 +1,208 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=generator content="Wowchemy 5.0.0-beta.3 for Hugo"><meta name=author content="徐旭栋"><meta name=description content="如何优化 Swift Performance"><link rel=alternate hreflang=zh-hans href=/2016/11/26/%E5%86%8D%E8%B0%88-swift-performance/><link rel=preconnect href=https://fonts.gstatic.com crossorigin><meta name=theme-color content="#0366d6"><script src=/js/mathjax-config.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.0/css/academicons.min.css integrity="sha512-W4yqoT1+8NLkinBLBZko+dFB2ZbHsYLDdr50VElllRcNt2Q4/GSs6u71UHKxB7S6JEMCp5Ve4xjh3eGQl/HRvg==" crossorigin=anonymous><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css integrity="sha256-FMvZuGapsJLjouA6k7Eo2lusoAX9i0ShlWFG6qt7SLc=" crossorigin=anonymous><link rel=stylesheet href=/css/github.min.css crossorigin=anonymous title=hl-light media=print onload="this.media='all'"><link rel=stylesheet href=/css/dracula.min.css crossorigin=anonymous title=hl-dark media=print onload="this.media='all'" disabled><script src=https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.2/lazysizes.min.js integrity="sha512-TmDwFLhg3UA4ZG0Eb4MIyT1O1Mb+Oww5kFG0uHqXsdbyZz9DcvYQhKpGgNkamAI6h2lGGZq2X8ftOJvF/XjTUg==" crossorigin=anonymous async></script><script src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js integrity crossorigin=anonymous async></script><link rel=preload as=style href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&family=Roboto+Mono:wght@300;400;500&display=swap"><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&family=Roboto+Mono:wght@300;400;500&display=swap" media=print onload="this.media='all'"><link rel=stylesheet href=/css/wowchemy.465a3c6b66f8f813e368856df0a9c840.css><script async src="https://www.googletagmanager.com/gtag/js?id=G-BEBL8ZB8H5"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}function trackOutboundLink(a,b){gtag('event','click',{event_category:'outbound',event_label:a,transport_type:'beacon',event_callback:function(){b!=='_blank'&&(document.location=a)}}),console.debug("Outbound link clicked: "+a)}function onClickCallback(a){if(a.target.tagName!=='A'||a.target.host===window.location.host)return;trackOutboundLink(a.target,a.target.getAttribute('target'))}gtag('js',new Date),gtag('config','G-BEBL8ZB8H5',{}),gtag('set',{cookie_flags:'SameSite=None;Secure'}),document.addEventListener('click',onClickCallback,!1)</script><link rel=manifest href=/index.webmanifest><link rel=icon type=image/png href=/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_32x32_fill_lanczos_center_2.png><link rel=apple-touch-icon type=image/png href=/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_180x180_fill_lanczos_center_2.png><link rel=canonical href=/2016/11/26/%E5%86%8D%E8%B0%88-swift-performance/><meta property="twitter:card" content="summary"><meta property="og:site_name" content="徐旭栋"><meta property="og:url" content="/2016/11/26/%E5%86%8D%E8%B0%88-swift-performance/"><meta property="og:title" content="再谈 Swift Performance | 徐旭栋"><meta property="og:description" content="如何优化 Swift Performance"><meta property="og:image" content="/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png"><meta property="twitter:image" content="/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png"><meta property="og:locale" content="zh-Hans"><meta property="article:published_time" content="2016-11-26T18:00:05+00:00"><meta property="article:modified_time" content="2016-11-26T19:00:05+00:00"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"/2016/11/26/%E5%86%8D%E8%B0%88-swift-performance/"},"headline":"再谈 Swift Performance","datePublished":"2016-11-26T18:00:05Z","dateModified":"2016-11-26T19:00:05Z","author":{"@type":"Person","name":"徐旭栋"},"publisher":{"@type":"Organization","name":"徐旭栋","logo":{"@type":"ImageObject","url":"/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_192x192_fill_lanczos_center_2.png"}},"description":"如何优化 Swift Performance"}</script><title>再谈 Swift Performance | 徐旭栋</title></head><body id=top data-spy=scroll data-offset=70 data-target=#TableOfContents class=page-wrapper data-wc-page-id=896bfa8683c85a409d042488fae4d736><script src=/js/wowchemy-init.min.b024895df05e271929739bb54886c674.js></script><div class=page-header><nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id=navbar-main><div class=container-xl><div class="d-none d-lg-inline-flex"><a class=navbar-brand href=/>徐旭栋</a></div><button type=button class=navbar-toggler data-toggle=collapse data-target=#navbar-content aria-controls=navbar aria-expanded=false aria-label=切换导航>
+<span><i class="fas fa-bars"></i></span></button><div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none"><a class=navbar-brand href=/>徐旭栋</a></div><div class="navbar-collapse main-menu-item collapse justify-content-start" id=navbar-content><ul class="navbar-nav d-md-inline-flex"><li class=nav-item><a class=nav-link href=/#about><span>主页</span></a></li><li class=nav-item><a class=nav-link href=/#projects><span>项目</span></a></li><li class=nav-item><a class=nav-link href=/#posts><span>文章</span></a></li><li class=nav-item><a class=nav-link href=/#skills><span>技能树</span></a></li><li class=nav-item><a class=nav-link href=/#contact><span>联系方式</span></a></li><li class=nav-item><a class=nav-link href=/cipcode><span><b>索引</b></span></a></li></ul></div><ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2"><li class="nav-item dropdown theme-dropdown"><a href=# class=nav-link data-toggle=dropdown aria-haspopup=true aria-label="Display preferences"><i class="fas fa-moon" aria-hidden=true></i></a><div class=dropdown-menu><a href=# class="dropdown-item js-set-theme-light"><span>浅色</span></a>
+<a href=# class="dropdown-item js-set-theme-dark"><span>深色</span></a>
+<a href=# class="dropdown-item js-set-theme-auto"><span>自动</span></a></div></li></ul></div></nav></div><div class=page-body><article class=article><div class="article-container pt-3"><h1>再谈 Swift Performance</h1><p class=page-subtitle>如何优化 Swift Performance</p><div class=article-metadata><div><span class=author-highlighted>徐旭栋</span></div><span class=article-date>最近更新于
+Sat, Nov 26, 2016</span>
+<span class=middot-divider></span><span class=article-reading-time>5 分钟阅读时长</span><br><span class=article-categories><font color=#005cc5><i class="fas fa-feather-alt"></i><strong class=mr-1>CIP</strong>
+</font><a href=/cip/11.07-computer-science/>11.07) Computer Science</a>
+,
+<a href=/cip/11.0701-computer-science/>11.0701) Computer Science</a></span>
+<span class=article-categories><font color=#005cc5><i class="fas fa-hashtag mr-1"></i></font><a href=/category/pl.-programming-languages/>PL. Programming Languages</a>
+,
+<a href=/category/the-swift-programming-language/>The Swift Programming Language</a></span></div></div><div class=article-container><div class=article-style><p>随着 WWDC 2016 的离去，WWDC 2017 也已悄然竟接近，明年苹果将重回加州圣何塞 <code>McEnery</code> 举办开发者大会，这个时候那些该展望的、还没展望的，也基本被讨论的差不多了，虽然在这个时间点来讨论 Swift Performance 虽然有些老生常谈，但也不失为一个好的话题。</p><h2 id=class-与-struct-的取舍><code>class</code> 与 <code>struct</code> 的取舍</h2><p>什么情况下该用哪种 <code>first class type</code> 来建立我们的 <code>Model</code>，虽然各路英才心里自有图谱，但还是很有必要拉出来讨论一下。到底是用 <code>class</code> 还是 <code>struct</code>、用 <code>value</code> 还是 <code>reference</code> ，关键的约束点在于性能开销与多态的实现方式。</p><h3 id=内存分配>内存分配</h3><p>人尽皆知 <code>heap</code> 比 <code>stack</code> 更昂贵，<code>heap</code> 牺牲了性能以换取比 <code>stack</code> 更自由的内存管理，<code>stack</code> 牺牲了复杂的数据结构来获取和 <code>Int</code> 赋值一样快的 allocation。</p><p><code>heap</code> 之所以昂贵、性能开销大，是因为开辟内存时需要考虑到多线程申请同一块内存 <code>block</code> 而产生的竞争问题，因此首先需要加锁来达到 Thread Safety，然后，需要去找到未被使用使用的内存并申请初始化，用完了之后还得还回去将其 deallocate，而我们能得到的好处则是更加动态的内存生命周期。并且不像 C++，Swift 只能在堆上初始化 <code>class</code>，对于 <code>class</code> 选型的取舍显得尤其重要。</p><p>反观 <code>stack</code>，之所以其性能好是因为其开辟内存仅仅依赖于 <code>ESP</code> 的上下移动，以典型自底向上的栈结构为例，一次函数调用所需要的 stack allocate 仅仅需要上移 <code>ESP</code>，而当函数体结束时再把 <code>ESP</code> 指回入栈之前的位置，上段内存自然就 deallocate 了。每个线程有自己的 <code>stack</code>，不要考虑多线程加锁，也不需要考虑下一块内存是否可用。但限制在于，当执行一次完整的 <code>call stack</code>，<code>EBP</code> 的位置是固定的，意味着可以使用内存就这点，所以在栈上能做的事就被大大的限制，否则就等着 Overflow。</p><pre><code class=language-swift>struct Car {
+    var serial: Int 
+}
+
+let car = Car(serial: 123456)
+// Fake car, have a fake serial, which is equal to car.serial
+let fakeCar = aCar
+// do sth with car, fakeCar
+
+</code></pre><p>这样一段代码在 <code>stack</code> 上仅仅用了 2 个字的大小，用于存储两个 <code>car</code> 的 <code>serial</code>。就轻量级，开销低这些特点来说，在工程中用 <code>struct</code> 来建模看上去是挺美滋滋的，但抛开多态单就性能来说，是否意味着 <code>struct</code> 总是能成为 <code>Modeling</code> 的首选？答案是否定的，当 <code>struct</code> 遇见 <code>ARC</code> 时，她就变得并不那么轻量级了。</p><h3 id=arc><code>ARC</code></h3><p>Swift 对于 <code>heap</code> 上实例的内存管理，采用的机制依旧是 <code>ARC</code>。</p><p>ARC 的在性能上的开销主要是在 <code>swift_retain</code> & <code>swift_release</code> 所产生的多次 <code>indirection</code> 以及多线程的加锁保护。对于 <code>trivial</code> 的 <code>struct</code> 来说因为不涉及 <code>ARC</code>，因此没有影响。但当 <code>struct</code> 本身如果包含了需要 <code>ARC</code> 的实例时，他就变得不那么高效了。</p><pre><code class=language-swift>struct Car {
+    var name: String
+    var model: String
+}
+
+let newCar = Car(name: &quot;Tesla&quot;, model: &quot;Model S&quot;)
+let myCar = newCar
+print(myCar.name)
+</code></pre><p>就 <code>Car</code> 来说，<code>name</code> 和 <code>model</code> 虽然是 <code>String</code>， 是一个 <code>struct</code>，但是 <code>String</code> 的 <code>underlying buffer storage</code> 是开辟在堆上的，需要和 <code>Class</code> 一样的作 <code>retain count</code>，所以会产生如下所示代码。</p><pre><code class=language-swift>struct Car {
+    var name: String
+    var model: String
+}
+
+let newCar = Car(name: &quot;Tesla&quot;, model: &quot;Model S&quot;)
+let myCar = newCar
+
+print(myCar.name)
+ 
+swift_retain(myCar.name._storage)
+swift_retain(myCar.model._storage)
+ 
+swift_release(myCar.name._storage)
+swift_release(myCar.model._storage)
+ 
+swift_release(newCar.name._storage)
+swift_release(newCar.model._storage)
+
+</code></pre><p>过多的 <code>retain</code> & <code>release</code> 带来性能开销是我们不想看到的，而如果我们采用 <code>class</code> 来实现则展开成如下形式。</p><pre><code class=language-swift>class Car {
+    var name: String
+    var model: String
+    
+    init(name: String, model: String) {
+        self.name = name
+        self.model = model
+    }
+}
+
+let newCar = Car(name: &quot;Tesla&quot;, model: &quot;Model S&quot;)
+let myCar = newCar
+swift_retain(myCar)
+print(myCar.name)
+swift_retain(myCar)
+
+// ... do sth
+
+swift_release(myCar)
+swift_release(newCar)
+
+</code></pre><p>在实际的过程中，<code>Model</code> 显然不会这么简单，一个对象上有 10 几 20 个需要的 <code>ARC</code> 的 <code>property</code> 也不是不可能的，这时候谨慎使用 <code>struct</code> 是我们需要注意的雷区。</p><p>一个好的实践是多用 <code>built-in</code> 的 <code>type</code> 和结构来构建模型，比如 <code>Car.model</code>，作为一个 <code>String</code>，它其实没有很好的约束 <code>Car.model</code> 所想表达的内容，它可以是任何字符串例如 <code>Car.model = "foo"</code>，这是一个非常差的设计。因此如下所示，在这里我们可以采用 <code>enum</code> 来对 <code>model</code> 做约束。</p><pre><code class=language-swift>extension Car {
+    enum Model {
+        case s
+        case x
+    }
+}
+
+struct Car {
+    var name: String
+    var model: Car.Model
+}
+</code></pre><p>虽然是一个很小的优化点，但结果即提高了语义的清晰度，又减少了不必要的开销，可谓一石双鸟。</p><h2 id=多态>多态</h2><p><code>Dyanmic Dispatch</code> 作为类多态实现的基础之一，也是讨论了比较多的话题，对于 <code>class</code> 来说，编译器会给其添加额外的 <code>field</code> 来储存 <code>Type</code> 的信息，<code>runtime</code> 通过 <code>Type</code> 的 <code>v-table</code> 来找到对应的方法，具体关于 <code>Dynamic Dispatch</code> 的讨论可见之前的 <a href=../whole-module-optimizations/>Whole Module Optimization 分析</a>，这里就不再赘述。</p><p>回到 <code>struct</code>，如果我们需要在 <code>struct</code> 上实现多态，那就得依靠 <code>protocol</code> 来实现。</p><pre><code class=language-swift>protocol Turboable {
+    
+    func turbo()
+}
+
+func turbo(_ stuffs: [Turboable]) {
+    stuffs.forEach {
+        $0.turbo()
+    }
+}
+
+struct Car {
+    var name: String
+}
+
+extension Car: Turboable {
+    
+    func turbo() {
+        print(&quot;turbo Car&quot;)
+    }
+}
+
+struct Jet {
+    var name: String
+}
+
+extension Jet: Turboable {
+    
+    func turbo() {
+        print(&quot;turbo Jet&quot;)
+    }
+}
+
+struct Tractor {
+    var name: String
+    var serail: Int
+}
+
+extension Tractor: Turboable {
+    
+    func turbo() {
+        print(&quot;turbo Tractor&quot;)
+    }
+}
+
+let myStuffs: [Turboable] = [
+    Jet(name: &quot;MiG-25&quot;), 
+    Car(name: &quot;Chevrolet&quot;), 
+    Tractor(name: &quot;Mercedes-Benz&quot;,serial: 1)
+]
+turbo(myStuffs)
+</code></pre><p>这是一段很常见的 <code>Protocol Oriented Programming</code>，实际上这并不是没有额外性能开销的。和 <code>Class</code> 不一样，通过 <code>protocol</code> 实现的多态是通过 <code>Protocol Witness Table</code> 来做 <code>Dispatch</code>，每一个实现了 <code>Turboable</code> 的类型，编译器都会生成一份 <code>PWT</code>。</p><pre><code class=language-swift>struct JetPWT {
+    func turbo(_ jet: Jet) {
+        jet.turbo()
+    }
+}
+
+struct CarPWT {
+    func turbo(_ car: Car) {
+        car.turbo()
+    }
+}
+
+struct TractorPWT {
+    func turbo(_ tractor: Tractor) {
+        tractor.turbo()
+    }
+}
+</code></pre><p>同时对于 <code>Array</code>，底层的 <code>buffer</code> 显然更喜欢以固定的大小去连续的存储元素，而不同的 <code>type</code> 却有着不同的内存布局，因此 Swift 使用了 <code>Existential Containner</code> 去存储元素，这样一个容器提供了个三个字大小的 <code>value Buffer</code> 用于存储元素。</p><p>但如果元素的内存布局过大导致 <code>value Buffer</code> 放不下，例如三个字对于 <code>struct Jet</code> 足够大，但对于 <code>struct Tractor</code>，因为 <code>String</code>.<code>size</code> + <code>Int</code>.<code>size</code> > 3 使得它无法存放在只有三个字大小的 <code>buffer</code> 中。</p><pre><code class=language-swift>// 24 bytes, 3 word
+let jetSize = MemoryLayout&lt;Jet&gt;.size
+
+// 32 bytes, 4 words
+let tractorSize = MemoryLayout&lt;Tractor&gt;.size
+</code></pre><p>因此 <code>Existential Containner</code> 会在堆上开辟空间用来拷贝存储一份 <code>Tractor</code>，同时将指针存放在 <code>value Buffer</code> 中。</p><p>所以调用 <code>func turbo(_ stuffs: [Turboable])</code> 实际上绝大部分的性能开销都花费在对结构体进行内存分配上。</p><p>同时，谈及了内存操作，不同的 <code>type</code> 对应的内存布局是不同的，<code>Existential Containner</code> 需要额外信息才能为这些 <code>type</code> 做堆内存初始化、拷贝、释放，因此 Swift 引入了 <code>Value Witness Table</code> 来管理 <code>value type</code> 在堆上的生命周期。</p><pre><code class=language-swift>struct JetVWT {
+
+    // 在堆上初始化一块用于存放 Jet 的内存，并把地址赋给 Existential Containner
+    func allocate() 
+    // 把 stack Jet 的内存 copy 到 heap 上
+    func copy()
+    // 用于 class type 引用计数递减
+    func destruct()
+    // 释放堆内存
+    func deallocate()
+}
+
+struct CarVWT {
+    ...
+}
+
+struct TractorVWT {
+    ...
+}
+</code></pre><p>因此 <code>Existential Containner</code> 还需要额外的两个字的空间用来存放 <code>PWT</code> 和 <code>VWT</code> 的地址。</p><pre><code class=language-swift>struct ExistContTurboable {
+   var valueBuffer: (Int, Int, Int)
+   var vwt: ValueWitnessTable
+   var pwt: TurboableProtocolWitnessTable
+}
+</code></pre><p>通常来说 <code>Existential Containner</code> 的大小是 5 个字。</p><pre><code>// 40 bytes, 5 words
+let turboableSize = MemoryLayout&lt;Turboable&gt;.size
+</code></pre><p>虽然官方没声明，但是多个 <code>protocol</code> 的情况下一份 <code>pwt</code> 应该是不够的。</p><pre><code class=language-swift>// 48 bytes, 6 words
+let turboableSize = MemoryLayout&lt;Turboable &amp; CustomReflectable&gt;.size
+</code></pre><p>所以多个 <code>protocol</code> 的结构会是如下所示的布局。</p><pre><code class=language-swift>struct ExistContTurboableCustomReflectable {
+    var valueBuffer: (Int, Int, Int)
+    var vwt: ValueWitnessTable
+    var pwt: (TurboableProtocolWitnessTable, CustomReflectableWitnessTable)
+}
+</code></pre><p>以上整个流程实现了 <code>protocol</code> 的 <code>Dynamic Dispatch</code>，那么最终 <code>func turbo(_ stuffs: [Turboable])</code> 会生成下文所示的伪代码。</p><pre><code class=language-swift>
+func turbo(val: [ExistContTurboable]) {
+    val.forEach { element in
+        // on the heap
+        var local = ExistContTurboable()
+        let vwt = element.vwt
+        let pwt = element.pwt
+        local.vwt = vwt
+        local.pwt = pwt
+        // 拷贝 local var 至 valueBuffer 或者堆上的内存
+        vwt.allocateBufferAndCopyValue(&amp;local, element)
+        // 获取到 valueBuffer 或者堆上的实例
+        pwt.turbo(vwt.projectBuffer(&amp;local))
+        // 清理现场
+        vwt.destructAndDeallocateBuffer()
+    }
+}
+</code></pre><p>相比于 <code>class</code>，通过 <code>protocol</code> 实现的 <code>Dynamic Dispatch</code> 所带来的性能下降根据数据大小的不同可能高达数倍，并且不仅仅是 <code>protocol type</code>，也包括了 <code>stdlib</code> 中的一些函数。</p><pre><code class=language-swift>public func max&lt;T&gt;(_ x: T, _ y: T) -&gt; T where T : Comparable
+</code></pre><p>这是一个很典型的范型函数，编译器在优化 Scope 被限制的条件下，会保守的生成符合所有 case 的函数。</p><pre><code class=language-swift>public func max&lt;T&gt;(_ x: T, _ y: T, _ pwt: TypePWT, _ vwt: TypeVWT) -&gt; T where T : Comparable
+</code></pre><p>同样用到了 <code>PWT</code> 和 <code>VWT</code>，函数体的内部也同样用 <code>valueBuffer</code> 来存储数据，一样是 3 个字的大小（苹果估计和 G 胖有仇），唯一的区别是没用 <code>Existential Container</code> 到，因为这个对于每次调用只有一种 <code>type</code> 的参数是没有必要的。</p><p>当然这种通过范型实现的 <code>Static Polymorphism</code> 仍然是 <code>Dynamic Dispathc</code> 虽然对性能开销有影响，但是通过 <code>Generic Specialization</code> 可以使其达到 <code>Static Dispathc</code>，同样之前的 <a href=../whole-module-optimizations/>Whole Module Optimization 分析</a> 有提及，所以不再赘述。</p><div class="alert alert-note"><div>2017-07-14 Updated</div></div><p>在 WWDC 2017 上，苹果终于出手这个解决 <code>valueBuffer</code> 的性能问题了，<code>Unpredictable Performance Cliff</code>。苹果的方案是采用 <code>COW Existential Buffers</code>，简单来说就是太大没法放进 <code>valueBuffer</code> 的 value，苹果对其采用和类一样的 <code>reference counting</code>，多个 <code>Existential Container</code> 可以共享相同的 <code>buffer</code> 直到这个 value 需要被修改才会被重新分配内存，以减少 <code>heap allocation</code> 的次数，典型的 COW 机制。</p><p>同样对于范型的 <code>valueBuffer</code>，原来的 <code>heap allocation</code> 被替换为 <code>stack allocation</code>，规避了堆内存管理，这下可以更加肆无忌惮的使用范型和 <code>protocol</code> 了。</p><h2 id=结语>结语</h2><p>我们数据建模的方式小改动会对性能造成巨大的影响，所以在我们设计每一个代码环节时，我们都有这样思维，这段代码发生了什么、会产生怎么样的性能开销、内存是如何分配的。</p><p>在工程中都应该根据实际场景仔细斟酌采取哪种机制来获取优雅的实现，并在此基础上对性能做优化，是需要 <code>class</code> 的 OOP 特性，还是 <code>struct</code> 的 value 特性，是需要 <code>protocol</code> 的更加灵活的 <code>Dynamic Polymorphism</code>，还是由范型带来的更加 <code>static</code> 的 <code>Static Polymorphism</code>。</p><p>总之还是那句话，工欲善其事，必先利其器，了解你的编译器，这样才能让编译器更好的理解你。</p><h2 id=参考文献>参考文献</h2><ol><li><a href=https://developer.apple.com/videos/play/wwdc2016/416/ target=_blank rel=noopener>Understanding Swift Performance</a></li><li><a href=https://developer.apple.com/videos/play/wwdc2017/402/ target=_blank rel=noopener>What&rsquo;s New in Swift 4</a></li><li><a href=https://academy.realm.io/posts/goto-mike-ash-exploring-swift-memory-layout/ target=_blank rel=noopener>Exploring Swift Memory Layout</a></li><li><a href=https://academy.realm.io/posts/real-world-swift-performance/ target=_blank rel=noopener>Real World Swift Performance</a></li></ol></div><div class=article-tags><a class="badge badge-light" href=/tag/swift/>Swift</a>
+<a class="badge badge-light" href=/tag/compiler/>Compiler</a></div><div class=share-box aria-hidden=true><ul class=share><li><a href="https://twitter.com/intent/tweet?url=/2016/11/26/%E5%86%8D%E8%B0%88-swift-performance/&text=%e5%86%8d%e8%b0%88%20Swift%20Performance" target=_blank rel=noopener class=share-btn-twitter><i class="fab fa-twitter"></i></a></li><li><a href="https://www.facebook.com/sharer.php?u=/2016/11/26/%E5%86%8D%E8%B0%88-swift-performance/&t=%e5%86%8d%e8%b0%88%20Swift%20Performance" target=_blank rel=noopener class=share-btn-facebook><i class="fab fa-facebook"></i></a></li><li><a href="mailto:?subject=%e5%86%8d%e8%b0%88%20Swift%20Performance&body=/2016/11/26/%E5%86%8D%E8%B0%88-swift-performance/" target=_blank rel=noopener class=share-btn-email><i class="fas fa-envelope"></i></a></li><li><a href="https://www.linkedin.com/shareArticle?url=/2016/11/26/%E5%86%8D%E8%B0%88-swift-performance/&title=%e5%86%8d%e8%b0%88%20Swift%20Performance" target=_blank rel=noopener class=share-btn-linkedin><i class="fab fa-linkedin-in"></i></a></li><li><a href="whatsapp://send?text=%e5%86%8d%e8%b0%88%20Swift%20Performance%20/2016/11/26/%E5%86%8D%E8%B0%88-swift-performance/" target=_blank rel=noopener class=share-btn-whatsapp><i class="fab fa-whatsapp"></i></a></li><li><a href="https://service.weibo.com/share/share.php?url=/2016/11/26/%E5%86%8D%E8%B0%88-swift-performance/&title=%e5%86%8d%e8%b0%88%20Swift%20Performance" target=_blank rel=noopener class=share-btn-weibo><i class="fab fa-weibo"></i></a></li></ul></div><div class="media author-card content-widget-hr"><a href=/><img class="avatar mr-3 avatar-circle" src=/authors/admin/avatar_hu1df4eedbb5ba3b85acb73c9d8fe8e88f_149800_270x270_fill_q75_lanczos_center.jpg alt=徐旭栋></a><div class=media-body><h5 class=card-title><a href=/>徐旭栋</a></h5><h6 class=card-subtitle>苹果开发者</h6><p class=card-text>苹果开发者，游戏玩家。</p><ul class=network-icon aria-hidden=true><li><a href=https://github.com/0xxd0 target=_blank rel=noopener><i class="fab fa-github"></i></a></li><li><a href=https://twitter.com/Alchemistxxd target=_blank rel=noopener><i class="fab fa-twitter"></i></a></li><li><a href=https://www.facebook.com/Alchemistxxd/ target=_blank rel=noopener><i class="fab fa-facebook"></i></a></li><li><a href=https://twitter.com/Alchemistxxd target=_blank rel=noopener><i class="fab fa-youtube"></i></a></li><li><a href=/><i class="fab fa-discord"></i></a></li><li><a href=/><i class="fab fa-playstation"></i></a></li><li><a href=/><i class="fab fa-xbox"></i></a></li><li><a href=/><i class="fab fa-steam"></i></a></li><li><a href=/><i class="fab fa-instagram"></i></a></li><li><a href=/><i class="fab fa-tumblr"></i></a></li><li><a href=/><i class="fab fa-tiktok"></i></a></li><li><a href=/><i class="fab fa-linkedin"></i></a></li><li><a href=https://www.zhihu.com/people/xu-xu-dong-86 target=_blank rel=noopener><i class="fab fa-zhihu"></i></a></li><li><a href=mailto:xudongloveslife@gmail.com><i class="fas fa-envelope"></i></a></li></ul></div></div><section id=comments><div id=utteranc_thread></div><script src=https://utteranc.es/client.js repo=0xxd0/0xxd0.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script></section><div class="article-widget content-widget-hr"><h3>相关</h3><ul><li><a href=/2016/07/14/whole-module-optimization-%E5%88%86%E6%9E%90/>Whole-Module Optimization 分析</a></li><li><a href=/2016/06/25/introduce-objective-c-evolution/>Introduce Objective-C Evolution</a></li><li><a href=/2016/06/25/swift-%E8%AE%BE%E8%AE%A1%E5%93%B2%E5%AD%A6/>Swift 设计哲学</a></li><li><a href=/2016/01/25/%E5%BF%AB%E9%80%9F%E6%9E%9A%E4%B8%BE%E4%B8%8E%E8%BF%AD%E4%BB%A3%E5%99%A8/>快速枚举与迭代器</a></li><li><a href=/2015/11/28/clang-attributes-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3/>Clang Attributes 使用文档</a></li></ul></div></div></article></div><div class=page-footer><div class=container><footer class=site-footer><p class=powered-by><a href=/privacy/>隐私条款</a></p><p class=powered-by>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</p><p class="powered-by copyright-license-text">This work is licensed under <a href=https://creativecommons.org/licenses/by-nc-nd/4.0 rel="noopener noreferrer" target=_blank>CC BY NC ND 4.0</a></p><p class="powered-by footer-license-icons"><a href=https://creativecommons.org/licenses/by-nc-nd/4.0 rel="noopener noreferrer" target=_blank aria-label="Creative Commons"><i class="fab fa-creative-commons fa-2x" aria-hidden=true></i><i class="fab fa-creative-commons-by fa-2x" aria-hidden=true></i><i class="fab fa-creative-commons-nc fa-2x" aria-hidden=true></i><i class="fab fa-creative-commons-nd fa-2x" aria-hidden=true></i></a></p></footer></div></div><div id=modal class="modal fade" role=dialog><div class=modal-dialog><div class=modal-content><div class=modal-header><h5 class=modal-title>引用</h5><button type=button class=close data-dismiss=modal aria-label=Close>
+<span aria-hidden=true>&#215;</span></button></div><div class=modal-body><pre><code class="tex hljs"></code></pre></div><div class=modal-footer><a class="btn btn-outline-primary my-1 js-copy-cite" href=# target=_blank><i class="fas fa-copy"></i>复制</a>
+<a class="btn btn-outline-primary my-1 js-download-cite" href=# target=_blank><i class="fas fa-download"></i>下载</a><div id=modal-error></div></div></div></div></div><script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script><script src=https://cdnjs.cloudflare.com/ajax/libs/instant.page/5.1.0/instantpage.min.js integrity="sha512-1+qUtKoh9XZW7j+6LhRMAyOrgSQKenQ4mluTR+cvxXjP1Z54RxZuzstR/H9kgPXQsVB8IW7DMDFUJpzLjvhGSQ==" crossorigin=anonymous></script><script src=https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin=anonymous></script><script src=https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin=anonymous></script><script src=https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.8.4/mermaid.min.js integrity="sha512-as1BF4+iHZ3BVO6LLDQ7zrbvTXM+c/1iZ1qII/c3c4L8Rn5tHLpFUtpaEtBNS92f+xGsCzsD7b62XP3XYap6oA==" crossorigin=anonymous title=mermaid></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/highlight.min.js integrity="sha512-zol3kFQ5tnYhL7PzGt0LnllHHVWRGt2bTCIywDiScVvLIlaDOVJ6sPdJTVi0m3rA660RT+yZxkkRzMbb1L8Zkw==" crossorigin=anonymous></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/languages/swift.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/languages/applescript.min.js></script><script src=/js/_vendor/bootstrap.bundle.min.6aed84840afc03ab4d5750157f69c120.js></script><script src=/zh/js/wowchemy.min.a94e2b666e233f67b55ae8de46781f71.js></script></body></html>

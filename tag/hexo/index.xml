@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hexo | 徐旭栋</title><link>/tag/hexo/</link><atom:link href="/tag/hexo/index.xml" rel="self" type="application/rss+xml"/><description>Hexo</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Thu, 12 Jun 2014 00:00:00 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>Hexo</title><link>/tag/hexo/</link></image><item><title>用 Hexo 搭建个人博客</title><link>/2014/06/12/%E7%94%A8-hexo-%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</link><pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate><guid>/2014/06/12/%E7%94%A8-hexo-%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</guid><description>&lt;p>今次通过 Hexo 生成静态博客网站，所以配置服务器的流程可以省去，直接托管在 Github Pages 上即可，这也目前轻量级博客的趋势。&lt;/p>
+&lt;h2 id="环境安装">环境安装&lt;/h2>
+&lt;h3 id="node-环境安装">Node 环境安装&lt;/h3>
+&lt;h4 id="安装-nvmhttpsgithubcomcreationixnvm">安装 &lt;a href="https://github.com/creationix/nvm" target="_blank" rel="noopener">NVM&lt;/a>&lt;/h4>
+&lt;p>在终端中运行如下命令。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.29.0/install.sh | bash
+&lt;/code>&lt;/pre>
+&lt;h4 id="安装-nodejshttpsnodejsorgen">安装 &lt;a href="https://nodejs.org/en/" target="_blank" rel="noopener">Node.js&lt;/a>&lt;/h4>
+&lt;p>使用如下命令查找远程库版本。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ nvm ls-remote
+&lt;/code>&lt;/pre>
+&lt;p>找到合适的版本并安装。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ nvm install 5.1.0
+&lt;/code>&lt;/pre>
+&lt;h3 id="安装-hexohttpshexoio">安装 &lt;a href="https://hexo.io" target="_blank" rel="noopener">Hexo&lt;/a>&lt;/h3>
+&lt;p>Hexo 有丰富的&lt;a href="https://hexo.io/plugins/" target="_blank" rel="noopener">插件&lt;/a>和&lt;a href="https://hexo.io/themes/" target="_blank" rel="noopener">主题&lt;/a>，如果不能满足需求的话还可以&lt;a href="https://hexo.io/api/" target="_blank" rel="noopener">自己动手&lt;/a>，使用如下命令全局安装 &lt;code>hexo-cli&lt;/code>。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ npm install hexo-cli -g
+&lt;/code>&lt;/pre>
+&lt;p>安装 Hexo 所需的依赖包。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ npm install hexo-renderer-ejs --save
+$ npm install hexo-renderer-stylus --save
+$ npm install hexo-renderer-marked --save
+&lt;/code>&lt;/pre>
+&lt;p>或者直接通过 &lt;code>package.json&lt;/code> 一步到位。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ npm intall
+&lt;/code>&lt;/pre>
+&lt;h2 id="添加文章-posts">添加文章 Posts&lt;/h2>
+&lt;p>找个文件夹初始化 Blog 的工作目录。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ cd &amp;quot;/path/to/blog&amp;quot;
+$ hexo init
+&lt;/code>&lt;/pre>
+&lt;p>生成一篇文章。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ hexo new &amp;quot;用 Hexo 搭建个人博客&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;p>使用 &lt;code>vim&lt;/code> 或者其他 &lt;code>Markdown Editor&lt;/code> 编辑文章。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ cd source/_posts
+$ vim 用-Hexo-搭建个人博客.md
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>附上 &lt;code>Markdown&lt;/code> &lt;a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">语法&lt;/a>&lt;/strong>。写完博文之后生成 &lt;code>html&lt;/code>、&lt;code>css&lt;/code>、&lt;code>.js&lt;/code> 等静态网页文件，生成之后的内容在博客根目录 &lt;code>public&lt;/code> 文件夹下，里面就是博客需要部署的内容。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ hexo generate
+&lt;/code>&lt;/pre>
+&lt;p>启动本地 Hexo 服务器。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ hexo server
+INFO Hexo is running at http://0.0.0.0:4000/. Press Ctrl+C to stop.
+&lt;/code>&lt;/pre>
+&lt;p>在浏览器内输入&lt;a href="http:localhost:4000/" target="_blank" rel="noopener">本地服务器地址&lt;/a>预览博客。&lt;/p>
+&lt;h2 id="部署至-github">部署至 Github&lt;/h2>
+&lt;p>部署到 Github 上用于 Github Pages 的 repo 有两种形式：&lt;/p>
+&lt;ol>
+&lt;li>主页级 repo，页面部署到 &lt;code>master&lt;/code> 分支下，访问 Github Pages 时使用 &lt;code>username.github.io&lt;/code>，常用于个人主页。&lt;/li>
+&lt;li>项目级 repo，页面部署到 &lt;code>gh-pages&lt;/code> 分支，访问 Github Pages 时使用 &lt;code>username.github.io/repo-name&lt;/code>，常用于项目主页。&lt;/li>
+&lt;/ol>
+&lt;p>在 _config.yml 内配置完部署信息后 (&lt;code>deploy&lt;/code> 字段) 执行如下命令。&lt;/p>
+&lt;pre>&lt;code>$ hexo clean
+$ hexo generate
+$ hexo deploy
+&lt;/code>&lt;/pre>
+&lt;p>或者使用如下命令。&lt;/p>
+&lt;pre>&lt;code>$ hexo g
+$ hexo d
+&lt;/code>&lt;/pre>
+&lt;p>完成部署至 Github，过个几分钟等 Github 更新完缓存再打开 &lt;code>{username}.github.io/{blog-repo}&lt;/code> 或者 &lt;code>{username}.github.io&lt;/code> 就能看到 Github Pages。&lt;/p>
+&lt;h2 id="绑定域名">绑定域名&lt;/h2>
+&lt;p>Github 使用一系列 &lt;strong>name-based&lt;/strong> 虚拟 &lt;code>WWW&lt;/code> server 部署所有静态博客的 wwwroot 目录。虚拟服务器的地址就是上文提及的 &lt;code>{username}.github.io&lt;/code> 和 &lt;code>{username}.github.io/{repo-name}&lt;/code>，因此将需要绑定的域名指向 Github 的服务器 &lt;a href="https://github.io">https://github.io&lt;/a>，把域名解析权下放到 Github。&lt;/p>
+&lt;p>同时 Github 服务器需要知道如何解析域名，所以 Github Pages 用户需要将绑定的域名通过 wwwroot 目录下的 CNAME 文件告知 WWW server 域名 =&amp;gt; &lt;code>repo/branch&lt;/code> 的映射关系，所以在根目录 source 文件夹下建立一个 CNAME 文本文件，内容为绑定的域名。&lt;/p>
+&lt;p>完成之后，输入命令查询下 dns 解析结果。&lt;/p>
+&lt;pre>&lt;code class="language-bash">$ dig blog.alchemistxxd.com
+; &amp;lt;&amp;lt;&amp;gt;&amp;gt; DiG 9.8.3-P1 &amp;lt;&amp;lt;&amp;gt;&amp;gt; blog.alchemistxxd.com
+;; global options: +cmd
+;; Got answer:
+;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERY, status: NOERROR, id: 45658
+;; flags: qr rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 0
+;; QUESTION SECTION:
+;blog.alchemistxxd.com. IN A
+;; ANSWER SECTION:
+blog.alchemistxxd.com. 600 IN CNAME alchemistxxd.github.io.
+alchemistxxd.github.io. 2816 IN CNAME github.map.fastly.net.
+github.map.fastly.net. 142 IN A 103.245.222.133
+;; Query time: 299 msec
+;; SERVER: 222.44.10.48#53(222.44.10.48)
+;; WHEN: Wed Dec 2 23:41:45 2015
+;; MSG SIZE rcvd: 126
+&lt;/code>&lt;/pre>
+&lt;p>终わり&lt;/p>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://pages.github.com/" target="_blank" rel="noopener">Github Pages&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://hexo.io/" target="_blank" rel="noopener">Hexo.io&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://hexo.io/docs/" target="_blank" rel="noopener">Hexo Documentation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.npmjs.com/" target="_blank" rel="noopener">npm Docs&lt;/a>&lt;/li>
+&lt;/ol></description></item></channel></rss>

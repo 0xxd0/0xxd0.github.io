@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>The Objective-C Programming Language Evolution | 徐旭栋</title><link>/post/tech-for-good/objc-evolution-proposals/</link><atom:link href="/post/tech-for-good/objc-evolution-proposals/index.xml" rel="self" type="application/rss+xml"/><description>The Objective-C Programming Language Evolution</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Sat, 25 Jun 2016 10:31:29 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>The Objective-C Programming Language Evolution</title><link>/post/tech-for-good/objc-evolution-proposals/</link></image><item><title>OE-0001 Introduce Swift var, let keyword</title><link>/2016/06/26/oe-0001-introduce-swift-var-let-keyword/</link><pubDate>Sun, 26 Jun 2016 10:31:29 +0000</pubDate><guid>/2016/06/26/oe-0001-introduce-swift-var-let-keyword/</guid><description>&lt;!-- # 引入 defer 关键字 -->
+&lt;ul>
+&lt;li>Proposal: &lt;a href="https://github.com/0xxd0/objc-evolution/blob/master/proposal/0001-swift-var-and-let.md" target="_blank" rel="noopener">OE-0001&lt;/a>&lt;/li>
+&lt;li>Authors: &lt;a href="https://github.com/0xxd0" target="_blank" rel="noopener">Xudong Xu&lt;/a>&lt;/li>
+&lt;li>Status: &lt;strong>Implemented&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>&lt;code>var&lt;/code> 和 &lt;code>let&lt;/code> 是 Swift 定义变量的重要关键字，描述了变量是否可以被修改，将这些关键字引入 Objective-C，以更好地表达变量的可变性。&lt;/p>
+&lt;h2 id="motivation">Motivation&lt;/h2>
+&lt;p>在 Objective-C 中变量声明的 Type Inference 一直没有很好的解决方案，下方的显示类型声明代码是我们经常需要面对的：&lt;/p>
+&lt;pre>&lt;code class="language-objc">NSMutableArray&amp;lt;NSString *&amp;gt;* array = [[NSMutableArray&amp;lt;NSString *&amp;gt; array];
+&lt;/code>&lt;/pre>
+&lt;p>在 Swift 中会由类型推导自动完成：&lt;/p>
+&lt;pre>&lt;code class="language-swift">var elements = [String]();
+&lt;/code>&lt;/pre>
+&lt;h2 id="proposed-solution">Proposed solution&lt;/h2>
+&lt;p>在 ObjC 中引入 &lt;code>let&lt;/code> 和 &lt;code>var&lt;/code> 关键字：&lt;/p>
+&lt;pre>&lt;code class="language-objc">let elements = [NSMutableArray&amp;lt;NSString *&amp;gt; array];
+&lt;/code>&lt;/pre>
+&lt;p>影响范围为所有变量声明，并且同时兼容 C/C++。&lt;/p>
+&lt;h2 id="detailed-design">Detailed design&lt;/h2>
+&lt;p>得益于 Clang 将类型推导特性带入了 pure C，使得我们能在 C 代码中使用 &lt;code>__auto_type&lt;/code> 来做类型推导：&lt;/p>
+&lt;pre>&lt;code class="language-c">// File.c
+__auto_type str = &amp;quot;string&amp;quot;;
+&lt;/code>&lt;/pre>
+&lt;p>以 &lt;code>const&lt;/code> 修饰达到 &lt;code>let&lt;/code> 的效果，通过宏实现定义关键字：&lt;/p>
+&lt;pre>&lt;code class="language-c">#ifdef __cplusplus
+#define var auto
+#define let const auto
+#else
+#define var __auto_type
+#define let const __auto_type
+#endif
+&lt;/code>&lt;/pre>
+&lt;p>使 C/ObjC 能像 Swift 一样使用 &lt;code>var&lt;/code> 和 &lt;code>let&lt;/code>。&lt;/p>
+&lt;pre>&lt;code class="language-objc">var vector = std::vector&amp;lt;NSInteger&amp;gt;{1, 2, 3};
+let array = NSArray.alloc.init;
+let block = ^void (id self, SEL _cmd) {
+return;
+};
+&lt;/code>&lt;/pre>
+&lt;h2 id="source-compatibility">Source compatibility&lt;/h2>
+&lt;p>此特性是附加特性，并且不会破坏任何现有代码，只会精简先前繁琐的语法，不会有任何更改格式正确的代码的行为。&lt;/p>
+&lt;h2 id="alternatives-considered">Alternatives considered&lt;/h2>
+&lt;p>在 C++ 的环境下，可以通过 &lt;code>auto&lt;/code> 完成类型推导：&lt;/p>
+&lt;pre>&lt;code class="language-objc">auto array = [[NSMutableArray&amp;lt;NSString *&amp;gt; array];
+&lt;/code>&lt;/pre>
+&lt;p>但是这样会引入 C++，对于很多场景下这是没必要的。&lt;/p></description></item><item><title>OE-0002 Introduce Swift defer keyword</title><link>/2016/06/26/oe-0002-introduce-swift-defer-keyword/</link><pubDate>Sun, 26 Jun 2016 10:31:29 +0000</pubDate><guid>/2016/06/26/oe-0002-introduce-swift-defer-keyword/</guid><description>&lt;ul>
+&lt;li>Proposal: &lt;a href="https://github.com/0xxd0/objc-evolution/blob/master/proposal/0002-introduce-swift-defer.md" target="_blank" rel="noopener">OE-0002&lt;/a>&lt;/li>
+&lt;li>Authors: &lt;a href="https://github.com/0xxd0" target="_blank" rel="noopener">Xudong Xu&lt;/a>&lt;/li>
+&lt;li>Status: &lt;strong>Implemented&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>&lt;code>defer&lt;/code> 是 Swift 定义变量的重要关键字，用于 Control Flow 在当前作用域退出之后的收尾操作，将 &lt;code>defer&lt;/code> 关键字引入 Objective-C，使 Control Flow 更优雅。&lt;/p>
+&lt;h2 id="motivation">Motivation&lt;/h2>
+&lt;p>&lt;code>defer&lt;/code> 极大的改变了资源的获取与释放的代码编写流程，没有 &lt;code>defer&lt;/code> 的情况下，我们需要在所有的退出语句都加上收尾处理。&lt;/p>
+&lt;pre>&lt;code class="language-swift">func foo() {
+guard let list = class_copyMethodList(value, &amp;amp;outCount) else {
+return
+}
+if (condition) {
+// ...
+free(list)
+return
+}
+// ...
+free(list)
+}
+&lt;/code>&lt;/pre>
+&lt;p>用了 &lt;code>defer&lt;/code> 之后可以把精力放在 Control Flow 上，而不是在何处处理收尾，Swift 是一门提倡尽早 &lt;code>return&lt;/code> 的语言：&lt;/p>
+&lt;pre>&lt;code class="language-swift">// with defer
+func foo() {
+guard let list = class_copyMethodList(value, &amp;amp;outCount) else {
+return
+}
+defer {
+free(list)
+}
+if (condition) {
+// ...
+return
+}
+// ...
+return
+}
+&lt;/code>&lt;/pre>
+&lt;h2 id="proposed-solution">Proposed solution&lt;/h2>
+&lt;p>得益于 Clang 的 &lt;code>__attribute((cleanup()))&lt;/code> 特性，将 C Block 标记为一个从当前作用域退出之后执行的收尾用匿名函数。&lt;/p>
+&lt;h2 id="detailed-design">Detailed design&lt;/h2>
+&lt;p>实现参考&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/0xxd0/objc-evolution/blob/75e73c073dab38d3f464b4bc12dc317b4a247ff1/runtime/swift.h#L29" target="_blank" rel="noopener">runtime/swift.h#L29&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>通过宏定义的 defer，可以做到如下的 Control Flow：&lt;/p>
+&lt;pre>&lt;code class="language-c">static pthread_mutex_t lock_key;
+void foo() {
+pthread_mutex_lock(&amp;amp;lock_key);
+defer {
+pthread_mutex_unlock(&amp;amp;lock_key);
+};
+var cls_count = (unsigned)0;
+let cls_list = objc_copyClassList(&amp;amp;cls_count);
+defer {
+free(cls_list);
+};
+// do sth
+}
+&lt;/code>&lt;/pre>
+&lt;h2 id="source-compatibility">Source compatibility&lt;/h2>
+&lt;p>此特性是附加特性，并且不会破坏任何现有代码，只会精简先前繁琐的 Control Flow，不会有任何更改格式正确的代码的行为。&lt;/p>
+&lt;h2 id="alternatives-considered">Alternatives considered&lt;/h2>
+&lt;p>无&lt;/p></description></item><item><title>OE-0003 Protocol Default Implementation</title><link>/2016/06/26/oe-0003-protocol-default-implementation/</link><pubDate>Sun, 26 Jun 2016 10:31:29 +0000</pubDate><guid>/2016/06/26/oe-0003-protocol-default-implementation/</guid><description>&lt;!-- # 引入 var, let 关键字 -->
+&lt;ul>
+&lt;li>Proposal: &lt;a href="https://github.com/0xxd0/objc-evolution/blob/master/proposal/0003-protocol-default-implementation.md" target="_blank" rel="noopener">OE-0003&lt;/a>&lt;/li>
+&lt;li>Authors: &lt;a href="https://github.com/0xxd0" target="_blank" rel="noopener">Xudong Xu&lt;/a>&lt;/li>
+&lt;li>Status: &lt;strong>Implemented&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>Swift 中，定义 Protocol 时，可以使用 extension 给某些方法提供默认实现，希望把此特性引入 Objective-C&lt;/p>
+&lt;h2 id="motivation">Motivation&lt;/h2>
+&lt;p>在 Swift 中 Protocol 的默认实现一般为如下形式：&lt;/p>
+&lt;pre>&lt;code class="language-swift">protocol Foo {
+associatedtype Element
+func method(_ arg: Element)
+}
+extension Foo where Element: Equatable {
+func method(_ arg: Element) {
+}
+static func isEqual(_ lhs: Element, _ rhs: Element) -&amp;gt; Bool {
+return lhs == rhs
+}
+}
+&lt;/code>&lt;/pre>
+&lt;p>对 Objective-C 来说还做不到这么强的泛型约束，但是希望能够做到基本的 Protocol 默认实现，比如给 UICollectionViewDelegate 加上不能选择的默认实现：&lt;/p>
+&lt;pre>&lt;code class="language-objc">@extension(UICollectionViewDelegate)
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+return false
+}
+@end
+&lt;/code>&lt;/pre>
+&lt;h2 id="proposed-solution">Proposed solution&lt;/h2>
+&lt;p>通过 ObjC runtime 配合 C Marco，在 &lt;code>dyld load&lt;/code> 之后 &lt;code>Clang Module Init&lt;/code> 之前向 Dummy Class 注入 Protocol 的默认实现。在 &lt;code>Class +load&lt;/code> 时候把默认实现的 &lt;code>Method&lt;/code> 添加到具体的 &lt;code>Class&lt;/code> 里。&lt;/p>
+&lt;h2 id="detailed-design">Detailed design&lt;/h2>
+&lt;p>实现参考&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/0xxd0/objc-evolution/blob/75e73c073dab38d3f464b4bc12dc317b4a247ff1/runtime/Extension.h#L20" target="_blank" rel="noopener">runtime/Extension.h#L20&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/0xxd0/objc-evolution/blob/75e73c073dab38d3f464b4bc12dc317b4a247ff1/runtime/Extension.cpp#L17" target="_blank" rel="noopener">runtime/Extension.cpp#L17&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="source-compatibility">Source compatibility&lt;/h2>
+&lt;p>此特性是附加特性，并且不会破坏任何现有代码，只会精简先前繁琐的语法，不会有任何更改格式正确的代码的行为。&lt;/p>
+&lt;h2 id="alternatives-considered">Alternatives considered&lt;/h2>
+&lt;p>在 C++ 的环境下，可以通过 &lt;code>auto&lt;/code> 完成类型推导：&lt;/p>
+&lt;pre>&lt;code class="language-objc">auto array = [[NSMutableArray&amp;lt;NSString *&amp;gt; array];
+&lt;/code>&lt;/pre>
+&lt;p>但是这样会引入 C++，对于很多场景下这是没必要的。&lt;/p></description></item></channel></rss>

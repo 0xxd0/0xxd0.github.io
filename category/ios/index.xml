@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>iOS | 徐旭栋</title><link>/category/ios/</link><atom:link href="/category/ios/index.xml" rel="self" type="application/rss+xml"/><description>iOS</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Mon, 10 Dec 2018 10:31:29 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>iOS</title><link>/category/ios/</link></image><item><title>HT0007 如何使用 SSL 证书签名 iOS .mobileconfig 文件</title><link>/2018/12/09/ht0007-%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-ssl-%E8%AF%81%E4%B9%A6%E7%AD%BE%E5%90%8D-ios-.mobileconfig-%E6%96%87%E4%BB%B6/</link><pubDate>Sun, 09 Dec 2018 10:31:29 +0000</pubDate><guid>/2018/12/09/ht0007-%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-ssl-%E8%AF%81%E4%B9%A6%E7%AD%BE%E5%90%8D-ios-.mobileconfig-%E6%96%87%E4%BB%B6/</guid><description>&lt;p>您可以使用证书与 OpenSSL 签名 iOS 平台 .mobileconfig 文件。&lt;/p>
+&lt;p>以下高级步骤主要适用于系统管理员以及熟悉命令行的其他人员。iPhoneOS / iPadOS 设备上的配置描述文件（.mobileconfig）是以 .plist 为载体，包含了设备安全策略、VPN 配置信息、Wi-Fi 设置、APN 设置、Exchange 帐户设置、Google 帐户设置、邮件设置以及允许 iPhone, iPod touch, iPad 与企业系统配合使用的证书。本文描述了开发者如何使用 SSL Certification 对 . mobileconfig 文件进行签名，以确保 iPhoneOS / iPadOS 系统上的安全性。&lt;/p>
+&lt;h2 id="准备工作">准备工作&lt;/h2>
+&lt;h3 id="理解证书的状态">理解证书的状态&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>状态&lt;/th>
+&lt;th>说明&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Unsigned&lt;/td>
+&lt;td>The mobileconfig is not signed by anyone. Therefore the source is unknown.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Unverified&lt;/td>
+&lt;td>The mobileconfig is signed, but the source is not recognized as trusted.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Verified&lt;/td>
+&lt;td>The mobileconfig is signed and is recognized as a trusted source.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>当使用 Apple Configurator 2 为 iPhoneOS / iPadOS 添加 Profile 文件时，未签名的 .mobileconfig 文件会被标记为 &amp;ldquo;Unsigned&amp;rdquo; 状态，修复此问题我们需要对 Profile 进行签名。&lt;/p>
+&lt;h3 id="准备所需要的文件">准备所需要的文件&lt;/h3>
+&lt;ol>
+&lt;li>未签名的 .mobileconfig 文件，&lt;strong>UnsignedProfile.mobileconfig&lt;/strong>&lt;/li>
+&lt;li>证书对应 Private Key，&lt;strong>PrivateKey.pem&lt;/strong>&lt;/li>
+&lt;li>与 SSL 证书对应的证书链（中级证书），&lt;strong>CertChain.pem&lt;/strong>&lt;/li>
+&lt;li>受信任的 SSL 证书，自签名证书、TrustAsia, Let’s Encrypt 等签发的免费 SSL 证书，商业 SSL 证书，&lt;strong>Certificate.pem&lt;/strong>&lt;/li>
+&lt;/ol>
+&lt;h3 id="签名方式">签名方式&lt;/h3>
+&lt;pre>&lt;code class="language-bash">openssl smime
+-sign \
+-in UnsignedProfile.mobileconfig \
+-out SignedProfile.mobileconfig \
+-signer Certificate.pem \
+-inkey PrivateKey.pem \
+-certfile CertChain.pem \
+-outform der -nodetach
+&lt;/code>&lt;/pre>
+&lt;h2 id="使用自签名证书签名">使用自签名证书签名&lt;/h2>
+&lt;p>创建可引导安装器后，请按照以下步骤进行使用：&lt;/p>
+&lt;h3 id="从-keychain-access-导出自签名证书">从 Keychain Access 导出自签名证书&lt;/h3>
+&lt;p>Keychain Access -&amp;gt; Certificate Assistance -&amp;gt; Create a Certificate，根据提示创建证书，创建完成之后对证书私钥进行导出，右键证书点击 Export 导出 Certificate.per，右键私钥点击 Export 导出 PrivateKey.p12，通过命令行将 .p12 转换为 .pem，将 Certificate.per 转换为 Certificate.pem。&lt;/p>
+&lt;pre>&lt;code class="language-bash">openssl pkcs12 -in PrivateKey.p12 -out PrivateKey.pem -nodes
+openssl x509 -trustout -inform DER -outform PEM -in Certificate.cer -out Certificate.pem
+&lt;/code>&lt;/pre>
+&lt;h3 id="下载根证书和中间证书">下载根证书和中间证书&lt;/h3>
+&lt;p>本文使用 AppleIncRootCertificate.cer 根证书和 AppleApplicationIntegrationCA5G1.cer 中间证书，更多证书可以访问 Apple PKI。下载完成后通过命令行从 Root Certificate 和 Intermediate Certificate 提取 Certificates 和 Keys，参考 &lt;a href="info.ssl.com/article.aspx?id=12149">INFO.SSL&lt;/a>。&lt;/p>
+&lt;pre>&lt;code class="language-bash">openssl x509 -trustout -inform DER -outform PEM -in AppleIncRootCertificate.cer -out Root.pem
+openssl x509 -trustout -inform DER -outform PEM -in AppleApplicationIntegrationCA5G1.cer -out Intermediate.pem
+&lt;/code>&lt;/pre>
+&lt;p>将 Intermediate.pem 和 Root.pem 中的文本内容合并为一份文件 AppleIncCertificateChain.pem，此时 AppleIncCertificateChain.pem 将会包含两份证书。&lt;/p>
+&lt;h3 id="签名">签名&lt;/h3>
+&lt;ol>
+&lt;li>打开“应用程序”文件夹内“实用工具”文件夹中的“终端”。&lt;/li>
+&lt;li>在获取管理员权限之后，在“终端”中键入或粘贴以下命令。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">openssl smime \
+-sign \
+-in UnsignedProfile.mobileconfig \
+-out SignedProfile.mobileconfig \
+-signer Certificate.pem \
+-inkey PrivateKey.pem \
+-certfile AppleIncCertificateChain.pem \
+-outform der -nodetach
+&lt;/code>&lt;/pre>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://letsencrypt.org/" target="_blank" rel="noopener">Free SSL/TLS Certificates&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://discussions.apple.com/thread/2363234" target="_blank" rel="noopener">possible status of a mobileconfig? - Apple Community&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.apple.com/certificateauthority/" target="_blank" rel="noopener">Apple PKI&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://support.apple.com/zh-cn/guide/server/apd2474fbab/mac" target="_blank" rel="noopener">在 macOS 服务器中创建自签名证书 - Apple 支持&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>HT0013 如何向 iOS 系统中添加自定义字体</title><link>/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/</link><pubDate>Mon, 10 Dec 2018 10:31:29 +0000</pubDate><guid>/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/</guid><description>&lt;p>为 iPhoneOS / iPadOS 设备添加自定义字体。&lt;/p>
+&lt;p>以下高级步骤主要适用于系统管理员以及熟悉命令行的其他人员。&lt;/p>
+&lt;h2 id="概览">概览&lt;/h2>
+&lt;p>iOS 并不限制第三方添加字体到系统之中，当你有自定义字体想在你的 app 或者其他系统内建应用（e.g. Notes.app, Pages.app）中使用时，通过 iOS 提供的多种方法你可以实现不同的结果。&lt;/p>
+&lt;h2 id="为应用添加自定义字体">为应用添加自定义字体&lt;/h2>
+&lt;p>为一个 app 添加字体，字体的使用范围限制于当前 app 之中，如图所示，将字体拖入至工程，并勾选对应的 Target Membership。&lt;/p>
+&lt;figure id="figure-adding-a-custom-font-to-your-app">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://docs-assets.developer.apple.com/published/35bc80c902/d373ed5c-a36b-46fe-9bd8-bf49700072be.png" alt="Adding a Custom Font to Your App" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Adding a Custom Font to Your App
+&lt;/figcaption>&lt;/figure>
+&lt;p>通过 Info.plist &lt;strong>UIAppFonts&lt;/strong> (Fonts provided by application) 字段向 Xcode 工程注册字体，完成之后就可以像其他 iOS 内建字体一样使用你的自定义字体。&lt;/p>
+&lt;p>更多请参考 Apple 文档 &lt;a href="https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app" target="_blank" rel="noopener">Adding a Custom Font to Your App | Apple Developer Documentation&lt;/a>。&lt;/p>
+&lt;h2 id="向-ios-系统注册自定义字体">向 iOS 系统注册自定义字体&lt;/h2>
+&lt;p>为系统内建的应用提供自定字体需要用到 iOS 13 新提供的 CoreText 的 API，同时需要在 App.entitlements 中添加 Fonts Capability 并勾选 Install Fonts，使用字体时需要勾选 Use Installed Fonts。&lt;/p>
+&lt;figure id="figure-wwdc19-session-227">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="WWDC19 Session 227" srcset="
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_9ca56f76f669a9bb2328814904fa0a72.png 400w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_9247fa423d8040f4d4794ff63936225f.png 760w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_9ca56f76f669a9bb2328814904fa0a72.png"
+width="760"
+height="265"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+WWDC19 Session 227
+&lt;/figcaption>&lt;/figure>
+&lt;figure id="figure-adding-a-custom-font-to-your-app">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://docs-assets.developer.apple.com/published/1b7e45d9c2/f9329213-4abb-413e-a339-4b91ee4bf554.png" alt="Adding a Custom Font to Your App" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Adding a Custom Font to Your App
+&lt;/figcaption>&lt;/figure>
+&lt;p>如果其他 app 需要使用通过 CTFontManagerRegisterFontURLS 进行注册的字体，需要通过 CTFontManagerRequestFonts 进行 request 才能获得字体。&lt;/p>
+&lt;figure id="figure-wwdc19-session-227">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="WWDC19 Session 227" srcset="
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_d835121eea6317e508f6ec0613a1a020.png 400w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_3f5f43825a98d8037f1011dc43c66f45.png 760w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_d835121eea6317e508f6ec0613a1a020.png"
+width="760"
+height="308"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+WWDC19 Session 227
+&lt;/figcaption>&lt;/figure>
+&lt;p>更多请参考 &lt;a href="https://developer.apple.com/videos/play/wwdc2019/227/" target="_blank" rel="noopener">Font Management and Text Scaling - WWDC 2019 - Videos - Apple Developer&lt;/a>。&lt;/p>
+&lt;h2 id="通过-mobileconfig-向-ios-系统添加自定义字体">通过 .mobileconfig 向 iOS 系统添加自定义字体&lt;/h2>
+&lt;p>通过 CoreText 提供的 API 有需要使用 CTFontManagerRequestFonts 的限制，所以无法适用于部分没有使用此 API 的 app (e.g. Notes.app)，因此可以通过 Apple Configurator 2 生成字体 Profile 来配置字体，打开 Apple Configurator 2 并切换到 Fonts 页面，点击右侧的 Configure，就会弹出对话框要求选择字体。
+单个描述文件的容量上限约为 20 megabytes，所以对于较小西文字体文件，可以将整个 Font Family 配置到同一个描述文件中，对于较大的非西文字体，则应该逐个单独添加。&lt;/p>
+&lt;figure >
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="" srcset="
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_0f4b7d4bad2f0c26aeda9a2d176e8267.png 400w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_83820084f4395201ee05488b62318eb0.png 760w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_0f4b7d4bad2f0c26aeda9a2d176e8267.png"
+width="760"
+height="659"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;/figure>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app" target="_blank" rel="noopener">Adding a Custom Font to Your App | Apple Developer Documentation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://developer.apple.com/videos/play/wwdc2019/227/" target="_blank" rel="noopener">Font Management and Text Scaling - WWDC 2019 - Videos - Apple Developer&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://stackoverflow.com/questions/57653398/ios-13-custom-fonts-download-and-installation" target="_blank" rel="noopener">iOS 13 Custom Fonts download and installation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://fonts.google.com" target="_blank" rel="noopener">Browse Fonts - Google Fonts&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.google.cn/get/noto/" target="_blank" rel="noopener">Google Noto Fonts&lt;/a>&lt;/li>
+&lt;/ol></description></item></channel></rss>

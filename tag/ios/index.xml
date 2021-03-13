@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>iOS | 徐旭栋</title><link>/tag/ios/</link><atom:link href="/tag/ios/index.xml" rel="self" type="application/rss+xml"/><description>iOS</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Mon, 10 Dec 2018 10:31:29 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>iOS</title><link>/tag/ios/</link></image><item><title>HT0007 如何使用 SSL 证书签名 iOS .mobileconfig 文件</title><link>/2018/12/09/ht0007-%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-ssl-%E8%AF%81%E4%B9%A6%E7%AD%BE%E5%90%8D-ios-.mobileconfig-%E6%96%87%E4%BB%B6/</link><pubDate>Sun, 09 Dec 2018 10:31:29 +0000</pubDate><guid>/2018/12/09/ht0007-%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-ssl-%E8%AF%81%E4%B9%A6%E7%AD%BE%E5%90%8D-ios-.mobileconfig-%E6%96%87%E4%BB%B6/</guid><description>&lt;p>您可以使用证书与 OpenSSL 签名 iOS 平台 .mobileconfig 文件。&lt;/p>
+&lt;p>以下高级步骤主要适用于系统管理员以及熟悉命令行的其他人员。iPhoneOS / iPadOS 设备上的配置描述文件（.mobileconfig）是以 .plist 为载体，包含了设备安全策略、VPN 配置信息、Wi-Fi 设置、APN 设置、Exchange 帐户设置、Google 帐户设置、邮件设置以及允许 iPhone, iPod touch, iPad 与企业系统配合使用的证书。本文描述了开发者如何使用 SSL Certification 对 . mobileconfig 文件进行签名，以确保 iPhoneOS / iPadOS 系统上的安全性。&lt;/p>
+&lt;h2 id="准备工作">准备工作&lt;/h2>
+&lt;h3 id="理解证书的状态">理解证书的状态&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>状态&lt;/th>
+&lt;th>说明&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Unsigned&lt;/td>
+&lt;td>The mobileconfig is not signed by anyone. Therefore the source is unknown.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Unverified&lt;/td>
+&lt;td>The mobileconfig is signed, but the source is not recognized as trusted.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Verified&lt;/td>
+&lt;td>The mobileconfig is signed and is recognized as a trusted source.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>当使用 Apple Configurator 2 为 iPhoneOS / iPadOS 添加 Profile 文件时，未签名的 .mobileconfig 文件会被标记为 &amp;ldquo;Unsigned&amp;rdquo; 状态，修复此问题我们需要对 Profile 进行签名。&lt;/p>
+&lt;h3 id="准备所需要的文件">准备所需要的文件&lt;/h3>
+&lt;ol>
+&lt;li>未签名的 .mobileconfig 文件，&lt;strong>UnsignedProfile.mobileconfig&lt;/strong>&lt;/li>
+&lt;li>证书对应 Private Key，&lt;strong>PrivateKey.pem&lt;/strong>&lt;/li>
+&lt;li>与 SSL 证书对应的证书链（中级证书），&lt;strong>CertChain.pem&lt;/strong>&lt;/li>
+&lt;li>受信任的 SSL 证书，自签名证书、TrustAsia, Let’s Encrypt 等签发的免费 SSL 证书，商业 SSL 证书，&lt;strong>Certificate.pem&lt;/strong>&lt;/li>
+&lt;/ol>
+&lt;h3 id="签名方式">签名方式&lt;/h3>
+&lt;pre>&lt;code class="language-bash">openssl smime
+-sign \
+-in UnsignedProfile.mobileconfig \
+-out SignedProfile.mobileconfig \
+-signer Certificate.pem \
+-inkey PrivateKey.pem \
+-certfile CertChain.pem \
+-outform der -nodetach
+&lt;/code>&lt;/pre>
+&lt;h2 id="使用自签名证书签名">使用自签名证书签名&lt;/h2>
+&lt;p>创建可引导安装器后，请按照以下步骤进行使用：&lt;/p>
+&lt;h3 id="从-keychain-access-导出自签名证书">从 Keychain Access 导出自签名证书&lt;/h3>
+&lt;p>Keychain Access -&amp;gt; Certificate Assistance -&amp;gt; Create a Certificate，根据提示创建证书，创建完成之后对证书私钥进行导出，右键证书点击 Export 导出 Certificate.per，右键私钥点击 Export 导出 PrivateKey.p12，通过命令行将 .p12 转换为 .pem，将 Certificate.per 转换为 Certificate.pem。&lt;/p>
+&lt;pre>&lt;code class="language-bash">openssl pkcs12 -in PrivateKey.p12 -out PrivateKey.pem -nodes
+openssl x509 -trustout -inform DER -outform PEM -in Certificate.cer -out Certificate.pem
+&lt;/code>&lt;/pre>
+&lt;h3 id="下载根证书和中间证书">下载根证书和中间证书&lt;/h3>
+&lt;p>本文使用 AppleIncRootCertificate.cer 根证书和 AppleApplicationIntegrationCA5G1.cer 中间证书，更多证书可以访问 Apple PKI。下载完成后通过命令行从 Root Certificate 和 Intermediate Certificate 提取 Certificates 和 Keys，参考 &lt;a href="info.ssl.com/article.aspx?id=12149">INFO.SSL&lt;/a>。&lt;/p>
+&lt;pre>&lt;code class="language-bash">openssl x509 -trustout -inform DER -outform PEM -in AppleIncRootCertificate.cer -out Root.pem
+openssl x509 -trustout -inform DER -outform PEM -in AppleApplicationIntegrationCA5G1.cer -out Intermediate.pem
+&lt;/code>&lt;/pre>
+&lt;p>将 Intermediate.pem 和 Root.pem 中的文本内容合并为一份文件 AppleIncCertificateChain.pem，此时 AppleIncCertificateChain.pem 将会包含两份证书。&lt;/p>
+&lt;h3 id="签名">签名&lt;/h3>
+&lt;ol>
+&lt;li>打开“应用程序”文件夹内“实用工具”文件夹中的“终端”。&lt;/li>
+&lt;li>在获取管理员权限之后，在“终端”中键入或粘贴以下命令。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-bash">openssl smime \
+-sign \
+-in UnsignedProfile.mobileconfig \
+-out SignedProfile.mobileconfig \
+-signer Certificate.pem \
+-inkey PrivateKey.pem \
+-certfile AppleIncCertificateChain.pem \
+-outform der -nodetach
+&lt;/code>&lt;/pre>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://letsencrypt.org/" target="_blank" rel="noopener">Free SSL/TLS Certificates&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://discussions.apple.com/thread/2363234" target="_blank" rel="noopener">possible status of a mobileconfig? - Apple Community&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.apple.com/certificateauthority/" target="_blank" rel="noopener">Apple PKI&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://support.apple.com/zh-cn/guide/server/apd2474fbab/mac" target="_blank" rel="noopener">在 macOS 服务器中创建自签名证书 - Apple 支持&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>HT0013 如何向 iOS 系统中添加自定义字体</title><link>/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/</link><pubDate>Mon, 10 Dec 2018 10:31:29 +0000</pubDate><guid>/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/</guid><description>&lt;p>为 iPhoneOS / iPadOS 设备添加自定义字体。&lt;/p>
+&lt;p>以下高级步骤主要适用于系统管理员以及熟悉命令行的其他人员。&lt;/p>
+&lt;h2 id="概览">概览&lt;/h2>
+&lt;p>iOS 并不限制第三方添加字体到系统之中，当你有自定义字体想在你的 app 或者其他系统内建应用（e.g. Notes.app, Pages.app）中使用时，通过 iOS 提供的多种方法你可以实现不同的结果。&lt;/p>
+&lt;h2 id="为应用添加自定义字体">为应用添加自定义字体&lt;/h2>
+&lt;p>为一个 app 添加字体，字体的使用范围限制于当前 app 之中，如图所示，将字体拖入至工程，并勾选对应的 Target Membership。&lt;/p>
+&lt;figure id="figure-adding-a-custom-font-to-your-app">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://docs-assets.developer.apple.com/published/35bc80c902/d373ed5c-a36b-46fe-9bd8-bf49700072be.png" alt="Adding a Custom Font to Your App" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Adding a Custom Font to Your App
+&lt;/figcaption>&lt;/figure>
+&lt;p>通过 Info.plist &lt;strong>UIAppFonts&lt;/strong> (Fonts provided by application) 字段向 Xcode 工程注册字体，完成之后就可以像其他 iOS 内建字体一样使用你的自定义字体。&lt;/p>
+&lt;p>更多请参考 Apple 文档 &lt;a href="https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app" target="_blank" rel="noopener">Adding a Custom Font to Your App | Apple Developer Documentation&lt;/a>。&lt;/p>
+&lt;h2 id="向-ios-系统注册自定义字体">向 iOS 系统注册自定义字体&lt;/h2>
+&lt;p>为系统内建的应用提供自定字体需要用到 iOS 13 新提供的 CoreText 的 API，同时需要在 App.entitlements 中添加 Fonts Capability 并勾选 Install Fonts，使用字体时需要勾选 Use Installed Fonts。&lt;/p>
+&lt;figure id="figure-wwdc19-session-227">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="WWDC19 Session 227" srcset="
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_9ca56f76f669a9bb2328814904fa0a72.png 400w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_9247fa423d8040f4d4794ff63936225f.png 760w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManagerRegisterFontURLS_hucfda22ca6c1719673d5d88e7507b81b7_232878_9ca56f76f669a9bb2328814904fa0a72.png"
+width="760"
+height="265"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+WWDC19 Session 227
+&lt;/figcaption>&lt;/figure>
+&lt;figure id="figure-adding-a-custom-font-to-your-app">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://docs-assets.developer.apple.com/published/1b7e45d9c2/f9329213-4abb-413e-a339-4b91ee4bf554.png" alt="Adding a Custom Font to Your App" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Adding a Custom Font to Your App
+&lt;/figcaption>&lt;/figure>
+&lt;p>如果其他 app 需要使用通过 CTFontManagerRegisterFontURLS 进行注册的字体，需要通过 CTFontManagerRequestFonts 进行 request 才能获得字体。&lt;/p>
+&lt;figure id="figure-wwdc19-session-227">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="WWDC19 Session 227" srcset="
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_d835121eea6317e508f6ec0613a1a020.png 400w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_3f5f43825a98d8037f1011dc43c66f45.png 760w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/CTFontManager_hufa3c300f7b67ee5ae15dbf3386edc981_197468_d835121eea6317e508f6ec0613a1a020.png"
+width="760"
+height="308"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+WWDC19 Session 227
+&lt;/figcaption>&lt;/figure>
+&lt;p>更多请参考 &lt;a href="https://developer.apple.com/videos/play/wwdc2019/227/" target="_blank" rel="noopener">Font Management and Text Scaling - WWDC 2019 - Videos - Apple Developer&lt;/a>。&lt;/p>
+&lt;h2 id="通过-mobileconfig-向-ios-系统添加自定义字体">通过 .mobileconfig 向 iOS 系统添加自定义字体&lt;/h2>
+&lt;p>通过 CoreText 提供的 API 有需要使用 CTFontManagerRequestFonts 的限制，所以无法适用于部分没有使用此 API 的 app (e.g. Notes.app)，因此可以通过 Apple Configurator 2 生成字体 Profile 来配置字体，打开 Apple Configurator 2 并切换到 Fonts 页面，点击右侧的 Configure，就会弹出对话框要求选择字体。
+单个描述文件的容量上限约为 20 megabytes，所以对于较小西文字体文件，可以将整个 Font Family 配置到同一个描述文件中，对于较大的非西文字体，则应该逐个单独添加。&lt;/p>
+&lt;figure >
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="" srcset="
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_0f4b7d4bad2f0c26aeda9a2d176e8267.png 400w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_83820084f4395201ee05488b62318eb0.png 760w,
+/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/12/10/ht0013-%E5%A6%82%E4%BD%95%E5%90%91-ios-%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93/apple-configurator-2_hue98665b1bff3ce65595dad0b7d546b64_380522_0f4b7d4bad2f0c26aeda9a2d176e8267.png"
+width="760"
+height="659"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;/figure>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app" target="_blank" rel="noopener">Adding a Custom Font to Your App | Apple Developer Documentation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://developer.apple.com/videos/play/wwdc2019/227/" target="_blank" rel="noopener">Font Management and Text Scaling - WWDC 2019 - Videos - Apple Developer&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://stackoverflow.com/questions/57653398/ios-13-custom-fonts-download-and-installation" target="_blank" rel="noopener">iOS 13 Custom Fonts download and installation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://fonts.google.com" target="_blank" rel="noopener">Browse Fonts - Google Fonts&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.google.cn/get/noto/" target="_blank" rel="noopener">Google Noto Fonts&lt;/a>&lt;/li>
+&lt;/ol></description></item><item><title>HT0026 未越狱如何降级 iOS 应用版本</title><link>/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/</link><pubDate>Thu, 14 Jun 2018 15:44:16 +0000</pubDate><guid>/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/</guid><description>&lt;h2 id="如何获取-ipa">如何获取 ipa&lt;/h2>
+&lt;p>要获取应用下载链接，在未越狱的情况下，由于每一个 &lt;code>ipa&lt;/code> 都和 Apple ID 绑定，并且有 Apple 的签名，所以必须要通过官方途径配合 Apple 账号下载。在 Windows 上可以直接通过 iTunes 方式获取 &lt;code>ipa&lt;/code>，而在 macOS 上目前有两种获取 &lt;code>ipa&lt;/code> 方式：&lt;/p>
+&lt;ol>
+&lt;li>iTunes&lt;/li>
+&lt;li>Apple Configurator&lt;/li>
+&lt;/ol>
+&lt;h3 id="ipa-的下载流程">ipa 的下载流程&lt;/h3>
+&lt;h4 id="itunes-的-ipa-下载流程">iTunes 的 ipa 下载流程&lt;/h4>
+&lt;p>在 iTunes 下，一次购买下载 &lt;code>ipa&lt;/code> 的流程由一个发往服务器为 &lt;code>buy.itunes.apple.com&lt;/code>、Path 为 &lt;code>WebObjects/MZBuy.woa/wa/buyProduct&lt;/code> 的请求作为开始。构造请求时会向 &lt;code>appExtVrsId&lt;/code> 字段注入 Build 号，来指定获取具体某个版本的 &lt;code>ipa&lt;/code>（默认为最新上架的一个 Build Number），再利用 &lt;code>GUID&lt;/code> 和 &lt;code>DSID&lt;/code> 生成 &lt;code>kbsync&lt;/code> 请求鉴权信息，完成 Request 构造。收到 Response 之后，分析 Response Body 中的 &lt;code>XML&lt;/code> 文件，可以找到包含签名后的下载链接，iTunes 利用这个链接完成 &lt;code>ipa&lt;/code> 的下载，链接的形式如下所示。&lt;/p>
+&lt;pre>&lt;code class="language-shell">https://iosapps.itunes.apple.com/itunes-assets/Purple114/v4/bf/36/04/bf360426-5231-2db4-ff0b-430c788ec5c6/pre-thinned13659119744838198600.lc.7948000812590706.EOTME2CVXCUZU.signed.dpkg.ipa?accessKey=${accessKey}
+&lt;/code>&lt;/pre>
+&lt;p>可以看到请求的 &lt;code>ipa&lt;/code> 为 &lt;code>pre-thinned13......ipa&lt;/code>；Path 为 &lt;code>itunes-assets/Purple114/v4/bf/36/04/bf360426-5231-2db4-ff0b-430c788ec5c6&lt;/code>，由于同一个应用，不同设备的 &lt;code>ipa&lt;/code> 包都是不同的，所以文件服务器上必然有大量包含了 &lt;code>pre-thinned&lt;/code> 的 ipa，所以 &lt;code>hash&lt;/code> 过的 Path 可用于文件索引加速，但会使得反向推算特定版本特定设备的 &lt;code>ipa&lt;/code> 变得几乎不可能；&lt;code>accessKey&lt;/code> 为 public key 且具有时效性，用于文件访问鉴权。&lt;/p>
+&lt;p>综上可以得知 &lt;code>ipa&lt;/code> 文件路径难以推测，并且请求具有实效性，因此在 Response 处没有太多的可挖掘的点。而将 &lt;code>appExtVrsId&lt;/code> 这个字段作为切入点是比较合理的。&lt;/p>
+&lt;h4 id="apple-configurator-的-ipa-下载流程">Apple Configurator 的 ipa 下载流程&lt;/h4>
+&lt;p>在 Apple Configurator 2 中，苹果针对请求做了修改 Path 变为 &lt;code>WebObjects/MZFinance.woa/wa/volumeStoreDownloadProduct&lt;/code>，请求的 Plist 如下所示。&lt;/p>
+&lt;pre>&lt;code>&amp;lt;key&amp;gt;guid&amp;lt;/key&amp;gt;
+&amp;lt;string&amp;gt;${guid}&amp;lt;/string&amp;gt;
+&amp;lt;key&amp;gt;kbsync&amp;lt;/key&amp;gt;
+&amp;lt;string&amp;gt;${kbsync}&amp;lt;/string&amp;gt;
+&amp;lt;key&amp;gt;salableAdamId&amp;lt;/key&amp;gt;
+&amp;lt;string&amp;gt;414478124&amp;lt;/string&amp;gt;
+&amp;lt;key&amp;gt;serialNumber&amp;lt;/key&amp;gt;
+&amp;lt;string&amp;gt;${serialNumber}&amp;lt;/string&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>可以发现并没有字段可以来指定版本信息，一筹莫展。&lt;/p>
+&lt;h3 id="通过-itunes-获取-ipa">通过 iTunes 获取 ipa&lt;/h3>
+&lt;div class="alert alert-note">
+&lt;div>
+2020 年 03 月 18 日 后，从 iTunes 12.6.5 的 App Store 下载应用会直接 SSL 握手失败，iTunes 的方式失效。
+&lt;/div>
+&lt;/div>
+&lt;p>自 macOS Mojave 之后，iTunes 的 App Store 的功能就逐渐淡出舞台了，&lt;a href="https://secure-appldnld.apple.com/itunes12/091-87821-20180912-69177170-B085-11E8-B6AB-C1D03409AD2A/iTunes12.6.5.dmg" target="_blank" rel="noopener">iTunes 12.6.5.3&lt;/a> 是最后一个可以浏览 App Store 的 iTunes 版本。&lt;/p>
+&lt;h4 id="安装-itunes-12653">安装 iTunes 12.6.5.3&lt;/h4>
+&lt;p>在 Mojave 之后安装 iTunes 会受到限制，需要绕过校验系统版本的 iTunes Installer，直接提取安装包内部的 iTunes.app 移至 /Applications 使用。在 macOS Mojave 10.14.4 之后，苹果直接对 iTunes 版本做了限制，打开 iTunes 会提示你当前系统不支持 12.6.5，这时候需要提高 info.plist 里的版本号绕过 macOS 的校验，可以使用 Apple Script 来完成上述步骤。&lt;/p>
+&lt;script type="application/javascript" src="https://gist.github.com/0xxd0/c5e410690e501de1786e72499b03eff4.js">&lt;/script>
+&lt;p>针对历史版本的 iTunes，以及其残留物无法删除干净的情况下，可以使用如下 &lt;code>shell&lt;/code> 脚本。&lt;/p>
+&lt;script type="application/javascript" src="https://gist.github.com/0xxd0/f4ad266c6df5b9b62433f86a0881b9b6.js">&lt;/script>
+&lt;p>完成安装后，如果启动 iTunes 时提示 &amp;ldquo;iTunes Library.itl&amp;rdquo; 错误，则需要移除 Music 目录下 iTunes 文件夹内 iTunes Library.itl 文件。此外也可以通过 &lt;a href="https://github.com/cormiertyshawn895/Retroactive" target="_blank" rel="noopener">Retroactive&lt;/a> 安装 iTunes，同样也包括其他被苹果删除的内建应用。&lt;/p>
+&lt;h4 id="从-itunes-抓取下载数据">从 iTunes 抓取下载数据&lt;/h4>
+&lt;p>以 Charles 为例，按照以下步骤进行下载地址抓取&lt;/p>
+&lt;ol>
+&lt;li>打开 Charles，配置证书打开，SSL Proxying 加入 &lt;code>*.apple.com&lt;/code>。&lt;/li>
+&lt;li>开 iTunes，选择一个应用下载，以 WeChat 为例。&lt;/li>
+&lt;li>在 Charles 中过滤 path 为 &lt;code>WebObjects/MZBuy.woa/wa/buyProduct&lt;/code> 的请求，添加 &lt;code>breakpoints&lt;/code>。&lt;/li>
+&lt;li>查看 Response Body 中 &lt;code>XML&lt;/code> 字段 &lt;code>softwareVersionExternalIdentifiers&lt;/code>，该数组包含了所有可下载的 Build 号。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-xml">&amp;lt;key&amp;gt;softwareVersionExternalIdentifiers&amp;lt;/key&amp;gt;
+&amp;lt;array&amp;gt;
+...
+&amp;lt;integer&amp;gt;717062721&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;719842773&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;726302660&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;746082682&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;811222902&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;811530944&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;811669817&amp;lt;/integer&amp;gt;
+&amp;lt;integer&amp;gt;811953630&amp;lt;/integer&amp;gt;
+...
+&amp;lt;/array&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;ol start="5">
+&lt;li>根据 &lt;a href="https://mixrank.com/appstore/apps/414478124/versions" target="_blank" rel="noopener">MIXRANK&lt;/a> 查询版本对应的 Build 号。&lt;/li>
+&lt;/ol>
+&lt;figure id="figure-build-number">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Build Number" srcset="
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/build-version-map_hu7721f23abd3aabca125ada159a160f16_195919_a68d9f8a3109a2303308b3144f941c93.png 400w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/build-version-map_hu7721f23abd3aabca125ada159a160f16_195919_d486c938359d9c29c4f1a7acb62a54a8.png 760w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/build-version-map_hu7721f23abd3aabca125ada159a160f16_195919_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/build-version-map_hu7721f23abd3aabca125ada159a160f16_195919_a68d9f8a3109a2303308b3144f941c93.png"
+width="760"
+height="557"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Build Number
+&lt;/figcaption>&lt;/figure>
+&lt;ol start="6">
+&lt;li>取消之前的下载，并再次下载触发断点，编辑 Request，将请求的 &lt;code>appExtVrsId&lt;/code> 字段的值替换成对应的版本号，并 Excute。&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-xml">&amp;lt;key&amp;gt;appExtVrsId&amp;lt;/key&amp;gt;
+&amp;lt;string&amp;gt;830005675&amp;lt;/string&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;ol start="7">
+&lt;li>完成下载之后可得到指定版本的 ipa。&lt;/li>
+&lt;/ol>
+&lt;h3 id="使用-apple-configurator">使用 Apple Configurator&lt;/h3>
+&lt;div class="alert alert-warning">
+&lt;div>
+暂时还未找到通过 Apple Configurator 2 降级的方法
+&lt;/div>
+&lt;/div>
+&lt;h4 id="安装-apple-configurator-2">安装 Apple Configurator 2&lt;/h4>
+&lt;p>&lt;a href="https://apps.apple.com/cn/app/apple-configurator-2/id1037126344" target="_blank" rel="noopener">点击链接&lt;/a> 从 Mac App Store 直接安装 Apple Configurator 2&lt;/p>
+&lt;h4 id="如何从-apple-configurator-2-抓取下载数据">如何从 Apple Configurator 2 抓取下载数据&lt;/h4>
+&lt;p>首先从 Apple Configurator 2 发起下载请求，以 WeChat 为例，选择 WeChat 点击 Add。&lt;/p>
+&lt;figure id="figure-wechat">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="WeChat" srcset="
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-wechat_hu409c0142164a426ac1eab9af4e5507e1_490825_8ae8f77353d25851add9e69a7ab97c46.png 400w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-wechat_hu409c0142164a426ac1eab9af4e5507e1_490825_f526c1bf2d21b88dde2c195036a5cdec.png 760w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-wechat_hu409c0142164a426ac1eab9af4e5507e1_490825_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-wechat_hu409c0142164a426ac1eab9af4e5507e1_490825_8ae8f77353d25851add9e69a7ab97c46.png"
+width="760"
+height="507"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+WeChat
+&lt;/figcaption>&lt;/figure>
+&lt;p>从 Apple Configurator 2 抓取下载数和 iTunes 的唯一区别点在于断点的位置，如下图所示。&lt;/p>
+&lt;figure id="figure-break-point">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Break Point" srcset="
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/buyitunes-breakpoint_huf641f3175853c64aed3b6229b150b204_94151_c5821320c8699a94522f86b62f74760c.png 400w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/buyitunes-breakpoint_huf641f3175853c64aed3b6229b150b204_94151_574de24b7c3e5c75268b0f0fe62a3be4.png 760w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/buyitunes-breakpoint_huf641f3175853c64aed3b6229b150b204_94151_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/buyitunes-breakpoint_huf641f3175853c64aed3b6229b150b204_94151_c5821320c8699a94522f86b62f74760c.png"
+width="760"
+height="153"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Break Point
+&lt;/figcaption>&lt;/figure>
+&lt;p>其余流程在理论上没有任何区别，但如&lt;a href="#Apple-Configurator-%e7%9a%84-ipa-%e4%b8%8b%e8%bd%bd%e6%b5%81%e7%a8%8b">“Apple Configurator 的 ipa 下载流程”&lt;/a>中所述，核心在于如何修改版本，暂时还没找到方法，目前苹果应该是把 Build Number 查询与修改这一步放到了服务端。&lt;/p>
+&lt;h2 id="安装-ipa">安装 ipa&lt;/h2>
+&lt;p>使用 Apple Configurator 2，添加一个 App，点击 Choose from my Mac 选择上一步骤中抓取到的 ipa。&lt;/p>
+&lt;figure id="figure-install-ipa">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >
+&lt;img alt="Install IPA" srcset="
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-install-ipa_hu98537246a3a2a82ed81ec0a73f2cf4e6_751964_94209d88307529f92adea8d6df8b9fb6.png 400w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-install-ipa_hu98537246a3a2a82ed81ec0a73f2cf4e6_751964_afee8a21139800545e80ebdbe4e0c28a.png 760w,
+/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-install-ipa_hu98537246a3a2a82ed81ec0a73f2cf4e6_751964_1200x1200_fit_lanczos_2.png 1200w"
+src="/2018/06/14/ht0026-%E6%9C%AA%E8%B6%8A%E7%8B%B1%E5%A6%82%E4%BD%95%E9%99%8D%E7%BA%A7-ios-%E5%BA%94%E7%94%A8%E7%89%88%E6%9C%AC/apple-configurator-2-install-ipa_hu98537246a3a2a82ed81ec0a73f2cf4e6_751964_94209d88307529f92adea8d6df8b9fb6.png"
+width="760"
+height="469"
+loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+Install IPA
+&lt;/figcaption>&lt;/figure>
+&lt;p>按步骤安装完成 ipa 的部署即可。&lt;/p>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://forums.macrumors.com/threads/itunes-12-6-5-3-on-macos-catalina-10-15.2184518/" target="_blank" rel="noopener">iTunes 12.6.5.3 on MacOS Catalina 10.15&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.theiphonewiki.com/wiki/DSID" target="_blank" rel="noopener">DSID&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://support.apple.com/zh-cn/HT208079" target="_blank" rel="noopener">使用 iTunes 在业务环境中部署应用&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://discussions.apple.com/thread/251200031?page=2" target="_blank" rel="noopener">Updating apps using iTunes 12.6.5.3&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://discussions.apple.com/thread/251211447" target="_blank" rel="noopener">iTunes 12.6.5 Apps don’t download since 18/03/2020&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/Public-key_cryptography" target="_blank" rel="noopener">Public-key cryptography&lt;/a>&lt;/li>
+&lt;/ol></description></item></channel></rss>

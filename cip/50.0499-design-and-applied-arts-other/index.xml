@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>50.0499) Design and Applied Arts, Other | 徐旭栋</title><link>/cip/50.0499-design-and-applied-arts-other/</link><atom:link href="/cip/50.0499-design-and-applied-arts-other/index.xml" rel="self" type="application/rss+xml"/><description>50.0499) Design and Applied Arts, Other</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Tue, 15 Oct 2019 00:00:00 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>50.0499) Design and Applied Arts, Other</title><link>/cip/50.0499-design-and-applied-arts-other/</link></image><item><title>Typefaces 索引</title><link>/2019/10/15/typefaces-%E7%B4%A2%E5%BC%95/</link><pubDate>Tue, 15 Oct 2019 00:00:00 +0000</pubDate><guid>/2019/10/15/typefaces-%E7%B4%A2%E5%BC%95/</guid><description>&lt;h2 id="adobe-fonts">Adobe Fonts&lt;/h2>
+&lt;h4 id="source-serifhttpsadobe-fontsgithubiosource-serif">&lt;a href="https://adobe-fonts.github.io/source-serif/" target="_blank" rel="noopener">Source Serif&lt;/a>&lt;/h4>
+&lt;h4 id="source-sanshttpsadobe-fontsgithubiosource-sans">&lt;a href="https://adobe-fonts.github.io/source-sans/" target="_blank" rel="noopener">Source Sans&lt;/a>&lt;/h4>
+&lt;h4 id="source-code-prohttpsadobe-fontsgithubiosource-code-pro">&lt;a href="https://adobe-fonts.github.io/source-code-pro/" target="_blank" rel="noopener">Source Code Pro&lt;/a>&lt;/h4>
+&lt;h2 id="microsoft-fonts">Microsoft Fonts&lt;/h2>
+&lt;h4 id="cascadia-codehttpsgithubcommicrosoftcascadia-code">&lt;a href="https://github.com/microsoft/cascadia-code" target="_blank" rel="noopener">Cascadia Code&lt;/a>&lt;/h4>
+&lt;figure >
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://raw.githubusercontent.com/microsoft/cascadia-code/main/images/cascadia-code.png" alt="" loading="lazy" data-zoomable width="300px" />&lt;/div>
+&lt;/div>&lt;/figure>
+&lt;ul>
+&lt;li>&lt;code>Cascadia Code&lt;/code>: standard version of Cascadia&lt;/li>
+&lt;li>&lt;code>Cascadia Mono&lt;/code>: a version of Cascadia that doesn&amp;rsquo;t have ligatures&lt;/li>
+&lt;li>&lt;code>Cascadia (Code|Mono) PL&lt;/code>: a version of Cascadia that has embedded Powerline symbols&lt;/li>
+&lt;/ul>
+&lt;figure >
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://raw.githubusercontent.com/microsoft/cascadia-code/main/images/cascadia-code-characters.png" alt="" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;/figure>
+&lt;h2 id="google-fontshttpsfontsgooglecom">&lt;a href="https://fonts.google.com" target="_blank" rel="noopener">Google Fonts&lt;/a>&lt;/h2>
+&lt;figure >
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="./google-fonts.svg" alt="" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;/figure>
+&lt;h4 id="google-noto-fontshttpswwwgooglecomgetnoto">&lt;a href="https://www.google.com/get/noto/" target="_blank" rel="noopener">Google Noto Fonts&lt;/a>&lt;/h4>
+&lt;h2 id="jetbrains-fonts">JetBrains Fonts&lt;/h2>
+&lt;h4 id="jetbrains-monohttpswwwjetbrainscomlpmono">&lt;a href="https://www.jetbrains.com/lp/mono/" target="_blank" rel="noopener">JetBrains Mono&lt;/a>&lt;/h4>
+&lt;h2 id="other-fonts">Other Fonts&lt;/h2>
+&lt;h4 id="firacodehttpsgithubcomtonskyfiracode">&lt;a href="https://github.com/tonsky/FiraCode" target="_blank" rel="noopener">FiraCode&lt;/a>&lt;/h4>
+&lt;figure >
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://raw.githubusercontent.com/tonsky/FiraCode/master/extras/download.png" alt="" loading="lazy" data-zoomable width="300px" />&lt;/div>
+&lt;/div>&lt;/figure>
+&lt;figure id="figure-ligatures-cheatsheet">
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://raw.githubusercontent.com/tonsky/FiraCode/master/extras/ligatures.png" alt="ligatures cheatsheet" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;figcaption>
+ligatures cheatsheet
+&lt;/figcaption>&lt;/figure>
+&lt;h4 id="geomanisthttpswwwatipofoundrycomfontsgeomanist">&lt;a href="https://www.atipofoundry.com/fonts/geomanist" target="_blank" rel="noopener">geomanist&lt;/a>&lt;/h4>
+&lt;figure >
+&lt;div class="d-flex justify-content-center">
+&lt;div class="w-100" >&lt;img src="https://www.atipofoundry.com/media/pages/fonts/geomanist/2024424344-1591511652/geomanist-01.jpg" alt="" loading="lazy" data-zoomable />&lt;/div>
+&lt;/div>&lt;/figure>
+&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://github.com/tonsky/FiraCode" target="_blank" rel="noopener">tonsky/FiraCode&lt;/a>.&lt;/li>
+&lt;/ol></description></item></channel></rss>

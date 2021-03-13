@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>HTTP | 徐旭栋</title><link>/tag/http/</link><atom:link href="/tag/http/index.xml" rel="self" type="application/rss+xml"/><description>HTTP</description><generator>Wowchemy (https://wowchemy.com)</generator><language>zh-Hans</language><copyright>Copyright © 2014 - 2021 Xudong Xu. 保留所有权利。</copyright><lastBuildDate>Thu, 15 Jun 2017 00:00:00 +0000</lastBuildDate><image><url>/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_512x512_fill_lanczos_center_2.png</url><title>HTTP</title><link>/tag/http/</link></image><item><title>深入了解 QUIC Transport Protocol</title><link>/2017/06/15/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-quic-transport-protocol/</link><pubDate>Thu, 15 Jun 2017 00:00:00 +0000</pubDate><guid>/2017/06/15/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-quic-transport-protocol/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/draft-ietf-quic-transport-34.pdf" target="_blank" rel="noopener">QUIC: A UDP-Based Multiplexed and Secure Transport&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://www.ietf.org/proceedings/98/slides/slides-98-edu-sessf-quic-tutorial-00.pdf" target="_blank" rel="noopener">QUIC Tutorial&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://blog.cloudflare.com/the-road-to-quic/" target="_blank" rel="noopener">The Road to QUIC&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://www.chromium.org/quic" target="_blank" rel="noopener">QUIC, a multiplexed stream transport over UDP&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 HTTP</title><link>/2017/05/11/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-http/</link><pubDate>Thu, 11 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/11/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-http/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc2616.pdf" target="_blank" rel="noopener">Hypertext Transfer Protocol &amp;ndash; HTTP/1.1&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc7231.pdf" target="_blank" rel="noopener">Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview" target="_blank" rel="noopener">An overview of HTTP&lt;/a>.&lt;/li>
+&lt;/ol></description></item><item><title>深入了解 TCP</title><link>/2017/05/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-tcp/</link><pubDate>Wed, 03 May 2017 00:00:00 +0000</pubDate><guid>/2017/05/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-tcp/</guid><description>&lt;h2 id="进一步了解">进一步了解&lt;/h2>
+&lt;ol>
+&lt;li>&lt;a href="https://tools.ietf.org/pdf/rfc793.pdf" target="_blank" rel="noopener">TRANSMISSION CONTROL PROTOCOL): Semantics and Content&lt;/a>.&lt;/li>
+&lt;li>&lt;a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol" target="_blank" rel="noopener">Transmission Control Protocol - Wikipedia&lt;/a>.&lt;/li>
+&lt;/ol></description></item></channel></rss>
